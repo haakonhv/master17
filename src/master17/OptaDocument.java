@@ -19,8 +19,13 @@ public class OptaDocument {
 		this.fileName = fileName;
 		this.doc = xmlReader.getDocument(fileName);
 		this.game = xmlReader.getGame(doc);
-		this.EventList = xmlReader.getEventList(doc);
+		System.out.println(game.getGame_id());
+		this.EventList = xmlReader.getEventList(doc, game);
 		
+	}
+
+	public ArrayList<Event> getEventList() {
+		return EventList;
 	}
 	
 

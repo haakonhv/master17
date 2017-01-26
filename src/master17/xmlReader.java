@@ -13,8 +13,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import project16.Event;
-
 public class xmlReader {
 	public static Document getDocument(String fileName) throws ParserConfigurationException, SAXException, IOException{ //lager Document object fra xml-fil med navn fileName som input (Opta-fil)
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -35,40 +33,194 @@ public class xmlReader {
     }
 	public static ArrayList<Event> getEventList(Document doc, Game game){
 		int game_id = game.getGame_id();
-		NodeList xmlEventList = doc.getElementsByTagName("Event");
-		ArrayList<Event> eventList = new ArrayList<Event>();
-		int GD = 0;
+		NodeList xmlEventList = doc.getElementsByTagName("Event"); //nodelist med alle event-nodene fra XML-filen
+		ArrayList<Event> eventList = new ArrayList<Event>(); //foreløpig tom liste som skal inneholde alle eventer fra XML-filen
+		int gd = 0; //goal difference
+		int mp = 0; //manpower difference
 		int sequence=1; //sequence nummer internt i en game
-		for (int i=0; i<xmlEventList.getLength();i++){
+		int number = 0;
+		for (int i=0; i<xmlEventList.getLength();i++){ //løkke som går gjennom hver event-node og lager event-objekter
 			Element xmlEvent = (Element) xmlEventList.item(i);
 			int event_id = Integer.parseInt(xmlEvent.getAttribute("id")); //setter opta-event id;
-			int number = i+1;
-		  	if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==1){
-         		int period = 1;
+			String action_type = getActionType(xmlEvent);
+			if (action_type.equals("skip")){
+				continue;
+			}
+			int team_id = Integer.parseInt(xmlEvent.getAttribute("team_id"));
+			if (action_type.equals("Red card")){
+				if (team_id == game.getHome_team_id()){
+					mp = mp - 1;
+				}
+				else {
+					mp = mp + 1;
+				}
+				continue;
+			}	
+			number = number+1;
+			int period = 0;
+		  	if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==1){ //første omgang
+         		period = 1;
          	}
-         	else if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==2){
-         		int period = 2;
+         	else if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==2){ //andre omgang
+         		period = 2;
          	}
          	else {
-         		int period = 16;//optas pre-match period-kode
+         		period = 16;//optas pre-match period-kode
          	}
 		  	int minute = Integer.parseInt(xmlEvent.getAttribute("min"));
 		  	int second = Integer.parseInt(xmlEvent.getAttribute("sec"));
 		  	float xstart = Float.parseFloat(xmlEvent.getAttribute("x"));
          	float ystart = Float.parseFloat(xmlEvent.getAttribute("y"));
-         	//int typeid = Integer.parseInt(xmlEvent.getAttribute("type_id"));
-         	
+         	int player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
+         	if (!action_type.equals("Goal")){
+         		eventList.add(new Event(event_id, action_type, team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
+         	}
+         	else {
+         		eventList.add(new Event(event_id, "Shot", team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
+         		number = number + 1;
+         		eventList.add(new Event(event_id, action_type, team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
+         		if (team_id == game.getHome_team_id()){
+         			gd = gd+1;
+         		}
+         		else {
+         			gd = gd - 1;
+         		}
+         	}
 		}
+		return eventList;
 	}
 	
-	private String getEventType(Element xmlEvent){
+	private static String getActionType(Element xmlEvent){ //finner actiontype til et event
 		int typeid = Integer.parseInt(xmlEvent.getAttribute("type_id"));
+		String actiontype;
 		if (typeid == 1){
-			NodeList qualifierList = xmlEvent.getChildNodes();
-			event_type="Pass";
+			boolean cross = false; //hjelpevariabel for å ikke klassifisere cross som langpasning
+			boolean longpass = false; //hjelpevariabel, som over
+			NodeList qualifierList = xmlEvent.getChildNodes(); //liste over alle qualifiers til eventet, brukes for å skille cross, long ball, corner, free kick og vanlig pasning
+			for(int i=0; i<qualifierList.getLength();i++){
+				if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
+					Element q = (Element) qualifierList.item(i);
+					int qualifier_id = Integer.parseInt(q.getAttribute("qualifier_id"));
+					if (qualifier_id == 5){
+						actiontype = "Free kick pass";
+						return actiontype;
+					}
+					else if (qualifier_id == 6){
+						actiontype = "Corner taken";
+						return actiontype;
+					}
+					else if (qualifier_id == 1){
+						longpass = true;
+					}
+					else if (qualifier_id == 107){
+						actiontype = "Throw in taken";
+						return actiontype;
+					}
+					else if (qualifier_id == 2){
+						cross = true;
+					}
+				} 
+			}
+			if (cross == true){
+				actiontype = "Cross";
+				return actiontype;
+			}
+			else if (longpass == true){
+				actiontype = "Long pass";
+				return actiontype;
+			}
+			else {
+				actiontype = "Pass";
+				return actiontype;
+			}
 		}
-		
-		return event_type;
+		else if (typeid == 3){
+			actiontype = "Take on";
+			return actiontype;
+		}
+		else if (typeid == 61){
+			actiontype = "Ball touch";
+			return actiontype;
+		}
+		else if (typeid == 50){
+			actiontype = "Dispossessed";
+			return actiontype;
+		}
+		else if (typeid == 7){
+			actiontype = "Tackle";
+			return actiontype;
+		}
+		else if (typeid == 8){
+			actiontype = "Interception";
+			return actiontype;
+		}
+		else if (typeid == 12){
+			actiontype = "Clearance";
+			return actiontype;
+		}
+		else if (typeid == 49){
+			actiontype = "Ball recovery";
+			return actiontype;
+		}
+		else if (typeid == 44){
+			actiontype = "Aerial duel";
+			return actiontype;
+		}
+		else if (typeid == 4){
+			if (Integer.parseInt(xmlEvent.getAttribute("outcome"))==0){
+				actiontype = "Foul committed";
+			}
+			else {
+				actiontype = "Fouled";
+			}
+			return actiontype;
+		}
+		else if (typeid == 5){
+			if (Integer.parseInt(xmlEvent.getAttribute("outcome")) == 0){
+				if (Float.parseFloat(xmlEvent.getAttribute("x"))>100){
+					actiontype = "Out of play";
+				}
+				else {
+					actiontype = "skip";
+				}
+			}
+			else {
+				actiontype = "skip";
+			}
+			return actiontype;
+		}
+		else if (typeid == 17){
+			NodeList qualifierList = xmlEvent.getChildNodes();
+			for(int i=0; i<qualifierList.getLength();i++){
+				if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
+					Element q = (Element) qualifierList.item(i);
+		    		int qid = Integer.parseInt(q.getAttribute("qualifier_id"));
+		    		if (qid == 32 || qid== 33){
+		    			actiontype = "Red card";
+		    			return actiontype;
+		    		}
+		    		else {
+		    			actiontype = "skip";
+		    			return actiontype;
+		    		}
+				}
+				
+	    		
+			}
+			actiontype = "skip";
+			return actiontype;
+		}
+		else if (typeid == 13 || typeid == 14 || typeid == 15){
+			actiontype = "Shot";
+			return actiontype;
+		}
+		else if (typeid == 16){
+			actiontype = "Goal";
+			return actiontype;
+		}
+		else {
+			actiontype = "skip";
+			return actiontype;
+		}
 	}
-
 }
