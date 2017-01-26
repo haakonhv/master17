@@ -79,12 +79,16 @@ public class xmlReader {
          		eventList.add(new Event(event_id, "Shot", team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
          		number = number + 1;
          		eventList.add(new Event(event_id, action_type, team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
+         		sequence += 1;
          		if (team_id == game.getHome_team_id()){
          			gd = gd+1;
          		}
          		else {
          			gd = gd - 1;
          		}
+         	}
+         	if (action_type.equals("Out of play")){
+         		sequence += 1;
          	}
 		}
 		return eventList;
