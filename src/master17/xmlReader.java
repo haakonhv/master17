@@ -34,12 +34,13 @@ public class xmlReader {
 	public static ArrayList<Event> getEventList(Document doc, Game game){
 		int game_id = game.getGame_id();
 		NodeList xmlEventList = doc.getElementsByTagName("Event"); //nodelist med alle event-nodene fra XML-filen
-		ArrayList<Event> eventList = new ArrayList<Event>(); //foreløpig tom liste som skal inneholde alle eventer fra XML-filen
+		ArrayList<Event> eventList = new ArrayList<Event>(); //forelï¿½pig tom liste som skal inneholde alle eventer fra XML-filen
 		int gd = 0; //goal difference
 		int mp = 0; //manpower difference
+		int tempID=0;
 		int sequence=1; //sequence nummer internt i en game
 		int number = 0;
-		for (int i=0; i<xmlEventList.getLength();i++){ //løkke som går gjennom hver event-node og lager event-objekter
+		for (int i=0; i<xmlEventList.getLength();i++){ //lï¿½kke som gï¿½r gjennom hver event-node og lager event-objekter
 			Element xmlEvent = (Element) xmlEventList.item(i);
 			int event_id = Integer.parseInt(xmlEvent.getAttribute("id")); //setter opta-event id;
 			String action_type = getActionType(xmlEvent);
@@ -55,10 +56,10 @@ public class xmlReader {
 					mp = mp + 1;
 				}
 				continue;
-			}	
+			}
 			number = number+1;
 			int period = 0;
-		  	if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==1){ //første omgang
+		  	if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==1){ //fï¿½rste omgang
          		period = 1;
          	}
          	else if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==2){ //andre omgang
@@ -78,8 +79,9 @@ public class xmlReader {
          	else {
          		eventList.add(new Event(event_id, "Shot", team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
          		number = number + 1;
-         		eventList.add(new Event(event_id, action_type, team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
+         		eventList.add(new Event(tempID+1, action_type, team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
          		sequence += 1;
+         		tempID+=1;
          		if (team_id == game.getHome_team_id()){
          			gd = gd+1;
          		}
@@ -93,14 +95,14 @@ public class xmlReader {
 		}
 		return eventList;
 	}
-	
+
 	private static String getActionType(Element xmlEvent){ //finner actiontype til et event
 		int typeid = Integer.parseInt(xmlEvent.getAttribute("type_id"));
 		String actiontype;
 		if (typeid == 1){
-			boolean cross = false; //hjelpevariabel for å ikke klassifisere cross som langpasning
+			boolean cross = false; //hjelpevariabel for ï¿½ ikke klassifisere cross som langpasning
 			boolean longpass = false; //hjelpevariabel, som over
-			NodeList qualifierList = xmlEvent.getChildNodes(); //liste over alle qualifiers til eventet, brukes for å skille cross, long ball, corner, free kick og vanlig pasning
+			NodeList qualifierList = xmlEvent.getChildNodes(); //liste over alle qualifiers til eventet, brukes for ï¿½ skille cross, long ball, corner, free kick og vanlig pasning
 			for(int i=0; i<qualifierList.getLength();i++){
 				if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
 					Element q = (Element) qualifierList.item(i);
@@ -123,7 +125,7 @@ public class xmlReader {
 					else if (qualifier_id == 2){
 						cross = true;
 					}
-				} 
+				}
 			}
 			if (cross == true){
 				actiontype = "Cross";
@@ -208,8 +210,8 @@ public class xmlReader {
 		    			return actiontype;
 		    		}
 				}
-				
-	    		
+
+
 			}
 			actiontype = "skip";
 			return actiontype;
