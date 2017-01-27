@@ -242,7 +242,6 @@ public class xmlReader {
 		boolean xUpdated = false;
 		boolean yUpdated = false;
 		float[] endCoordinates = {0,0};
-		System.out.println("getEndCoords");
 		NodeList qualifierList = xmlEvent.getChildNodes();
 		for(int i=0; i<qualifierList.getLength();i++){
 			if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
@@ -251,12 +250,10 @@ public class xmlReader {
 	    		if (qid == 140){
 	    			xEnd = Float.parseFloat(q.getAttribute("value"));
 	    			xUpdated = true;
-	    			System.out.println("fant xend");
 	    		}
 	    		else if (qid == 141){
 	    			yEnd = Float.parseFloat(q.getAttribute("value"));
 	    			yUpdated = true;
-	    			System.out.println("fant yend");
 	    		}
 			}
 		}
