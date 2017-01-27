@@ -76,10 +76,8 @@ public class xmlReader {
          	float[] endCoordinates = getEndCoordinates(xmlEvent);
          	float xend = endCoordinates[0];
          	float yend = endCoordinates[1];
-         	//int outcome = Integer.parseInt(xmlEvent.getAttribute("outcome"));
+         	int outcome = Integer.parseInt(xmlEvent.getAttribute("outcome"));
          	int player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
-         	int outcome = player_id;
-         	System.out.println(outcome);
          	if (!action_type.equals("Goal")){
          		eventList.add(new Event(event_id, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
          	}
@@ -237,7 +235,7 @@ public class xmlReader {
 			return actiontype;
 		}
 	}
-	
+
 	private static float[] getEndCoordinates(Element xmlEvent){
 		float xEnd = 0;
 		float yEnd = 0;
@@ -272,7 +270,7 @@ public class xmlReader {
 		}
 		return endCoordinates;
 	}
-		
+
 }
 
 
