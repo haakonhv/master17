@@ -13,6 +13,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+
 public class xmlReader {
 	public static Document getDocument(String fileName) throws ParserConfigurationException, SAXException, IOException{ //lager Document object fra xml-fil med navn fileName som input (Opta-fil)
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -72,14 +73,20 @@ public class xmlReader {
 		  	int second = Integer.parseInt(xmlEvent.getAttribute("sec"));
 		  	float xstart = Float.parseFloat(xmlEvent.getAttribute("x"));
          	float ystart = Float.parseFloat(xmlEvent.getAttribute("y"));
+         	float[] endCoordinates = getEndCoordinates(xmlEvent);
+         	float xend = endCoordinates[0];
+         	float yend = endCoordinates[1];
+         	//int outcome = Integer.parseInt(xmlEvent.getAttribute("outcome"));
          	int player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
+         	int outcome = player_id;
+         	System.out.println(outcome);
          	if (!action_type.equals("Goal")){
-         		eventList.add(new Event(event_id, action_type, team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
+         		eventList.add(new Event(event_id, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
          	}
          	else {
-         		eventList.add(new Event(event_id, "Shot", team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
+         		eventList.add(new Event(event_id, "Shot", outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
          		number = number + 1;
-         		eventList.add(new Event(tempID+1, action_type, team_id, player_id, xstart, ystart, number, sequence, game_id, period, minute, second, mp, gd));
+         		eventList.add(new Event(tempID+1, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
          		sequence += 1;
          		tempID+=1;
          		if (team_id == game.getHome_team_id()){
@@ -97,6 +104,7 @@ public class xmlReader {
 	}
 
 	private static String getActionType(Element xmlEvent){ //finner actiontype til et event
+
 		int typeid = Integer.parseInt(xmlEvent.getAttribute("type_id"));
 		String actiontype;
 		if (typeid == 1){
@@ -229,4 +237,42 @@ public class xmlReader {
 			return actiontype;
 		}
 	}
+	
+	private static float[] getEndCoordinates(Element xmlEvent){
+		float xEnd = 0;
+		float yEnd = 0;
+		boolean xUpdated = false;
+		boolean yUpdated = false;
+		float[] endCoordinates = {0,0};
+		System.out.println("getEndCoords");
+		NodeList qualifierList = xmlEvent.getChildNodes();
+		for(int i=0; i<qualifierList.getLength();i++){
+			if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
+				Element q = (Element) qualifierList.item(i);
+	    		int qid = Integer.parseInt(q.getAttribute("qualifier_id"));
+	    		if (qid == 140){
+	    			xEnd = Float.parseFloat(q.getAttribute("value"));
+	    			xUpdated = true;
+	    			System.out.println("fant xend");
+	    		}
+	    		else if (qid == 141){
+	    			yEnd = Float.parseFloat(q.getAttribute("value"));
+	    			yUpdated = true;
+	    			System.out.println("fant yend");
+	    		}
+			}
+		}
+		if (xUpdated & yUpdated) {
+			endCoordinates[0] = xEnd;
+			endCoordinates[1] = yEnd;
+		}
+		else {
+			endCoordinates[0] = Float.parseFloat(xmlEvent.getAttribute("x"));
+			endCoordinates[1] = Float.parseFloat(xmlEvent.getAttribute("y"));
+		}
+		return endCoordinates;
+	}
+		
 }
+
+

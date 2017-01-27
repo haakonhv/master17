@@ -16,8 +16,13 @@ public class Main {
 		OptaDocument opta = new OptaDocument("data_files/f24-90-2016-839685-eventdetails.xml");
 		System.out.println("Ferdig");
 		ArrayList<Event> eventlist = opta.getEventList();
+		for (Event e: eventlist){
+			System.out.println(e);
+		}
 		DatabaseHandler dbhandler = new DatabaseHandler();
 		dbhandler.insertEvents(eventlist);
+
+		
 	}
 
 }

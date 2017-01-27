@@ -22,9 +22,9 @@ public class DatabaseHandler {
 
 		String sql="";
 		for(Event e : eventList){
-			sql="INSERT INTO Event (EventID,Action,TeamID,PlayerID,GameID,XStart,YStart,Number,Sequence,Minute,Second,"
-					+"ManpowerDifference,GoalDifference,Period)"+"\n"+"VALUES "+"("+e.getEvent_id()+",'"+e.getAction_type()+"',"+e.getTeam_id()+","+e.getPlayer_id()+","
-					+e.getGame_id()+","+e.getXstart()+","+e.getYstart()+","+e.getNumber()+","+e.getSequence()+","+e.getMinute()+","+e.getSecond()+","+e.getManpowerdifference()+
+			sql="INSERT INTO Event (EventID,Action,Outcome,TeamID,PlayerID,GameID,XStart,YStart,Xend,Yend,Number,Sequence,Minute,Second,"
+					+"ManpowerDifference,GoalDifference,Period)"+"\n"+"VALUES "+"("+e.getEvent_id()+",'"+e.getAction_type()+"',"+e.getOutcome()+","+e.getTeam_id()+","+e.getPlayer_id()+","
+					+e.getGame_id()+","+e.getXstart()+","+e.getYstart()+","+e.getXend()+","+e.getYend()+","+e.getNumber()+","+e.getSequence()+","+e.getMinute()+","+e.getSecond()+","+e.getManpowerdifference()+
 					","+e.getGoaldifference()+","+e.getPeriod()+")"+";\n";
 			stmt.addBatch(sql);
 
