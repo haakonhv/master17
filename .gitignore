@@ -1,4 +1,11 @@
 /bin/
 *.jar
 *.xml
-*.classpath
+
+/Users/HaakonHaave/Documents/workspace/master17/jdbcdriver/*
+
+/Users/Håkon/workspace/master17/jdbcdriver/*
+
+/Users/HaakonHaave/Documents/workspace/master17/.classpath
+
+/Users/Håkon/workspace/master17/.classpath
