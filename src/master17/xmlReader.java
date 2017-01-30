@@ -58,6 +58,7 @@ public class xmlReader {
 				}
 				continue;
 			}
+
 			number = number+1;
 			int period = 0;
 		  	if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==1){ //f�rste omgang
@@ -78,6 +79,50 @@ public class xmlReader {
          	float yend = endCoordinates[1];
          	int outcome = Integer.parseInt(xmlEvent.getAttribute("outcome"));
          	int player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
+
+         	if (eventList.size() > 0){
+				Event prevEvent = eventList.get(eventList.size()-1);
+         		if ((prevEvent.getAction_type().equals("Pass"))){
+         			if (prevEvent.getOutcome()==1){
+         				double xdiff = 1.05*Math.abs(xstart - prevEvent.getXend());
+         				double ydiff = 0.68*Math.abs(ystart - prevEvent.getYend());
+         				double carryLength = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
+	         			if (carryLength > 7.5){
+	         				System.out.println(carryLength);
+	         				eventList.add(new Event(tempID+1, "Ball carry", 1, team_id, player_id, prevEvent.getXend(), prevEvent.getYend(), xstart, ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
+	         				number+=1;
+	         				tempID+=1;
+	         			}
+         			}
+         			else{
+         				if (!(prevEvent.getXend()<0 || prevEvent.getXend()>100 || prevEvent.getYend()<0 || prevEvent.getYend()>100)){
+         					double xdiff = 1.05*Math.abs(xstart - (100-prevEvent.getXend()));
+	         				double ydiff = 0.68*Math.abs(ystart - (100-prevEvent.getYend()));
+	         				double carryLength = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
+	         				if (carryLength > 7.5){
+		         				System.out.println(carryLength);
+		         				eventList.add(new Event(tempID+1, "Ball carry", 1, team_id, player_id, 100-prevEvent.getXend(), 100-prevEvent.getYend(), xstart, ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
+		         				number+=1;
+		         				tempID+=1;
+	         				}
+         				}
+         			}
+				}
+         		else if (prevEvent.getAction_type().equals("Ball recovery")){
+         			double xdiff = 1.05*Math.abs(xstart - prevEvent.getXend());
+         			double ydiff = 0.68*Math.abs(ystart - prevEvent.getYend());
+         			double carryLength = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
+         			if (carryLength > 7.5){
+         				System.out.println(carryLength);
+         				eventList.add(new Event(tempID+1, "Ball carry", 1, team_id, player_id, prevEvent.getXend(), prevEvent.getYend(), xstart, ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
+         				number+=1;
+         				tempID+=1;
+         			}
+
+				}
+
+			}
+
          	if (!action_type.equals("Goal")){
          		eventList.add(new Event(event_id, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
          	}
