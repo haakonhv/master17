@@ -30,14 +30,22 @@ public class DatabaseHandler {
 
 		}
 
-
 		int [] updateCounts = stmt.executeBatch();
-
-
 		closeConnection();
 
 	}
-
+	public void updatePlayers(ArrayList<Player> playerlist) throws SQLException, ClassNotFoundException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "";
+		for (Player p : playerlist){
+			sql = "UPDATE Player SET Weight=" + p.getWeight() + ",Side=" + "'" +p.getSide() + "'" + ",Position=" + "'"+p.getPosition()+"'" + " WHERE PlayerID=" + p.getId() + ";\n";
+			stmt.addBatch(sql);
+		}
+		int [] updateCounts = stmt.executeBatch();
+		closeConnection();
+		System.out.println(updateCounts);
+	}
 
 
 
