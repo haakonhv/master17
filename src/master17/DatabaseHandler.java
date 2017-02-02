@@ -2,6 +2,7 @@ package master17;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ public class DatabaseHandler {
 		closeConnection();
 
 	}
+
+
 	public void updatePlayers(ArrayList<Player> playerlist) throws SQLException, ClassNotFoundException{
 		openConnection();
 		Statement stmt = conn.createStatement();
@@ -74,8 +77,15 @@ public class DatabaseHandler {
 		return conn;
 
 
-
-
 	}
 
+	public static ResultSet getDatabaseEvents(int gameID) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT* FROM Event WHERE GameID="+gameID;
+		System.out.println(query);
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+
+	}
 }
