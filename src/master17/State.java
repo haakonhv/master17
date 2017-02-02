@@ -12,12 +12,9 @@ public class State {
 	private int occurrence;
 	private int reward;
 
-
-	public int getStateID() {
-		return stateID;
-	}
-	public State(int zone, boolean home, String action, int period, int manpowerDiff, int matchStatus, int reward) {
+	public State(int stateID,int zone, boolean home, String action, int period, int manpowerDiff, int matchStatus, int reward) {
 		super();
+		this.stateID = stateID;
 		this.zone = zone;
 		this.home = home;
 		this.action = action;
@@ -27,6 +24,11 @@ public class State {
 		this.reward = reward;
 		this.occurrence = 1;
 	}
+
+	public int getStateID(){
+		return stateID;
+	}
+
 	public int getZone() {
 		return zone;
 	}

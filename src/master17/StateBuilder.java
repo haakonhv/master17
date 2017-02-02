@@ -6,37 +6,69 @@ import java.util.ArrayList;
 
 public class StateBuilder {
 
-	public static void setStateFromEvent(Game game) throws ClassNotFoundException, SQLException{
+	public static ArrayList<State> getStatesFromEvents(Game game) throws ClassNotFoundException, SQLException{
 		ResultSet rs = DatabaseHandler.getDatabaseEvents(game.getGame_id());
 		ArrayList<State> stateList = new ArrayList<State>();
+		ArrayList<String> sql = new ArrayList<String>();
+		int stateID = 1;
 		while (rs.next()){
+			String eventID = rs.getString("EventID");
 			int zone = getZoneFromCoordinates(rs.getFloat("Xstart"),rs.getFloat("Ystart"));
 			String action = rs.getString("Action");
 			int period = getPeriod(rs.getInt("Minute"), rs.getInt("Period"));
 			boolean home = game.getHome_team_id() == rs.getInt("TeamID");
 			int matchStatus = getMatchStatus(rs.getInt("GoalDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
 			int manpowerDifference = getManpowerDifference(rs.getInt("ManpowerDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
-			int reward = getReward(action);
+			int reward = getReward(action, home);
 			if (stateList.size() == 0){
-				stateList.add(new State(zone, home, action, period, manpowerDifference, matchStatus, reward));
+				if (reward!=0){
+					stateList.add(new State(stateID,0,home,action,0,0,0,reward));
+					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
+					stateID++;
+				}
+				else{
+					stateList.add(new State(stateID,zone, home, action, period, manpowerDifference, matchStatus, reward));
+					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
+					stateID++;
+				}
 			}
 			else { //stateList ikke tom
 				boolean stateExists = false;
 				for (int i =0; i<stateList.size();i++){
 					State s = stateList.get(i);
-
+					if (reward!=0){
+						if (s.getReward()==reward){
+							s.incrementOccurrence();
+							sql.add("UPDATE Event SET StateID="+s.getStateID()+" WHERE EventID="+eventID);
+							stateExists = true;
+							break;
+						}
+						continue;
+					}
 					if(s.getZone() == zone && s.getAction().equals(action) && s.getPeriod() == period
 							&& s.isHome()==home && s.getMatchStatus() == matchStatus && s.getManpowerDiff() == manpowerDifference){
 						s.incrementOccurrence();
+						sql.add("UPDATE Event SET StateID="+s.getStateID()+" WHERE EventID="+eventID);
 						stateExists = true;
 						break;
 					}
 				}
 				if (!stateExists){
-					stateList.add(new State(zone, home, action, period, manpowerDifference, matchStatus, reward));
+					if (reward != 0){
+						stateList.add(new State(stateID,0,home,action,0,0,0,reward));
+						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
+						stateID++;
+					}
+					else{
+						stateList.add(new State(stateID,zone, home, action, period, manpowerDifference, matchStatus, reward));
+						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
+						stateID++;
+					}
 				}
 			}
 		}
+		DatabaseHandler.updateEventStateID(sql);
+		return stateList;
 	}
 
 	public static int getZoneFromCoordinates(float x, float y){
@@ -160,15 +192,15 @@ public class StateBuilder {
 		}
 	}
 
-	public static int getReward(String action){
-		if (action.equals("Goal")) return 1;
+	public static int getReward(String action, boolean home){
+		if (action.equals("Goal")){
+			if(home) return 1;
+			else return -1;
+		}
 		else return 0;
 	}
 
-	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		Game game = new Game(839685,305,197,1,2016);
-		setStateFromEvent(game);
-	}
+
 }
 
 
