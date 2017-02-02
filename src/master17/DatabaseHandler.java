@@ -36,6 +36,40 @@ public class DatabaseHandler {
 
 	}
 
+	public void insertStates(ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
+		Statement stmt = conn.createStatement();
+		int home;
+		String sql="";
+		for(State s : stateList){
+			if (s.isHome()){
+				home = 1;
+			}
+			else{
+				home = 0;
+			}
+			sql="INSERT INTO State (StateID,Zone,Action,Home,Period,ManpowerDifference,MatchStatus,Occurrence,Reward)"+
+				"\n"+"VALUES "+"("+s.getStateID()+","+s.getZone()+",'"+s.getAction()+"',"+home+","+s.getPeriod()+","+s.getManpowerDiff()+","+
+				s.getMatchStatus()+","+s.getOccurrence()+","+s.getReward()+")"+";\n";
+			stmt.addBatch(sql);
+
+		}
+		int [] updateCounts = stmt.executeBatch();
+		closeConnection();
+	}
+
+	public void insertStateTransitions(ArrayList<StateTransition> stateTransList) throws SQLException{
+		Statement stmt = conn.createStatement();
+		int home;
+		String sql="";
+		for(StateTransition st : stateTransList){
+
+			sql="INSERT INTO StateTransition (StartID, EndID, Occurrence) VALUES ("+st.getStartStateID()+","+st.getEndStateID()+","+st.getOccurrence()+")";
+			stmt.addBatch(sql);
+
+		}
+		int [] updateCounts = stmt.executeBatch();
+		closeConnection();
+	}
 
 	public void updatePlayers(ArrayList<Player> playerlist) throws SQLException, ClassNotFoundException{
 		openConnection();
@@ -61,31 +95,47 @@ public class DatabaseHandler {
 
 	}
 
+	public static Connection getConnection() throws ClassNotFoundException, SQLException {
+		Class.forName("com.mysql.jdbc.Driver");
+		conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		return conn;
+	}
+
+
 	public static void closeConnection() throws SQLException{
 		conn.close();
 		System.out.println("Connection closed...");
 	}
 
-	public static Connection returnConnection() throws ClassNotFoundException, SQLException {
 
-		Class.forName("com.mysql.jdbc.Driver");
-
-		System.out.println("Connecting to database...");
-
-		conn = DriverManager.getConnection(DB_URL, USER, PASS);
-		System.out.println("Connected database successfully...");
-		return conn;
-
-
-	}
 
 	public static ResultSet getDatabaseEvents(int gameID) throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String query = "SELECT* FROM Event WHERE GameID="+gameID;
-		System.out.println(query);
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 
 	}
+
+	public static void updateEventStateID(ArrayList<String> sqlList) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		for(String s : sqlList){
+			stmt.addBatch(s);
+
+		}
+		int [] updateCounts = stmt.executeBatch();
+
+	}
+
+	public static ResultSet getOrderedEvents(int gameID) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT* FROM Event WHERE GameID="+gameID+" ORDER BY Number ASC";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+
+	}
+
 }
