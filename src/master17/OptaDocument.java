@@ -12,6 +12,18 @@ public class OptaDocument {
 	private String fileName;
 	private Document doc;
 	private Game game;
+	public String getFileName() {
+		return fileName;
+	}
+
+	public Document getDoc() {
+		return doc;
+	}
+
+	public Game getGame() {
+		return game;
+	}
+
 	private ArrayList<Event> EventList;
 
 	public OptaDocument(String fileName) throws ParserConfigurationException, SAXException, IOException {
