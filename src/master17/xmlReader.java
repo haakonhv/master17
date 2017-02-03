@@ -38,7 +38,7 @@ public class xmlReader {
 		ArrayList<Event> eventList = new ArrayList<Event>(); //forel�pig tom liste som skal inneholde alle eventer fra XML-filen
 		int gd = 0; //goal difference
 		int mp = 0; //manpower difference
-		int tempID=0;
+		int tempID=game_id*1000;
 		int sequence=1; //sequence nummer internt i en game
 		int number = 0;
 		for (int i=0; i<xmlEventList.getLength();i++){ //l�kke som g�r gjennom hver event-node og lager event-objekter
@@ -70,6 +70,14 @@ public class xmlReader {
          	else {
          		period = 16;//optas pre-match period-kode
          	}
+		  	int player_id = 0;
+		  	try { 
+         		player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
+         	}
+         	catch (NumberFormatException E){
+         		continue;
+         	}
+         	
 		  	int minute = Integer.parseInt(xmlEvent.getAttribute("min"));
 		  	int second = Integer.parseInt(xmlEvent.getAttribute("sec"));
 		  	float xstart = Float.parseFloat(xmlEvent.getAttribute("x"));
@@ -78,8 +86,6 @@ public class xmlReader {
          	float xend = endCoordinates[0];
          	float yend = endCoordinates[1];
          	int outcome = Integer.parseInt(xmlEvent.getAttribute("outcome"));
-         	int player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
-
          	if (eventList.size() > 0){
 				Event prevEvent = eventList.get(eventList.size()-1);
 				String prevActionType = prevEvent.getAction_type();

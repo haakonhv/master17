@@ -6,11 +6,10 @@ import java.util.ArrayList;
 
 public class StateBuilder {
 
-	public static ArrayList<State> getStatesFromEvents(Game game) throws ClassNotFoundException, SQLException{
+	public static ArrayList<State> getStatesFromEvents(Game game, ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
 		ResultSet rs = DatabaseHandler.getDatabaseEvents(game.getGame_id());
-		ArrayList<State> stateList = new ArrayList<State>();
 		ArrayList<String> sql = new ArrayList<String>();
-		int stateID = 1;
+		int stateID = stateList.size()+1;
 		while (rs.next()){
 			String eventID = rs.getString("EventID");
 			int zone = getZoneFromCoordinates(rs.getFloat("Xstart"),rs.getFloat("Ystart"));

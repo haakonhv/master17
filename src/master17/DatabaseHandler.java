@@ -54,7 +54,7 @@ public class DatabaseHandler {
 
 		}
 		int [] updateCounts = stmt.executeBatch();
-		closeConnection();
+		//closeConnection();
 	}
 
 	public void insertStateTransitions(ArrayList<StateTransition> stateTransList) throws SQLException{
@@ -68,7 +68,7 @@ public class DatabaseHandler {
 
 		}
 		int [] updateCounts = stmt.executeBatch();
-		closeConnection();
+		//closeConnection();
 	}
 
 	public void updatePlayers(ArrayList<Player> playerlist) throws SQLException, ClassNotFoundException{

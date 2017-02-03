@@ -6,9 +6,8 @@ import java.util.ArrayList;
 
 public class StateTransitionBuilder {
 
-	public static ArrayList<StateTransition> getStateTransitions(Game game) throws SQLException, ClassNotFoundException{
+	public static ArrayList<StateTransition> getStateTransitions(Game game, ArrayList<StateTransition> stateTransList) throws SQLException, ClassNotFoundException{
 		ResultSet rs = DatabaseHandler.getOrderedEvents(game.getGame_id());
-		ArrayList<StateTransition> stateTransList = new ArrayList<StateTransition>();
 		rs.next();
 		int prevStateID = rs.getInt("StateID");
 		while(rs.next()){
