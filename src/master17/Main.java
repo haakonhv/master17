@@ -23,7 +23,7 @@ public class Main {
 		//ArrayList<StateTransition> stateTransList = StateTransitionBuilder.getStateTransitions(game);
 		//dbhandler.insertStateTransitions(stateTransList);
 		//sendGamesFromDataFiles();
-		sendGamesFromDataFiles();
+		Qlearning.qLearningAlgorithm();
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
 		File folder = new File("data_files");
@@ -41,7 +41,7 @@ public class Main {
 			stateList = StateBuilder.getStatesFromEvents(game, stateList);
 			stateTransList = StateTransitionBuilder.getStateTransitions(game, stateTransList);
 			long endTime = System.nanoTime();
-			System.out.println("Eventlist, statelist og statetrans oppdatert med fil " + i+1 + "av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder") ;
+			System.out.println("Eventlist, statelist og statetrans oppdatert med fil " + (i+1) + "av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder") ;
 			
 		}
 		dbhandler.insertStates(stateList);

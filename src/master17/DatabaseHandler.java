@@ -117,6 +117,21 @@ public class DatabaseHandler {
 		return rs;
 
 	}
+	public static ResultSet getDatabaseStates() throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT* FROM State";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+	}
+	public static ResultSet getDatabaseStateTrans() throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT* FROM StateTransition";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+	}
+	
 
 	public static void updateEventStateID(ArrayList<String> sqlList) throws ClassNotFoundException, SQLException{
 		openConnection();

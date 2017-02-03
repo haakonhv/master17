@@ -11,6 +11,9 @@ public class State {
 	private int matchStatus;
 	private int occurrence;
 	private int reward;
+	private double qValue;
+
+	
 
 	public State(int stateID,int zone, boolean home, String action, int period, int manpowerDiff, int matchStatus, int reward) {
 		super();
@@ -23,6 +26,24 @@ public class State {
 		this.matchStatus = matchStatus;
 		this.reward = reward;
 		this.occurrence = 1;
+	}
+	
+	
+	public State(int stateID, int reward, double qValue, int occurrence) {
+		super();
+		this.stateID = stateID;
+		this.reward = reward;
+		this.qValue = qValue;
+		this.occurrence = occurrence;
+	}
+
+
+	public double getqValue() {
+		return qValue;
+	}
+
+	public void setqValue(double qValue) {
+		this.qValue = qValue;
 	}
 
 	public int getStateID(){
@@ -58,11 +79,14 @@ public class State {
 		this.occurrence +=1;
 	}
 
+
+	@Override
 	public String toString() {
-		return "State [stateID=" + stateID + ", zone=" + zone + ", home=" + home + ", action=" + action + ", period="
-				+ period + ", manpowerDiff=" + manpowerDiff + ", matchStatus=" + matchStatus + ", occurrence="
-				+ occurrence + ", reward=" + reward + "]";
+		return "State [stateID=" + stateID + ", occurrence=" + occurrence + ", reward=" + reward + ", qValue=" + qValue
+				+ "]";
 	}
+
+
 
 
 

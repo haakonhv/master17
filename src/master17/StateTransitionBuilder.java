@@ -10,27 +10,31 @@ public class StateTransitionBuilder {
 		ResultSet rs = DatabaseHandler.getOrderedEvents(game.getGame_id());
 		rs.next();
 		int prevStateID = rs.getInt("StateID");
+		String prevAction = rs.getString("Action");
 		while(rs.next()){
+			
 			int currentStateID = rs.getInt("StateID");
-			if(stateTransList.size()==0){
-				stateTransList.add(new StateTransition(prevStateID, currentStateID));
-			}
-			else {
-				boolean transExists = false;
-				for (int i = 0; i< stateTransList.size();i++){
-					StateTransition st = stateTransList.get(i);
-					if (st.getStartStateID() == prevStateID && st.getEndStateID() == currentStateID){
-						st.incrementOccurence();
-						transExists = true;
-						break;
-					}
-				}
-				if (!transExists){
+			if (!(prevAction.equals("Goal") || prevAction.equals("Out of play"))){
+				if(stateTransList.size()==0){
 					stateTransList.add(new StateTransition(prevStateID, currentStateID));
 				}
-
+				else {
+					boolean transExists = false;
+					for (int i = 0; i< stateTransList.size();i++){
+						StateTransition st = stateTransList.get(i);
+						if (st.getStartStateID() == prevStateID && st.getEndStateID() == currentStateID){
+							st.incrementOccurence();
+							transExists = true;
+							break;
+						}
+					}
+					if (!transExists){
+						stateTransList.add(new StateTransition(prevStateID, currentStateID));
+					}
+				}
 			}
 			prevStateID = currentStateID;
+			prevAction = rs.getString("Action");
 		}
 		return stateTransList;
 	}
