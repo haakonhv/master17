@@ -11,7 +11,7 @@ public class StateBuilder {
 		ArrayList<String> sql = new ArrayList<String>();
 		int stateID = stateList.size()+1;
 		while (rs.next()){
-			String eventID = rs.getString("OptaEventID"); //opta event id
+			String eventID = rs.getString("EventID"); //opta event id
 			int zone;
 			String action = rs.getString("Action");
 			int period;
@@ -24,7 +24,7 @@ public class StateBuilder {
 				manpowerDifference = 0;
 				zone = 0;
 				home = false;
-			}	
+			}
 			else {
 				period = getPeriod(rs.getInt("Minute"), rs.getInt("Period"));
 				matchStatus = getMatchStatus(rs.getInt("GoalDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
@@ -33,16 +33,16 @@ public class StateBuilder {
 				home = game.getHome_team_id() == rs.getInt("TeamID");
 			}
 			int reward = getReward(action, home);
-			
+
 			if (stateList.size() == 0){ //stateList er tom
 				if (reward!=0){ //Hvis første event som sjekkes er mål
 					stateList.add(new State(stateID,0,home,action,0,0,0,reward));
-					sql.add("UPDATE Event SET StateID="+stateID+" WHERE OptaEventID="+eventID);
+					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
 					stateID++;
 				}
 				else if (action.equals("Out of play")){
 					stateList.add(new State(stateID,0,false,action,0,0,0,0));
-					sql.add("UPDATE Event SET StateID="+stateID+" WHERE OptaEventID="+eventID);
+					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
 					stateID++;
 				}
 				else if (action.equals("End of period")){
@@ -50,7 +50,7 @@ public class StateBuilder {
 				}
 				else{ //Alle andre events
 					stateList.add(new State(stateID,zone, home, action, period, manpowerDifference, matchStatus, reward));
-					sql.add("UPDATE Event SET StateID="+stateID+" WHERE OptaEventID="+eventID);
+					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
 					stateID++;
 				}
 			}
@@ -61,7 +61,7 @@ public class StateBuilder {
 					if (reward!=0){ //Hvis event er mål, lag state for mål
 						if (s.getReward()==reward){
 							s.incrementOccurrence();
-							sql.add("UPDATE Event SET StateID="+s.getStateID()+" WHERE OptaEventID="+eventID);
+							sql.add("UPDATE Event SET StateID="+s.getStateID()+" WHERE EventID="+eventID);
 							stateExists = true;
 							break;
 						}
@@ -73,7 +73,7 @@ public class StateBuilder {
 					if(s.getZone() == zone && s.getAction().equals(action) && s.getPeriod() == period
 							&& s.isHome()==home && s.getMatchStatus() == matchStatus && s.getManpowerDiff() == manpowerDifference){
 						s.incrementOccurrence(); //Oppdaterer occurence i state og legger til StateID på eventet i db
-						sql.add("UPDATE Event SET StateID="+s.getStateID()+" WHERE OptaEventID="+eventID);
+						sql.add("UPDATE Event SET StateID="+s.getStateID()+" WHERE EventID="+eventID);
 						stateExists = true;
 						break;
 					}
@@ -81,17 +81,17 @@ public class StateBuilder {
 				if (!stateExists){ //Hvis staten ikke finnes fra før i db, legg til passende state
 					if (reward != 0){
 						stateList.add(new State(stateID,0,home,action,0,0,0,reward));
-						sql.add("UPDATE Event SET StateID="+stateID+" WHERE OptaEventID="+eventID);
+						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
 						stateID++;
 					}
 					else if (action.equals("Out of play")){
 						stateList.add(new State(stateID,0,false,action,0,0,0,0));
-						sql.add("UPDATE Event SET StateID="+stateID+" WHERE OptaEventID="+eventID);
+						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
 						stateID++;
 					}
 					else{
 						stateList.add(new State(stateID,zone, home, action, period, manpowerDifference, matchStatus, reward));
-						sql.add("UPDATE Event SET StateID="+stateID+" WHERE OptaEventID="+eventID);
+						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
 						stateID++;
 					}
 				}

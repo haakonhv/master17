@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public class Main {
@@ -31,20 +32,23 @@ public class Main {
 		ArrayList<State> stateList = new ArrayList<State>();
 		DatabaseHandler dbhandler = new DatabaseHandler();
 		ArrayList<StateTransition> stateTransList = new ArrayList<StateTransition>();
-		for(int i = 0; i < listOfFiles.length; i++){
+		for(int i = 1; i < listOfFiles.length; i++){
 			long startTime = System.nanoTime();
 			//System.out.println(listOfFiles[i].toString());
-			OptaDocument opta = new OptaDocument(listOfFiles[i].toString());
+//			OptaDocument opta = new OptaDocument(listOfFiles[i].toString());
 			//ArrayList<Event> eventlist = opta.getEventList();
 			//dbhandler.insertEvents(eventlist);
-			Game game = opta.getGame();
-			//stateList = StateBuilder.getStatesFromEvents(game, stateList);
+			Document doc = xmlReader.getDocument(listOfFiles[i].toString());
+			Game game = xmlReader.getGame(doc);
+			System.out.println("Game created");
+			stateList = StateBuilder.getStatesFromEvents(game, stateList);
+			System.out.println("Statelist created");
 			stateTransList = StateTransitionBuilder.getStateTransitions(game, stateTransList);
 			long endTime = System.nanoTime();
 			System.out.println("Eventlist, statelist og statetrans oppdatert med fil " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder") ;
 		}
-		//dbhandler.insertStates(stateList);
-		//System.out.println("StateList inserted");
+		dbhandler.insertStates(stateList);
+		System.out.println("StateList inserted");
 		dbhandler.insertStateTransitions(stateTransList);
 		System.out.println("StateTransitions inserted");
 		DatabaseHandler.closeConnection();
