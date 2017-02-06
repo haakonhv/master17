@@ -58,6 +58,7 @@ public class xmlReader {
 				}
 				continue;
 			}
+			
 
 			number = number+1;
 			int period = 0;
@@ -82,6 +83,13 @@ public class xmlReader {
 		  	int second = Integer.parseInt(xmlEvent.getAttribute("sec"));
 		  	float xstart = Float.parseFloat(xmlEvent.getAttribute("x"));
          	float ystart = Float.parseFloat(xmlEvent.getAttribute("y"));
+         	
+         	if (action_type.equals("End of period")){
+				eventList.add(new Event(event_id, action_type, 1, 0, 0, 50, 50, 50, 50, number, sequence, game_id, period, minute, second, 0, 0));
+				number += 1;
+				sequence += 1;
+			}
+         	
          	float[] endCoordinates = getEndCoordinates(xmlEvent);
          	float xend = endCoordinates[0];
          	float yend = endCoordinates[1];
@@ -90,7 +98,7 @@ public class xmlReader {
 				Event prevEvent = eventList.get(eventList.size()-1);
 				String prevActionType = prevEvent.getAction_type();
 				
-				if (prevEvent.getOutcome() == 1){
+				if (prevEvent.getOutcome() == 1){ //sjekker ball carry fra forrige event til denne eventen
 					if ((prevActionType.equals("Pass")) || prevActionType.equals("Long pass") || prevActionType.equals("Ball recovery") || prevActionType.equals("Throw in taken") || prevActionType.equals("Cross") || prevActionType.equals("Free kick pass")){
 						if (!action_type.equals("Aerial duel")){
 							if (prevEvent.getTeam_id() == team_id){
@@ -261,8 +269,6 @@ public class xmlReader {
 		    			return actiontype;
 		    		}
 				}
-
-
 			}
 			actiontype = "skip";
 			return actiontype;
@@ -274,6 +280,9 @@ public class xmlReader {
 		else if (typeid == 16){
 			actiontype = "Goal";
 			return actiontype;
+		}
+		else if (typeid == 30){
+			actiontype = "End of period";
 		}
 		else {
 			actiontype = "skip";
