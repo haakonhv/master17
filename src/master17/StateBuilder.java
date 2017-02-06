@@ -10,8 +10,9 @@ public class StateBuilder {
 		ResultSet rs = DatabaseHandler.getDatabaseEvents(game.getGame_id());
 		ArrayList<String> sql = new ArrayList<String>();
 		int stateID = stateList.size()+1;
+		System.out.println(stateID);
 		while (rs.next()){
-			String eventID = rs.getString("EventID"); //opta event id
+			String eventID = rs.getString("EventID"); // event id
 			int zone;
 			String action = rs.getString("Action");
 			int period;

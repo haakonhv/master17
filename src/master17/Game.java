@@ -44,5 +44,9 @@ public class Game {
 		this.matchday = matchday;
 		this.season = season;
 	}
-	
+	public int getOtherTeam (int team){
+		if (team == this.getHome_team_id()) return this.away_team_id;
+		else return this.getHome_team_id();
+	}
+
 }

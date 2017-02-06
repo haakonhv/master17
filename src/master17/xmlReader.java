@@ -148,16 +148,45 @@ public class xmlReader {
          		eventList.add(new Event(event_id, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
          	}
          	else {
-         		eventList.add(new Event(event_id, "Shot", outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
-         		number = number + 1;
-         		eventList.add(new Event(tempID+1, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
-         		sequence += 1;
-         		tempID+=1;
+         		NodeList qualifierList = xmlEvent.getChildNodes();
+         		boolean ownGoal = false;
+         		for (int j = 0; j < qualifierList.getLength(); j++){
+         			if (qualifierList.item(j).getNodeType() == Node.ELEMENT_NODE){
+         				Element q = (Element) qualifierList.item(j);
+         				int qualifierID = Integer.parseInt(q.getAttribute("qualifier_id"));
+         				if (qualifierID == 28){
+         					ownGoal = true;
+         					eventList.add(new Event(event_id, "Ball touch", 0, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+         	         		number = number + 1;
+         	         		eventList.add(new Event(tempID+1, action_type, outcome, game.getOtherTeam(team_id), player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+         	         		sequence += 1;
+         	         		tempID+=1;
+         	         		break;
+         				}
+         			}
+         		}
+         		if (!ownGoal){
+         			eventList.add(new Event(event_id, "Shot", outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+	         		number = number + 1;
+	         		eventList.add(new Event(tempID+1, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+	         		sequence += 1;
+	         		tempID+=1;
+         		}
          		if (team_id == game.getHome_team_id()){
-         			gd = gd + 1;
+         			if (ownGoal){
+         				gd = gd - 1;
+         			}
+         			else{
+         				gd = gd + 1;
+         			}
          		}
          		else {
-         			gd = gd - 1;
+         			if (ownGoal){
+         				gd = gd + 1;
+         			}
+         			else{
+         				gd = gd - 1;
+         			}
          		}
          	}
          	if (action_type.equals("Out of play")){
