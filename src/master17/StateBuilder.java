@@ -12,22 +12,26 @@ public class StateBuilder {
 		int stateID = stateList.size()+1;
 		while (rs.next()){
 			String eventID = rs.getString("EventID");
-			int zone = getZoneFromCoordinates(rs.getFloat("Xstart"),rs.getFloat("Ystart"));
+			int zone;
 			String action = rs.getString("Action");
 			int period;
 			int matchStatus;
 			int manpowerDifference;
+			boolean home;
 			if (action.equals("Out of play")){
 				period = 0;
 				matchStatus = 0;
 				manpowerDifference = 0;
+				zone = 0;
+				home = false;
 			}	
 			else {
 				period = getPeriod(rs.getInt("Minute"), rs.getInt("Period"));
 				matchStatus = getMatchStatus(rs.getInt("GoalDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
 				manpowerDifference = getManpowerDifference(rs.getInt("ManpowerDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
+				zone = getZoneFromCoordinates(rs.getFloat("Xstart"),rs.getFloat("Ystart"));
+				home = game.getHome_team_id() == rs.getInt("TeamID");
 			}
-			boolean home = game.getHome_team_id() == rs.getInt("TeamID");
 			int reward = getReward(action, home);
 			
 			if (stateList.size() == 0){ //stateList er tom

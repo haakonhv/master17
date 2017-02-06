@@ -42,7 +42,7 @@ public class Main {
 			stateTransList = StateTransitionBuilder.getStateTransitions(game, stateTransList);
 			long endTime = System.nanoTime();
 			System.out.println("Eventlist, statelist og statetrans oppdatert med fil " + (i+1) + "av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder") ;
-			
+			break;
 		}
 		dbhandler.insertStates(stateList);
 		System.out.println("StateList inserted");
