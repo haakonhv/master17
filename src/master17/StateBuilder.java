@@ -15,15 +15,21 @@ public class StateBuilder {
 			int zone = getZoneFromCoordinates(rs.getFloat("Xstart"),rs.getFloat("Ystart"));
 			String action = rs.getString("Action");
 			int period;
-			if (action.equals("Out of play"))
+			int matchStatus;
+			int manpowerDifference;
+			if (action.equals("Out of play")){
 				period = 0;
+				matchStatus = 0;
+				manpowerDifference = 0;
+			}	
 			else {
 				period = getPeriod(rs.getInt("Minute"), rs.getInt("Period"));
+				matchStatus = getMatchStatus(rs.getInt("GoalDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
+				manpowerDifference = getManpowerDifference(rs.getInt("ManpowerDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
 			}
 			boolean home = game.getHome_team_id() == rs.getInt("TeamID");
-			int matchStatus = getMatchStatus(rs.getInt("GoalDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
-			int manpowerDifference = getManpowerDifference(rs.getInt("ManpowerDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
 			int reward = getReward(action, home);
+			
 			if (stateList.size() == 0){ //stateList er tom
 				if (reward!=0){ //Hvis første event som sjekkes er mål
 					stateList.add(new State(stateID,0,home,action,0,0,0,reward));
