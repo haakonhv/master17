@@ -11,17 +11,17 @@ public class Qlearning {
 		boolean converged = false;
 		int maxIterations = 100;
 		double convergeCriterion = 0.001;
-		
+
 		ResultSet stateSet = DatabaseHandler.getDatabaseStates();
 		ResultSet stateTransSet = DatabaseHandler.getDatabaseStateTrans();
 		ArrayList<State> stateList = new ArrayList<State>();
-		
-		
-		
+
+
+
 		while(stateSet.next()){
 			stateList.add(new State(stateSet.getInt("StateID"), stateSet.getInt("Reward"), stateSet.getFloat("QValue"), stateSet.getInt("Occurrence")));
 		}
-		
+
 		for (int i=0; i<maxIterations; i++){
 			for (int j=0; j<stateList.size();j++){
 				State s = stateList.get(j);
@@ -36,7 +36,7 @@ public class Qlearning {
 					stateTransSet.beforeFirst();
 					double stateReward = (double) s.getReward();
 					double stateOccurrence = (double) s.getOccurrence();
-					double newQValue =stateReward + nextStateQValues/stateOccurrence; 
+					double newQValue =stateReward + nextStateQValues/stateOccurrence;
 					s.setqValue(newQValue);
 					System.out.println("StateID: " + s.getStateID()+ " ny Q: " +newQValue + " i iterasjon: " + i);
 					currentValue = currentValue + Math.abs(newQValue);
@@ -48,11 +48,11 @@ public class Qlearning {
 				}
 			}
 			lastValue = currentValue;
-			currentValue = 0;	
+			currentValue = 0;
+			DatabaseHandler.updateQValues(stateList);
 		}
-		DatabaseHandler.updateQValues(stateList);
-		
-		
+
+
 	}
 	public static double getQvalue(ArrayList<State> stateList, int stateID){
 		for (State s: stateList){
@@ -62,5 +62,5 @@ public class Qlearning {
 		}
 		return 0;
 	}
-	
+
 }

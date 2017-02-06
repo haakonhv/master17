@@ -153,4 +153,17 @@ public class DatabaseHandler {
 
 	}
 
+	public static void updateQValues(ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql;
+		for(State s : stateList){
+			sql = "UPDATE State SET QValue=" + s.getqValue()+" WHERE StateID = "+s.getStateID()+";\n";
+			stmt.addBatch(sql);
+
+		}
+		int [] updateCounts = stmt.executeBatch();
+		closeConnection();
+	}
+
 }
