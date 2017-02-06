@@ -50,9 +50,8 @@ public class Qlearning {
 			lastValue = currentValue;
 			currentValue = 0;	
 		}
-		for (State s: stateList){
-			System.out.println(s);
-		}
+		DatabaseHandler.updateQValues(stateList);
+		
 		
 	}
 	public static double getQvalue(ArrayList<State> stateList, int stateID){
