@@ -9,8 +9,8 @@ public class Qlearning {
 		double lastValue = 0;
 		double currentValue = 0;
 		boolean converged = false;
-		int maxIterations = 100;
-		double convergeCriterion = 0.001;
+		int maxIterations = 1000;
+		double convergeCriterion = 0.0001;
 
 		ResultSet stateSet = DatabaseHandler.getDatabaseStates();
 		ResultSet stateTransSet = DatabaseHandler.getDatabaseStateTrans();
@@ -23,6 +23,7 @@ public class Qlearning {
 		}
 
 		for (int i=0; i<maxIterations; i++){
+			long startTime = System.nanoTime();
 			for (int j=0; j<stateList.size();j++){
 				State s = stateList.get(j);
 				if (!converged){
@@ -38,7 +39,7 @@ public class Qlearning {
 					double stateOccurrence = (double) s.getOccurrence();
 					double newQValue =stateReward + nextStateQValues/stateOccurrence;
 					s.setqValue(newQValue);
-					System.out.println("StateID: " + s.getStateID()+ " ny Q: " +newQValue + " i iterasjon: " + i);
+//					System.out.println("StateID: " + s.getStateID()+ " ny Q: " +newQValue + " i iterasjon: " + i);
 					currentValue = currentValue + Math.abs(newQValue);
 				}
 			}
@@ -49,8 +50,15 @@ public class Qlearning {
 			}
 			lastValue = currentValue;
 			currentValue = 0;
-			DatabaseHandler.updateQValues(stateList);
+			long endTime = System.nanoTime();
+			System.out.println("Iterasjon "+(i+1)+" ferdig. Tid: "+(endTime-startTime)/Math.pow(10, 9)+" sekunder");
+
+
+			if (i%50==0 && i!=0){
+				DatabaseHandler.updateQValues(stateList);
+			}
 		}
+		DatabaseHandler.updateQValues(stateList);
 
 
 	}
