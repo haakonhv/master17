@@ -283,6 +283,7 @@ public class xmlReader {
 		}
 		else if (typeid == 30){
 			actiontype = "End of period";
+			return actiontype;
 		}
 		else {
 			actiontype = "skip";
