@@ -14,7 +14,12 @@ public class StateBuilder {
 			String eventID = rs.getString("EventID");
 			int zone = getZoneFromCoordinates(rs.getFloat("Xstart"),rs.getFloat("Ystart"));
 			String action = rs.getString("Action");
-			int period = getPeriod(rs.getInt("Minute"), rs.getInt("Period"));
+			int period;
+			if (action.equals("Out of play"))
+				period = 0;
+			else {
+				period = getPeriod(rs.getInt("Minute"), rs.getInt("Period"));
+			}
 			boolean home = game.getHome_team_id() == rs.getInt("TeamID");
 			int matchStatus = getMatchStatus(rs.getInt("GoalDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
 			int manpowerDifference = getManpowerDifference(rs.getInt("ManpowerDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
