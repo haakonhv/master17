@@ -19,13 +19,21 @@ public class StateBuilder {
 			int matchStatus = getMatchStatus(rs.getInt("GoalDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
 			int manpowerDifference = getManpowerDifference(rs.getInt("ManpowerDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
 			int reward = getReward(action, home);
-			if (stateList.size() == 0){
-				if (reward!=0){
+			if (stateList.size() == 0){ //stateList er tom
+				if (reward!=0){ //Hvis første event som sjekkes er mål
 					stateList.add(new State(stateID,0,home,action,0,0,0,reward));
 					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
 					stateID++;
 				}
-				else{
+				else if (action.equals("Out of play")){
+					stateList.add(new State(stateID,0,false,action,0,0,0,0));
+					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
+					stateID++;
+				}
+				else if (action.equals("End of period")){
+					continue;
+				}
+				else{ //Alle andre events
 					stateList.add(new State(stateID,zone, home, action, period, manpowerDifference, matchStatus, reward));
 					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
 					stateID++;
@@ -35,7 +43,7 @@ public class StateBuilder {
 				boolean stateExists = false;
 				for (int i =0; i<stateList.size();i++){
 					State s = stateList.get(i);
-					if (reward!=0){
+					if (reward!=0){ //Hvis event er mål, lag state for mål
 						if (s.getReward()==reward){
 							s.incrementOccurrence();
 							sql.add("UPDATE Event SET StateID="+s.getStateID()+" WHERE EventID="+eventID);
@@ -44,17 +52,25 @@ public class StateBuilder {
 						}
 						continue;
 					}
+					if (action.equals("End of period")){
+						continue;
+					}
 					if(s.getZone() == zone && s.getAction().equals(action) && s.getPeriod() == period
 							&& s.isHome()==home && s.getMatchStatus() == matchStatus && s.getManpowerDiff() == manpowerDifference){
-						s.incrementOccurrence();
+						s.incrementOccurrence(); //Oppdaterer occurence i state og legger til StateID på eventet i db
 						sql.add("UPDATE Event SET StateID="+s.getStateID()+" WHERE EventID="+eventID);
 						stateExists = true;
 						break;
 					}
 				}
-				if (!stateExists){
+				if (!stateExists){ //Hvis staten ikke finnes fra før i db, legg til passende state
 					if (reward != 0){
 						stateList.add(new State(stateID,0,home,action,0,0,0,reward));
+						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
+						stateID++;
+					}
+					else if (action.equals("Out of play")){
+						stateList.add(new State(stateID,0,false,action,0,0,0,0));
 						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
 						stateID++;
 					}
