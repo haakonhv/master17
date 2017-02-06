@@ -2,7 +2,7 @@ package master17;
 
 
 public class Event {
-	private int event_id;
+	private long event_id;
 	private String action_type;
 	private int outcome;
 	private int team_id;
@@ -20,7 +20,7 @@ public class Event {
 	private int minute;
 	private int second;
 
-	public int getEvent_id() {
+	public long getEvent_id() {
 		return event_id;
 	}
 
@@ -86,7 +86,7 @@ public class Event {
 				+ goaldifference + ", minute=" + minute + ", second=" + second + "]";
 	}
 
-	public Event(int event_id, String action_type, int outcome, int team_id, int player_id, float xstart, float ystart, float xend, float yend, int number,
+	public Event(long event_id, String action_type, int outcome, int team_id, int player_id, float xstart, float ystart, float xend, float yend, int number,
 			int sequence, int game_id, int period, int minute, int second, int manpowerdifference, int goaldifference) {
 		super();
 		this.event_id = event_id;
