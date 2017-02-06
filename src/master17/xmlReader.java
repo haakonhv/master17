@@ -72,12 +72,7 @@ public class xmlReader {
          		period = 16;//optas pre-match period-kode
          	}
 		  	int player_id = 0;
-		  	try { 
-         		player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
-         	}
-         	catch (NumberFormatException E){
-         		continue;
-         	}
+		  	
          	
 		  	int minute = Integer.parseInt(xmlEvent.getAttribute("min"));
 		  	int second = Integer.parseInt(xmlEvent.getAttribute("sec"));
@@ -85,10 +80,22 @@ public class xmlReader {
          	float ystart = Float.parseFloat(xmlEvent.getAttribute("y"));
          	
          	if (action_type.equals("End of period")){
-				eventList.add(new Event(event_id, action_type, 1, 0, 0, 50, 50, 50, 50, number, sequence, game_id, period, minute, second, 0, 0));
-				number += 1;
-				sequence += 1;
+         		Event prevEvent = eventList.get(eventList.size()-1);
+         		if (!prevEvent.getAction_type().equals(action_type)){
+         			eventList.add(new Event(event_id, action_type, 1, 0, 0, 50, 50, 50, 50, number, sequence, game_id, period, minute, second, 0, 0));
+         			number += 1;
+         			sequence += 1;
+         			continue;
+         		}
+         		continue;
 			}
+         	
+         	try { 
+         		player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
+         	}
+         	catch (NumberFormatException E){
+         		continue;
+         	}
          	
          	float[] endCoordinates = getEndCoordinates(xmlEvent);
          	float xend = endCoordinates[0];

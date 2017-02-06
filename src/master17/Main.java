@@ -22,8 +22,8 @@ public class Main {
 //		dbhandler.insertStates(stateList);
 		//ArrayList<StateTransition> stateTransList = StateTransitionBuilder.getStateTransitions(game);
 		//dbhandler.insertStateTransitions(stateTransList);
-		//sendGamesFromDataFiles();
-		Qlearning.qLearningAlgorithm();
+		sendGamesFromDataFiles();
+		//Qlearning.qLearningAlgorithm();
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
 		File folder = new File("data_files");
