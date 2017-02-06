@@ -43,7 +43,7 @@ public class xmlReader {
 		int number = 0;
 		for (int i=0; i<xmlEventList.getLength();i++){ //l�kke som g�r gjennom hver event-node og lager event-objekter
 			Element xmlEvent = (Element) xmlEventList.item(i);
-			int event_id = Integer.parseInt(xmlEvent.getAttribute("id")); //setter opta-event id;
+			long event_id = Integer.parseInt(xmlEvent.getAttribute("id")); //setter opta-event id;
 			String action_type = getActionType(xmlEvent);
 			if (action_type.equals("skip")){
 				continue;
@@ -58,7 +58,7 @@ public class xmlReader {
 				}
 				continue;
 			}
-			
+
 
 			number = number+1;
 			int period = 0;
@@ -72,13 +72,13 @@ public class xmlReader {
          		period = 16;//optas pre-match period-kode
          	}
 		  	int player_id = 0;
-		  	
-         	
+
+
 		  	int minute = Integer.parseInt(xmlEvent.getAttribute("min"));
 		  	int second = Integer.parseInt(xmlEvent.getAttribute("sec"));
 		  	float xstart = Float.parseFloat(xmlEvent.getAttribute("x"));
          	float ystart = Float.parseFloat(xmlEvent.getAttribute("y"));
-         	
+
          	if (action_type.equals("End of period")){
          		Event prevEvent = eventList.get(eventList.size()-1);
          		if (!prevEvent.getAction_type().equals(action_type)){
@@ -89,14 +89,14 @@ public class xmlReader {
          		}
          		continue;
 			}
-         	
-         	try { 
+
+         	try {
          		player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
          	}
          	catch (NumberFormatException E){
          		continue;
          	}
-         	
+
          	float[] endCoordinates = getEndCoordinates(xmlEvent);
          	float xend = endCoordinates[0];
          	float yend = endCoordinates[1];
@@ -104,7 +104,7 @@ public class xmlReader {
          	if (eventList.size() > 0){
 				Event prevEvent = eventList.get(eventList.size()-1);
 				String prevActionType = prevEvent.getAction_type();
-				
+
 				if (prevEvent.getOutcome() == 1){ //sjekker ball carry fra forrige event til denne eventen
 					if ((prevActionType.equals("Pass")) || prevActionType.equals("Long pass") || prevActionType.equals("Ball recovery") || prevActionType.equals("Throw in taken") || prevActionType.equals("Cross") || prevActionType.equals("Free kick pass")){
 						if (!action_type.equals("Aerial duel")){
@@ -119,23 +119,29 @@ public class xmlReader {
 								if (action_type.equals("Foul committed")){
 									if (getCarryLength(prevEvent, xstart, ystart, team_id) > 7.5){
 										Element nextEvent = (Element) xmlEventList.item(i+1);
-										int nextEventPlayerID = Integer.parseInt(nextEvent.getAttribute("player_id"));
-										eventList.add(new Event(tempID+1, "Ball carry", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(), prevEvent.getYend(), 100 - xstart, 100 - ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
-										number+=1;
-										tempID+=1;
-									}	
+										try {
+											int nextEventPlayerID = Integer.parseInt(nextEvent.getAttribute("player_id"));
+											eventList.add(new Event(tempID+1, "Ball carry", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(), prevEvent.getYend(), 100 - xstart, 100 - ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
+											number+=1;
+											tempID+=1;
+							         	}
+							         	catch (NumberFormatException E){
+							         		continue;
+							         	}
+
+									}
 								}
 								else {
 									if (getCarryLength(prevEvent, xstart, ystart, team_id) > 7.5){
 										eventList.add(new Event(tempID+1, "Ball carry", 1, prevEvent.getTeam_id(), prevEvent.getPlayer_id(), prevEvent.getXend(), prevEvent.getYend(), 100 - xstart, 100 - ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
 										number+=1;
 										tempID+=1;
-									}					
-								}								
-							}								
-						}						
+									}
+								}
+							}
+						}
 					}
-         		}	    	     			        		
+         		}
 			}
 
          	if (!action_type.equals("Goal")){
@@ -342,7 +348,7 @@ public class xmlReader {
 				double xdiff = 1.05*Math.abs(currentXstart - (100 - prevEvent.getXend()));
 				double ydiff = 0.68*Math.abs(currentYstart - (100 - prevEvent.getYend()));
 				carryLength = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
-			} 
+			}
 		}
 		return carryLength;
 	}

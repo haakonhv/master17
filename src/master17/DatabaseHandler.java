@@ -23,10 +23,10 @@ public class DatabaseHandler {
 
 		String sql="";
 		for(Event e : eventList){
-			sql="INSERT INTO Event (EventID,Action,Outcome,TeamID,PlayerID,GameID,XStart,YStart,Xend,Yend,Number,Sequence,Minute,Second,"
-					+"ManpowerDifference,GoalDifference,Period)"+"\n"+"VALUES "+"("+e.getEvent_id()+",'"+e.getAction_type()+"',"+e.getOutcome()+","+e.getTeam_id()+","+e.getPlayer_id()+","
+			sql="INSERT INTO Event (Action,Outcome,TeamID,PlayerID,GameID,XStart,YStart,Xend,Yend,Number,Sequence,Minute,Second,"
+					+"ManpowerDifference,GoalDifference,Period,OptaEventID)"+"\n"+"VALUES "+"('"+e.getAction_type()+"',"+e.getOutcome()+","+e.getTeam_id()+","+e.getPlayer_id()+","
 					+e.getGame_id()+","+e.getXstart()+","+e.getYstart()+","+e.getXend()+","+e.getYend()+","+e.getNumber()+","+e.getSequence()+","+e.getMinute()+","+e.getSecond()+","+e.getManpowerdifference()+
-					","+e.getGoaldifference()+","+e.getPeriod()+")"+";\n";
+					","+e.getGoaldifference()+","+e.getPeriod()+","+e.getEvent_id()+")"+";\n";
 			stmt.addBatch(sql);
 
 		}
@@ -131,7 +131,7 @@ public class DatabaseHandler {
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 	}
-	
+
 
 	public static void updateEventStateID(ArrayList<String> sqlList) throws ClassNotFoundException, SQLException{
 		openConnection();
