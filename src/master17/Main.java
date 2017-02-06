@@ -22,8 +22,8 @@ public class Main {
 //		dbhandler.insertStates(stateList);
 		//ArrayList<StateTransition> stateTransList = StateTransitionBuilder.getStateTransitions(game);
 		//dbhandler.insertStateTransitions(stateTransList);
-//		sendGamesFromDataFiles();
-		Qlearning.qLearningAlgorithm();
+		sendGamesFromDataFiles();
+//		Qlearning.qLearningAlgorithm();
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
 		File folder = new File("data_files");
@@ -33,18 +33,18 @@ public class Main {
 		ArrayList<StateTransition> stateTransList = new ArrayList<StateTransition>();
 		for(int i = 0; i < listOfFiles.length; i++){
 			long startTime = System.nanoTime();
-			System.out.println(listOfFiles[i].toString());
+			//System.out.println(listOfFiles[i].toString());
 			OptaDocument opta = new OptaDocument(listOfFiles[i].toString());
-			ArrayList<Event> eventlist = opta.getEventList();
-			dbhandler.insertEvents(eventlist);
+			//ArrayList<Event> eventlist = opta.getEventList();
+			//dbhandler.insertEvents(eventlist);
 			Game game = opta.getGame();
-			stateList = StateBuilder.getStatesFromEvents(game, stateList);
+			//stateList = StateBuilder.getStatesFromEvents(game, stateList);
 			stateTransList = StateTransitionBuilder.getStateTransitions(game, stateTransList);
 			long endTime = System.nanoTime();
 			System.out.println("Eventlist, statelist og statetrans oppdatert med fil " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder") ;
 		}
-		dbhandler.insertStates(stateList);
-		System.out.println("StateList inserted");
+		//dbhandler.insertStates(stateList);
+		//System.out.println("StateList inserted");
 		dbhandler.insertStateTransitions(stateTransList);
 		System.out.println("StateTransitions inserted");
 		DatabaseHandler.closeConnection();

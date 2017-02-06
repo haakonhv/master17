@@ -91,7 +91,7 @@ public class StateBuilder {
 					}
 					else{
 						stateList.add(new State(stateID,zone, home, action, period, manpowerDifference, matchStatus, reward));
-						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
+						sql.add("UPDATE Event SET StateID="+stateID+" WHERE OptaEventID="+eventID);
 						stateID++;
 					}
 				}
