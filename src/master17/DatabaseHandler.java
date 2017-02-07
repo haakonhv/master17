@@ -191,7 +191,7 @@ public class DatabaseHandler {
 	public static ResultSet getEventsAndValues() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT E.TeamID, E.EventID, E.PlayerID, E.Action, E.GameID, E.StateID, S.QValue, G.HomeID, G.AwayID \n"
+		String query = "SELECT E.TeamID, E.EventID, E.PlayerID, E.Action, E.GameID, E.StateID, S.QValue, S.Zone, G.HomeID, G.AwayID \n"
 				+ "FROM Event AS E \n"
 				+ "INNER JOIN State AS S ON E.StateID=S.StateID \n"
 				+ "INNER JOIN Game AS G ON E.GameID=G.GameID \n"

@@ -45,113 +45,139 @@ public class PlayerValues {
 		this.shot = 0;
 	}
 
-	public void increaseTackle(double value){
+	public int getPlayerID() {
+		return playerID;
+	}
+
+	public void updateTackle(double value){
 		this.tackle += value;
 	}
-	public void decreaseTackle(double value){
-		this.tackle -= value;
-	}
-	public void increaseClearance(double value){
+
+	public void updateClearance(double value){
 		this.clearance += value;
 	}
-	public void decreaseClearance(double value){
-		this.clearance -= value;
-	}
-	public void increaseAerial(double value){
+
+	public void updateAerial(double value){
 		this.aerialDuel += value;
 	}
-	public void decreaseAerial(double value){
-		this.aerialDuel -= value;
-	}
-	public void increaseDispossessed(double value){
+
+	public void updateDispossessed(double value){
 		this.dispossessed += value;
 	}
-	public void decreaseDispossessed(double value){
-		this.dispossessed -= value;
-	}
-	public void increaseFoulCommitted(double value){
+
+	public void updateFoulCommitted(double value){
 		this.foulCommitted += value;
 	}
-	public void decreaseFoulCommitted(double value){
-		this.foulCommitted -= value;
-	}
-	public void increaseFouled(double value){
+
+	public void updateFouled(double value){
 		this.fouled += value;
 	}
-	public void decreaseFouled(double value){
-		this.fouled -= value;
-	}
-	public void increaseInterception(double value){
+
+	public void updateInterception(double value){
 		this.interception += value;
 	}
-	public void decreaseInterception(double value){
-		this.interception -= value;
-	}
-	public void increaseBallRecovery(double value){
+
+	public void updateBallRecovery(double value){
 		this.ballRecovery += value;
 	}
-	public void decreaseBallRecovery(double value){
-		this.ballRecovery -= value;
-	}
-	public void increaseBallTouch(double value){
+
+	public void updateBallTouch(double value){
 		this.ballTouch += value;
 	}
-	public void decreaseBallTouch(double value){
-		this.ballTouch -= value;
-	}
-	public void increaseBallCarry(double value){
+
+	public void updateBallCarry(double value){
 		this.ballCarry += value;
 	}
-	public void decreaseBallCarry(double value){
-		this.ballCarry -= value;
-	}
-	public void increasePass(double value){
+
+	public void updatePass(double value){
 		this.pass += value;
 	}
-	public void decreasePass(double value){
-		this.pass -= value;
-	}
-	public void increaseLongPass(double value){
+
+	public void updateLongPass(double value){
 		this.longPass += value;
 	}
-	public void decreaseLongPass(double value){
-		this.longPass -= value;
-	}
-	public void increaseCross(double value){
+
+	public void updateCross(double value){
 		this.cross += value;
 	}
-	public void decreaseCross(double value){
-		this.cross -= value;
-	}
-	public void increaseFreekickPass(double value){
+
+	public void updateFreekickPass(double value){
 		this.freekickPass += value;
 	}
-	public void decreaseFreekickPass(double value){
-		this.freekickPass -= value;
-	}
-	public void increaseCorner(double value){
+
+	public void updateCorner(double value){
 		this.cornerTaken += value;
 	}
-	public void decreaseCorner(double value){
-		this.cornerTaken -= value;
-	}
-	public void increaseThrowIn(double value){
+
+	public void updateThrowIn(double value){
 		this.throwInTaken += value;
 	}
-	public void decreaseThrowIn(double value){
-		this.throwInTaken -= value;
-	}
-	public void increaseTakeOn(double value){
+
+	public void updateTakeOn(double value){
 		this.takeOn += value;
 	}
-	public void decreaseTakeOn(double value){
-		this.takeOn -= value;
-	}
-	public void increaseShot(double value){
+
+	public void updateShot(double value){
 		this.shot += value;
 	}
-	public void decreaseShot(double value){
-		this.shot -= value;
+
+
+	public void updateValue(String action, double value){
+		if(action.equals("Pass")){
+			this.updatePass(value);
+		}
+		else if(action.equals("Long pass")){
+			this.updateLongPass(value);
+		}
+		else if(action.equals("Ball carry")){
+			this.updateBallCarry(value);
+		}
+		else if(action.equals("Ball recovery")){
+			this.updateBallRecovery(value);
+		}
+		else if(action.equals("Aerial duel")){
+			this.updateAerial(value);
+		}
+		else if(action.equals("Clearance")){
+			this.updateClearance(value);
+		}
+		else if(action.equals("Throw in taken")){
+			this.updateThrowIn(value);
+		}
+		else if(action.equals("Ball touch")){
+			this.updateBallTouch(value);
+		}
+		else if(action.equals("Interception")){
+			this.updateInterception(value);
+		}
+		else if(action.equals("Cross")){
+			this.updateCross(value);
+		}
+		else if(action.equals("Tackle")){
+			this.updateTackle(value);
+		}
+		else if(action.equals("Shot")){
+			this.updateShot(value);
+		}
+		else if(action.equals("Take on")){
+			this.updateTakeOn(value);
+		}
+		else if(action.equals("Free kick pass")){
+			this.updateFreekickPass(value);
+		}
+		else if(action.equals("Foul committed")){
+			this.updateFoulCommitted(value);
+		}
+		else if(action.equals("Fouled")){
+			this.updateFouled(value);
+		}
+		else if(action.equals("Dispossessed")){
+			this.updateDispossessed(value);
+		}
+		else if(action.equals("Corner taken")){
+			this.updateCorner(value);
+		}
 	}
+
 
 }
