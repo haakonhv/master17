@@ -199,4 +199,21 @@ public class DatabaseHandler {
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 	}
+	
+	public static void insertPlayerValues (ArrayList<PlayerValues> playerValueList) throws SQLException, ClassNotFoundException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql;
+		for(PlayerValues pv : playerValueList){
+			pv.setTotal();
+			sql = "INSERT INTO PlayerValues VALUES ("+pv.getPlayerID()+"," +pv.getTotal() +","+pv.getPass() +","+ pv.getLongPass() + "," + pv.getBallCarry() + "," + pv.getBallRecovery() + 
+					"," + pv.getAerialDuel() + "," + pv.getClearance() + "," + pv.getThrowInTaken() + "," + pv.getBallTouch() + "," + pv.getInterception() + "," + pv.getCross()
+					+ "," + pv.getTackle() + "," + pv.getShot() + "," + pv.getTakeOn() + "," + pv.getFreekickPass() + "," + pv.getFoulCommitted() + "," + pv.getFouled()
+					+"," +pv.getDispossessed() + "," + pv.getCornerTaken()+");\n";
+			stmt.addBatch(sql);
+
+		}
+		int [] updateCounts = stmt.executeBatch();
+		closeConnection();
+	}
 }

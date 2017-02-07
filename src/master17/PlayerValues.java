@@ -21,6 +21,7 @@ public class PlayerValues {
 	private double throwInTaken;
 	private double takeOn;
 	private double shot;
+	private double total;
 
 	public PlayerValues(int playerID) {
 		super();
@@ -43,6 +44,7 @@ public class PlayerValues {
 		this.throwInTaken = 0;
 		this.takeOn = 0;
 		this.shot = 0;
+		this.total=0;
 	}
 
 	public int getPlayerID() {
@@ -179,5 +181,87 @@ public class PlayerValues {
 		}
 	}
 
+	public double getTackle() {
+		return tackle;
+	}
+
+	public double getClearance() {
+		return clearance;
+	}
+
+	public double getAerialDuel() {
+		return aerialDuel;
+	}
+
+	public double getDispossessed() {
+		return dispossessed;
+	}
+
+	public double getFoulCommitted() {
+		return foulCommitted;
+	}
+
+	public double getFouled() {
+		return fouled;
+	}
+
+	public double getInterception() {
+		return interception;
+	}
+
+	public double getBallRecovery() {
+		return ballRecovery;
+	}
+
+	public double getBallTouch() {
+		return ballTouch;
+	}
+
+	public double getBallCarry() {
+		return ballCarry;
+	}
+
+	public double getPass() {
+		return pass;
+	}
+
+	public double getLongPass() {
+		return longPass;
+	}
+
+	public double getCross() {
+		return cross;
+	}
+
+	public double getFreekickPass() {
+		return freekickPass;
+	}
+
+	public double getCornerTaken() {
+		return cornerTaken;
+	}
+
+	public double getThrowInTaken() {
+		return throwInTaken;
+	}
+
+	public double getTakeOn() {
+		return takeOn;
+	}
+
+	public double getShot() {
+		return shot;
+	}
+
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal() {
+		this.total = this.getAerialDuel()+this.getBallCarry()+this.getBallRecovery()+this.getBallTouch()+this.getClearance()+this.getCornerTaken()+this.getCross()+
+				this.getDispossessed()+this.getFoulCommitted()+this.getFouled()+this.getFreekickPass()+this.getInterception()+this.getLongPass()+this.getPass()+this.getShot()+
+				this.getTackle()+this.getTakeOn()+this.getThrowInTaken();
+	}
+	
 
 }
