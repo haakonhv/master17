@@ -99,7 +99,7 @@ public class FindPlayerValues {
 				}
 				for (int j = 1; j < playerValueList.size(); j++){
 					if ( playerValueList.get(j).getID() == currPlayerID){
-						playerValueList.get(j).;
+						playerValueList.get(j)
 					}
 				}
 				
