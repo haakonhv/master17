@@ -1,16 +1,18 @@
 package master17;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class FindPlayerValues {
-	public static void findValues() {
+	public static void findValues() throws ClassNotFoundException, SQLException {
 		ResultSet players = DatabaseHandler.getPlayers();
 		ResultSet events = DatabaseHandler.getEventsAndValues();
 		ArrayList<PlayerValues> playerValueList= new ArrayList<PlayerValues>();
 		while (players.next()){ //bygger playerValues objekter for alle players i databasen
 			playerValueList.add(new PlayerValues(players.getInt("PlayerID")));
 		}
+		System.out.println("Laget playervalue list");
 		
 		events.next();
 		int prevTeamID = events.getInt("TeamID"); //lagrer previous events variabler. Nødvendig for å sjekke når game er ferdig, sjekke ballvinning osv
@@ -18,7 +20,7 @@ public class FindPlayerValues {
 		int prevGameID = events.getInt("GameID");
 		int prevStateID = events.getInt("StateID");
 		String prevAction = events.getString("Action");
-		double prevQvalue = events.getInt("QValue");
+		double prevQvalue = events.getDouble("QValue");
 		int prevHomeID = events.getInt("HomeID");
 		int prevAwayID = events.getInt("AwayID");
 		int prevZone = events.getInt("Zone");
@@ -29,7 +31,7 @@ public class FindPlayerValues {
 		int currGameID = events.getInt("GameID");
 		int currStateID = events.getInt("StateID");
 		String currAction = events.getString("Action");
-		double currQvalue = events.getInt("QValue");
+		double currQvalue = events.getDouble("QValue");
 		int currHomeID = events.getInt("HomeID");
 		int currAwayID = events.getInt("AwayID");
 		int currZone = events.getInt("Zone");
@@ -41,14 +43,34 @@ public class FindPlayerValues {
 			int nextGameID = events.getInt("GameID");
 			int nextStateID = events.getInt("StateID");
 			String nextAction = events.getString("Action");
-			double nextQvalue = events.getInt("QValue");
+			double nextQvalue = events.getDouble("QValue");
 			int nextHomeID = events.getInt("HomeID");
 			int nextAwayID = events.getInt("AwayID");
 			int nextZone = events.getInt("Zone");
-			
+			//System.out.println(currGameID);
+			//System.out.println("Current Q= " + currQvalue + " previous Q= "+prevQvalue+" nextQ = "+nextQvalue);
 			if (prevGameID!=currGameID){ //sjekker om forrige event er fra en annen game enn current
-				//TODO: Legg til logikk
+				System.out.println("Ferdig med game " +currGameID);
+				prevTeamID = currTeamID;
+				prevPlayerID = currPlayerID;
+				prevGameID = currGameID;
+				prevStateID = currStateID;
+				prevAction = currAction;
+				prevQvalue = currQvalue;
+				prevHomeID = currHomeID;
+				prevAwayID = currAwayID;
+				prevZone = currZone;
 				
+				currTeamID = nextTeamID;
+				currPlayerID = nextPlayerID;
+				currGameID = nextGameID;
+				currStateID = nextStateID;
+				currAction = nextAction;
+				currQvalue = nextQvalue;
+				currHomeID = nextHomeID;
+				currAwayID = nextAwayID;
+				currZone = nextZone;
+				continue;
 				
 			}
 			else { //prev og current event er fra samme game
@@ -83,7 +105,8 @@ public class FindPlayerValues {
 						eventValue = nextQvalue - currQvalue;
 					}
 					else { // current event er ikke av samme lag som previous (altså ballvinning e.l.)
-						eventValue = nextQvalue - prevQvalue;
+						eventValue = nextQvalue - currQvalue;
+						//eventValue = nextQvalue - prevQvalue;
 					}
 				}
 				else { //bortelags event
@@ -94,7 +117,8 @@ public class FindPlayerValues {
 						eventValue = - (nextQvalue - currQvalue);
 					}
 					else { //current event er fra annet lag enn previous (altså ballvinning e.l.)
-						eventValue = - (nextQvalue - prevQvalue);
+						eventValue = - (nextQvalue - currQvalue);
+						//eventValue = - (nextQvalue - prevQvalue);
 					}
 				}
 				for (int j = 1; j < playerValueList.size(); j++){
@@ -102,6 +126,25 @@ public class FindPlayerValues {
 						playerValueList.get(j).updateValue(currAction, eventValue);
 					}
 				}
+				prevTeamID = currTeamID;
+				prevPlayerID = currPlayerID;
+				prevGameID = currGameID;
+				prevStateID = currStateID;
+				prevAction = currAction;
+				prevQvalue = currQvalue;
+				prevHomeID = currHomeID;
+				prevAwayID = currAwayID;
+				prevZone = currZone;
+				
+				currTeamID = nextTeamID;
+				currPlayerID = nextPlayerID;
+				currGameID = nextGameID;
+				currStateID = nextStateID;
+				currAction = nextAction;
+				currQvalue = nextQvalue;
+				currHomeID = nextHomeID;
+				currAwayID = nextAwayID;
+				currZone = nextZone;
 			}	
 		}
 		DatabaseHandler.insertPlayerValues(playerValueList);
