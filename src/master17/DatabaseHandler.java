@@ -165,13 +165,13 @@ public class DatabaseHandler {
 		int [] updateCounts = stmt.executeBatch();
 		closeConnection();
 	}
-	
+
 	public static void insertGames(ArrayList<Game> gameList) throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String sql;
 		for(Game g : gameList){
-			
+
 			sql = "INSERT INTO Game VALUES ("+g.getGame_id()+","+g.getHome_team_id()+","+g.getAway_team_id() + "," + g.getMatchday() + "," + g.getSeason() +");\n";
 			stmt.addBatch(sql);
 
@@ -180,4 +180,23 @@ public class DatabaseHandler {
 		closeConnection();
 	}
 
+	public static ResultSet getPlayers() throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT PlayerID FROM Player";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+	}
+
+	public static ResultSet getEventsAndValues() throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT E.TeamID, E.EventID, E.PlayerID, E.Action, E.GameID, E.StateID, S.QValue, G.HomeID, G.AwayID \n"
+				+ "FROM Event AS E \n"
+				+ "INNER JOIN State AS S ON E.StateID=S.StateID \n"
+				+ "INNER JOIN Game AS G ON E.GameID=G.GameID \n"
+				+ "ORDER BY EventID ASC;";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+	}
 }

@@ -48,17 +48,110 @@ public class PlayerValues {
 	public void increaseTackle(double value){
 		this.tackle += value;
 	}
-
 	public void decreaseTackle(double value){
 		this.tackle -= value;
 	}
-
 	public void increaseClearance(double value){
 		this.clearance += value;
 	}
-
 	public void decreaseClearance(double value){
 		this.clearance -= value;
+	}
+	public void increaseAerial(double value){
+		this.aerialDuel += value;
+	}
+	public void decreaseAerial(double value){
+		this.aerialDuel -= value;
+	}
+	public void increaseDispossessed(double value){
+		this.dispossessed += value;
+	}
+	public void decreaseDispossessed(double value){
+		this.dispossessed -= value;
+	}
+	public void increaseFoulCommitted(double value){
+		this.foulCommitted += value;
+	}
+	public void decreaseFoulCommitted(double value){
+		this.foulCommitted -= value;
+	}
+	public void increaseFouled(double value){
+		this.fouled += value;
+	}
+	public void decreaseFouled(double value){
+		this.fouled -= value;
+	}
+	public void increaseInterception(double value){
+		this.interception += value;
+	}
+	public void decreaseInterception(double value){
+		this.interception -= value;
+	}
+	public void increaseBallRecovery(double value){
+		this.ballRecovery += value;
+	}
+	public void decreaseBallRecovery(double value){
+		this.ballRecovery -= value;
+	}
+	public void increaseBallTouch(double value){
+		this.ballTouch += value;
+	}
+	public void decreaseBallTouch(double value){
+		this.ballTouch -= value;
+	}
+	public void increaseBallCarry(double value){
+		this.ballCarry += value;
+	}
+	public void decreaseBallCarry(double value){
+		this.ballCarry -= value;
+	}
+	public void increasePass(double value){
+		this.pass += value;
+	}
+	public void decreasePass(double value){
+		this.pass -= value;
+	}
+	public void increaseLongPass(double value){
+		this.longPass += value;
+	}
+	public void decreaseLongPass(double value){
+		this.longPass -= value;
+	}
+	public void increaseCross(double value){
+		this.cross += value;
+	}
+	public void decreaseCross(double value){
+		this.cross -= value;
+	}
+	public void increaseFreekickPass(double value){
+		this.freekickPass += value;
+	}
+	public void decreaseFreekickPass(double value){
+		this.freekickPass -= value;
+	}
+	public void increaseCorner(double value){
+		this.cornerTaken += value;
+	}
+	public void decreaseCorner(double value){
+		this.cornerTaken -= value;
+	}
+	public void increaseThrowIn(double value){
+		this.throwInTaken += value;
+	}
+	public void decreaseThrowIn(double value){
+		this.throwInTaken -= value;
+	}
+	public void increaseTakeOn(double value){
+		this.takeOn += value;
+	}
+	public void decreaseTakeOn(double value){
+		this.takeOn -= value;
+	}
+	public void increaseShot(double value){
+		this.shot += value;
+	}
+	public void decreaseShot(double value){
+		this.shot -= value;
 	}
 
 }
