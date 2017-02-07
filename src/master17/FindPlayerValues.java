@@ -98,15 +98,13 @@ public class FindPlayerValues {
 					}
 				}
 				for (int j = 1; j < playerValueList.size(); j++){
-					if ( playerValueList.get(j).getID() == currPlayerID){
-						playerValueList.get(j)
+					if (playerValueList.get(j).getPlayerID() == currPlayerID){
+						playerValueList.get(j).updateValue(currAction, eventValue);
 					}
 				}
-				
-				
-			}
-			
-			
+			}	
 		}
+		DatabaseHandler.insertPlayerValues(playerValueList);
+		
 	}
 }
