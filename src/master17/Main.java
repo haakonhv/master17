@@ -24,9 +24,10 @@ public class Main {
 		//ArrayList<StateTransition> stateTransList = StateTransitionBuilder.getStateTransitions(game);
 		//dbhandler.insertStateTransitions(stateTransList);
 //		sendGamesFromDataFiles();
-		Qlearning.qLearningAlgorithm();
+		//Qlearning.qLearningAlgorithm();
+		insertGames();
 	}
-	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
+	public static void insertStatesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
 		File folder = new File("data_files");
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<State> stateList = new ArrayList<State>();
@@ -53,5 +54,16 @@ public class Main {
 		System.out.println("StateTransitions inserted");
 		DatabaseHandler.closeConnection();
 	}
+	public static void insertGames() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
+		File folder = new File("data_files");
+		File[] listOfFiles = folder.listFiles();
+		ArrayList<Game> gameList = new ArrayList<Game>();
+		for (int i = 0; i < listOfFiles.length; i++){
+			Document doc = xmlReader.getDocument(listOfFiles[i].toString());
+			gameList.add(xmlReader.getGame(doc));
+		}
+		DatabaseHandler.insertGames(gameList);
+	}
 
 }
+

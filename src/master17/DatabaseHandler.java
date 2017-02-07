@@ -165,5 +165,19 @@ public class DatabaseHandler {
 		int [] updateCounts = stmt.executeBatch();
 		closeConnection();
 	}
+	
+	public static void insertGames(ArrayList<Game> gameList) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql;
+		for(Game g : gameList){
+			
+			sql = "INSERT INTO Game VALUES ("+g.getGame_id()+","+g.getHome_team_id()+","+g.getAway_team_id() + "," + g.getMatchday() + "," + g.getSeason() +");\n";
+			stmt.addBatch(sql);
+
+		}
+		int [] updateCounts = stmt.executeBatch();
+		closeConnection();
+	}
 
 }
