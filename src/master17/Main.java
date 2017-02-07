@@ -25,7 +25,9 @@ public class Main {
 		//dbhandler.insertStateTransitions(stateTransList);
 //		sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
-		insertGames();
+		//insertGames();
+		double testTalle = - (1+1);
+		System.out.println(testTalle);
 	}
 	public static void insertStatesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
 		File folder = new File("data_files");
