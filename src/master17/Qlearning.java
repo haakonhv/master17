@@ -54,7 +54,7 @@ public class Qlearning {
 			System.out.println("Iterasjon "+(i+1)+" ferdig. Tid: "+(endTime-startTime)/Math.pow(10, 9)+" sekunder");
 
 
-			if (i%50==0 && i!=0){
+			if (i%20==0 && i!=0){
 				DatabaseHandler.updateQValues(stateList);
 			}
 		}
