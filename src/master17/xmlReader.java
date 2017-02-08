@@ -81,14 +81,19 @@ public class xmlReader {
 
          	if (action_type.equals("End of period")){
          		Event prevEvent = eventList.get(eventList.size()-1);
-         		if (!prevEvent.getAction_type().equals(action_type)){
+         		if (!prevEvent.getAction_type().equals(action_type)){ //ligger to end of period elementer i xml. Trenger bare 1
          			eventList.add(new Event(event_id, action_type, 1, 0, 0, 50, 50, 50, 50, number, sequence, game_id, period, minute, second, 0, 0));
-         			number += 1;
          			sequence += 1;
          			continue;
          		}
          		continue;
 			}
+
+         	if (action_type.equals("Goalkeeper")){
+         		eventList.add(new Event(event_id,action_type,1,team_id,0,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,0,0));
+         		sequence +=1;
+         		continue;
+         	}
 
          	try {
          		player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
@@ -306,10 +311,6 @@ public class xmlReader {
 		    			actiontype = "Red card";
 		    			return actiontype;
 		    		}
-		    		else {
-		    			actiontype = "skip";
-		    			return actiontype;
-		    		}
 				}
 			}
 			actiontype = "skip";
@@ -318,6 +319,35 @@ public class xmlReader {
 		else if (typeid == 13 || typeid == 14 || typeid == 15){
 			actiontype = "Shot";
 			return actiontype;
+		}
+		else if(typeid == 52){
+			actiontype = "Goalkeeper";
+			return actiontype;
+		}
+		else if (typeid == 10){
+			NodeList qualifierList = xmlEvent.getChildNodes();
+			for(int i=0; i<qualifierList.getLength();i++){
+				if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
+					Element q = (Element) qualifierList.item(i);
+		    		int qid = Integer.parseInt(q.getAttribute("qualifier_id"));
+		    		if (qid == 176 || qid== 177 || qid == 92 || qid == 93){
+		    			actiontype = "Goalkeeper";
+		    			return actiontype;
+		    		}
+				}
+			}
+			actiontype = "skip";
+			return actiontype;
+		}
+		else if (typeid == 11){
+			if (Integer.parseInt(xmlEvent.getAttribute("outcome"))==1){
+				actiontype = "Goalkeeper";
+				return actiontype;
+			}
+			else{
+				actiontype = "skip";
+				return actiontype;
+			}
 		}
 		else if (typeid == 16){
 			actiontype = "Goal";

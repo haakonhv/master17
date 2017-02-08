@@ -6,15 +6,17 @@ import java.util.ArrayList;
 
 public class StateTransitionBuilder {
 
-	public static ArrayList<StateTransition> getStateTransitions(Game game, ArrayList<StateTransition> stateTransList) throws SQLException, ClassNotFoundException{
-		ResultSet rs = DatabaseHandler.getOrderedEvents(game.getGame_id());
+	public static void setStateTransitions() throws SQLException, ClassNotFoundException{
+		ResultSet rs = DatabaseHandler.getOrderedEvents();
+		ArrayList<StateTransition> stateTransList = new ArrayList<StateTransition>();
 		rs.next();
 		int prevStateID = rs.getInt("StateID");
 		String prevAction = rs.getString("Action");
+		int counter = 0;
 		while(rs.next()){
-			
+			counter++;
 			int currentStateID = rs.getInt("StateID");
-			if (!(prevAction.equals("Goal") || prevAction.equals("Out of play") || prevAction.equals("End of period"))){
+			if (!(prevAction.equals("Goal") || prevAction.equals("Out of play") || prevAction.equals("End of period") || prevAction.equals("Goalkeeper"))){
 				if(stateTransList.size()==0){
 					stateTransList.add(new StateTransition(prevStateID, currentStateID));
 				}
@@ -35,7 +37,10 @@ public class StateTransitionBuilder {
 			}
 			prevStateID = currentStateID;
 			prevAction = rs.getString("Action");
+			if(counter%1000==0){
+				System.out.println("Laget "+counter+"transitions");
+			}
 		}
-		return stateTransList;
+		DatabaseHandler.insertStateTransitions(stateTransList);
 	}
 }

@@ -36,7 +36,7 @@ public class DatabaseHandler {
 
 	}
 
-	public void insertStates(ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
+	public static void insertStates(ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
 		Statement stmt = conn.createStatement();
 		int home;
 		String sql="";
@@ -57,7 +57,7 @@ public class DatabaseHandler {
 		//closeConnection();
 	}
 
-	public void insertStateTransitions(ArrayList<StateTransition> stateTransList) throws SQLException{
+	public static void insertStateTransitions(ArrayList<StateTransition> stateTransList) throws SQLException{
 		Statement stmt = conn.createStatement();
 		int home;
 		String sql="";
@@ -109,10 +109,11 @@ public class DatabaseHandler {
 
 
 
-	public static ResultSet getDatabaseEvents(int gameID) throws ClassNotFoundException, SQLException{
+	public static ResultSet getDatabaseEvents() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT* FROM Event WHERE GameID="+gameID;
+		String query = "SELECT E.EventID, E.Action, E.Minute, E.Period, E.GoalDifference, E.TeamID, E.ManpowerDifference, E.Xstart, E.Ystart,"
+				+ "G.HomeID, G.AwayID FROM Event AS E INNER JOIN Game AS G ON E.GameID = G.GameID";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 
@@ -144,10 +145,10 @@ public class DatabaseHandler {
 
 	}
 
-	public static ResultSet getOrderedEvents(int gameID) throws ClassNotFoundException, SQLException{
+	public static ResultSet getOrderedEvents() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT* FROM Event WHERE GameID="+gameID+" ORDER BY Number ASC";
+		String query = "SELECT* FROM Event ORDER BY EventID ASC";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 
@@ -199,14 +200,14 @@ public class DatabaseHandler {
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 	}
-	
+
 	public static void insertPlayerValues (ArrayList<PlayerValues> playerValueList) throws SQLException, ClassNotFoundException{
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String sql;
 		for(PlayerValues pv : playerValueList){
 			pv.setTotal();
-			sql = "INSERT INTO PlayerValues VALUES ("+pv.getPlayerID()+"," +pv.getTotal() +","+pv.getPass() +","+ pv.getLongPass() + "," + pv.getBallCarry() + "," + pv.getBallRecovery() + 
+			sql = "INSERT INTO PlayerValues VALUES ("+pv.getPlayerID()+"," +pv.getTotal() +","+pv.getPass() +","+ pv.getLongPass() + "," + pv.getBallCarry() + "," + pv.getBallRecovery() +
 					"," + pv.getAerialDuel() + "," + pv.getClearance() + "," + pv.getThrowInTaken() + "," + pv.getBallTouch() + "," + pv.getInterception() + "," + pv.getCross()
 					+ "," + pv.getTackle() + "," + pv.getShot() + "," + pv.getTakeOn() + "," + pv.getFreekickPass() + "," + pv.getFoulCommitted() + "," + pv.getFouled()
 					+"," +pv.getDispossessed() + "," + pv.getCornerTaken()+");\n";
