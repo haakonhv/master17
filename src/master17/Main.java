@@ -26,7 +26,10 @@ public class Main {
 //		sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
-		FindPlayerValues.findValues();
+//		FindPlayerValues.findValues();
+//		sendEventsFromDataFiles();
+//		StateBuilder.getStatesFromEvents();
+		StateTransitionBuilder.setStateTransitions();
 
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
@@ -44,9 +47,9 @@ public class Main {
 			Document doc = xmlReader.getDocument(listOfFiles[i].toString());
 			Game game = xmlReader.getGame(doc);
 			System.out.println("Game created");
-			stateList = StateBuilder.getStatesFromEvents(game, stateList);
+//			stateList = StateBuilder.getStatesFromEvents(game, stateList);
 			System.out.println("Statelist created");
-			stateTransList = StateTransitionBuilder.getStateTransitions(game, stateTransList);
+//			stateTransList = StateTransitionBuilder.getStateTransitions(game, stateTransList);
 			long endTime = System.nanoTime();
 			System.out.println("Eventlist, statelist og statetrans oppdatert med fil " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder");
 		}
@@ -55,6 +58,21 @@ public class Main {
 		dbhandler.insertStateTransitions(stateTransList);
 		System.out.println("StateTransitions inserted");
 		DatabaseHandler.closeConnection();
+	}
+
+	public static void sendEventsFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
+		File folder = new File("data_files");
+		File[] listOfFiles = folder.listFiles();
+		DatabaseHandler dbhandler = new DatabaseHandler();
+		for(int i = 0; i < listOfFiles.length; i++){
+			long startTime = System.nanoTime();
+			System.out.println(listOfFiles[i].toString());
+			OptaDocument opta = new OptaDocument(listOfFiles[i].toString());
+			ArrayList<Event> eventlist = opta.getEventList();
+			dbhandler.insertEvents(eventlist);
+			long endTime = System.nanoTime();
+			System.out.println("Eventlist " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder");
+		}
 	}
 
 }

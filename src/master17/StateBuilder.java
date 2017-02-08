@@ -6,12 +6,15 @@ import java.util.ArrayList;
 
 public class StateBuilder {
 
-	public static ArrayList<State> getStatesFromEvents(Game game, ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
-		ResultSet rs = DatabaseHandler.getDatabaseEvents(game.getGame_id());
+	public static void getStatesFromEvents() throws ClassNotFoundException, SQLException{
+		ResultSet rs = DatabaseHandler.getDatabaseEvents();
 		ArrayList<String> sql = new ArrayList<String>();
-		int stateID = stateList.size()+1;
-		System.out.println(stateID);
+		int stateID = 1;
+		ArrayList<State> stateList = new ArrayList<State>();
+		int counter = 0;
+		long startTime = System.nanoTime();
 		while (rs.next()){
+			counter++;
 			String eventID = rs.getString("EventID"); // event id
 			int zone;
 			String action = rs.getString("Action");
@@ -19,8 +22,22 @@ public class StateBuilder {
 			int matchStatus;
 			int manpowerDifference;
 			boolean home;
-			if (action.equals("Out of play")){
+			if (action.equals("Goalkeeper") || action.equals("Goal")){
 				period = 0;
+				matchStatus = 0;
+				manpowerDifference = 0;
+				zone = 0;
+				home = rs.getInt("HomeID") == rs.getInt("TeamID");
+			}
+			else if (action.equals("Out of play")){
+				period = 0;
+				matchStatus = 0;
+				manpowerDifference = 0;
+				zone = 0;
+				home = false;
+			}
+			else if(action.equals("End of period")){
+				period = getPeriod(rs.getInt("Minute"), rs.getInt("Period"));
 				matchStatus = 0;
 				manpowerDifference = 0;
 				zone = 0;
@@ -28,51 +45,25 @@ public class StateBuilder {
 			}
 			else {
 				period = getPeriod(rs.getInt("Minute"), rs.getInt("Period"));
-				matchStatus = getMatchStatus(rs.getInt("GoalDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
-				manpowerDifference = getManpowerDifference(rs.getInt("ManpowerDifference"), game.getHome_team_id(), rs.getInt("TeamID"));
+				matchStatus = getMatchStatus(rs.getInt("GoalDifference"), rs.getInt("HomeID"), rs.getInt("TeamID"));
+				manpowerDifference = getManpowerDifference(rs.getInt("ManpowerDifference"), rs.getInt("HomeID"), rs.getInt("TeamID"));
 				zone = getZoneFromCoordinates(rs.getFloat("Xstart"),rs.getFloat("Ystart"));
-				home = game.getHome_team_id() == rs.getInt("TeamID");
+				home = rs.getInt("HomeID") == rs.getInt("TeamID");
 			}
 			int reward = getReward(action, home);
 
 			if (stateList.size() == 0){ //stateList er tom
-				if (reward!=0){ //Hvis første event som sjekkes er mål
-					stateList.add(new State(stateID,0,home,action,0,0,0,reward));
-					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
-					stateID++;
-				}
-				else if (action.equals("Out of play")){
-					stateList.add(new State(stateID,0,false,action,0,0,0,0));
-					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
-					stateID++;
-				}
-				else if (action.equals("End of period")){
-					continue;
-				}
-				else{ //Alle andre events
-					stateList.add(new State(stateID,zone, home, action, period, manpowerDifference, matchStatus, reward));
-					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
-					stateID++;
-				}
+				stateList.add(new State(stateID,zone, home, action, period, manpowerDifference, matchStatus, reward));
+				sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
+				stateID++;
 			}
 			else { //stateList ikke tom
 				boolean stateExists = false;
 				for (int i =0; i<stateList.size();i++){
 					State s = stateList.get(i);
-					if (reward!=0){ //Hvis event er mål, lag state for mål
-						if (s.getReward()==reward){
-							s.incrementOccurrence();
-							sql.add("UPDATE Event SET StateID="+s.getStateID()+" WHERE EventID="+eventID);
-							stateExists = true;
-							break;
-						}
-						continue;
-					}
-					if (action.equals("End of period")){
-						break;
-					}
-					if(s.getZone() == zone && s.getAction().equals(action) && s.getPeriod() == period
-							&& s.isHome()==home && s.getMatchStatus() == matchStatus && s.getManpowerDiff() == manpowerDifference){
+					if(s.getAction().equals(action) && s.getZone() == zone && s.getPeriod() == period
+							&& s.isHome()==home && s.getMatchStatus() == matchStatus
+							&& s.getManpowerDiff() == manpowerDifference && s.getReward() == reward){
 						s.incrementOccurrence(); //Oppdaterer occurence i state og legger til StateID på eventet i db
 						sql.add("UPDATE Event SET StateID="+s.getStateID()+" WHERE EventID="+eventID);
 						stateExists = true;
@@ -80,26 +71,19 @@ public class StateBuilder {
 					}
 				}
 				if (!stateExists){ //Hvis staten ikke finnes fra før i db, legg til passende state
-					if (reward != 0){
-						stateList.add(new State(stateID,0,home,action,0,0,0,reward));
-						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
-						stateID++;
-					}
-					else if (action.equals("Out of play")){
-						stateList.add(new State(stateID,0,false,action,0,0,0,0));
-						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
-						stateID++;
-					}
-					else{
-						stateList.add(new State(stateID,zone, home, action, period, manpowerDifference, matchStatus, reward));
-						sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
-						stateID++;
-					}
+					stateList.add(new State(stateID,zone, home, action, period, manpowerDifference, matchStatus, reward));
+					sql.add("UPDATE Event SET StateID="+stateID+" WHERE EventID="+eventID);
+					stateID++;
 				}
 			}
+			if (counter%1000==0){
+				long endTime = System.nanoTime();
+				System.out.println("Oppdatert "+counter+ " events. Tid for siste 1000 events: "+ (endTime-startTime)/Math.pow(10, 9)+" sekunder" );
+				startTime = System.nanoTime();
+			}
 		}
+		DatabaseHandler.insertStates(stateList);
 		DatabaseHandler.updateEventStateID(sql);
-		return stateList;
 	}
 
 	public static int getZoneFromCoordinates(float x, float y){
