@@ -159,7 +159,7 @@ public class DatabaseHandler {
 		Statement stmt = conn.createStatement();
 		String sql;
 		for(State s : stateList){
-			sql = "UPDATE State SET QValue=" + s.getqValue()+" WHERE StateID = "+s.getStateID()+";\n";
+			sql = "UPDATE State2 SET QValue=" + s.getqValue()+" WHERE StateID = "+s.getStateID()+";\n";
 			stmt.addBatch(sql);
 
 		}
