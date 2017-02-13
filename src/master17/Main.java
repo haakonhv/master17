@@ -30,7 +30,8 @@ public class Main {
 //		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
-		ReinforcementLearning.learningAlgorithm();
+//		ReinforcementLearning.learningAlgorithm();
+		GameTimeReader.setPlayerGameTime();
 
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
