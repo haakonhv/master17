@@ -44,13 +44,11 @@ public class ReinforcementLearning {
 					double endReward = stateList.get(endID).getReward();
 					double prevQ = tempQvalues.get(startID);
 					double tempq = prevQ +(transOcc/stateOcc)*(endQvalue+endReward);
-					
 					tempQvalues.put(startID, tempq);
 				}
 			}
 			if (!converged){
 				for (Integer stateID : keys){
-				
 				State state = stateList.get(stateID);
 				double newQvalue = tempQvalues.get(stateID);
 				state.setqValue(newQvalue);
@@ -60,21 +58,17 @@ public class ReinforcementLearning {
 				//System.out.println(stateID);break;
 				}
 			}
-			
 			if (!converged){
 				if((currentValue - lastValue)/currentValue < convergeCriterion){
 					System.out.println("converged");
 					converged = true;
-
 				}
 			}
-			
 			lastValue = currentValue;
 			currentValue = 0;
 			long endTime = System.nanoTime();
 			System.out.println("Iterasjon "+(i+1)+" ferdig. Tid: "+(endTime-startTime)/Math.pow(10, 9)+" sekunder");
 			stateTransSet.beforeFirst();
-			
 		}
 
 		ArrayList<State> stateArray = new ArrayList<State>();
@@ -82,9 +76,6 @@ public class ReinforcementLearning {
 			stateArray.add(stateList.get(stateID));
 		}
 		DatabaseHandler.updateQValues(stateArray);
-		
-
-
 	}
 
 }
