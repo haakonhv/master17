@@ -14,10 +14,15 @@ public class Main {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException {
 		//File file = new File("data_files/f24-90-2016-839685-eventdetails.xml");
-		//OptaDocument opta = new OptaDocument("data_files/f24-90-2016-839685-eventdetails.xml");
-		//ArrayList<Event> eventlist = opta.getEventList();
-		//DatabaseHandler dbhandler = new DatabaseHandler();
-		//dbhandler.insertEvents(eventlist);
+		OptaDocument opta = new OptaDocument("data_files/f24-90-2016-839685-eventdetails.xml");
+		ArrayList<Event> eventlist = opta.getEventList();
+		System.out.println(eventlist.size());
+		for (Event e: eventlist){
+			//System.out.println(e);
+		}
+		
+		DatabaseHandler dbhandler = new DatabaseHandler();
+		 dbhandler.insertEvents(eventlist);
 		//Game game = new Game(839685,305,197,1,2016);
 //		ArrayList<State> stateList = StateBuilder.getStatesFromEvents(game);
 //		dbhandler.insertStates(stateList);
@@ -31,7 +36,7 @@ public class Main {
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
-		GameTimeReader.setPlayerGameTime();
+		//GameTimeReader.setPlayerGameTime();
 
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
