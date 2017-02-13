@@ -77,6 +77,10 @@ public class Event {
 	}
 
 
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
 	@Override
 	public String toString() {
 		return "Event [event_id=" + event_id + ", action_type=" + action_type + ", outcome=" + outcome + ", team_id="
