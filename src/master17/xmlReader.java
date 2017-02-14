@@ -568,11 +568,31 @@ public class xmlReader {
 				
 				if (prevEvent.getAction_type().equals("Pass") || prevEvent.getAction_type().equals("Long pass") || prevEvent.getAction_type().equals("Throw in taken")
 					|| prevEvent.getAction_type().equals("Cross") || prevEvent.getAction_type().equals("Free kick pass") || prevEvent.getAction_type().equals("Corner taken")){
+					if (prevEvent.getTeam_id()==thisEvent.getTeam_id()){
 						completeEventList.add(new Event(9999, "Ball received", 1, prevEvent.getTeam_id(), thisEvent.getPlayer_id(), prevEvent.getXend(),
 						prevEvent.getYend(), prevEvent.getXend(), prevEvent.getYend(), completeEventList.get(completeEventList.size()-1).getNumber()+1, thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), thisEvent.getMinute(),
 						thisEvent.getSecond(), thisEvent.getManpowerdifference(), thisEvent.getGoaldifference())); // legger til "Ball received" event etter pasninger som kom frem
 						prevEvent = completeEventList.get(completeEventList.size()-1);
+					}
+					else{ //lag er ulike
+						if (thisEvent.getAction_type().equals("Foul committed")){
+							Event nextEvent = eventList.get(i+1);
+							if (thisEvent.getEvent_id()==696609825){
+								System.out.println("Event");
+							}
+							try {
+								int nextEventPlayerID = nextEvent.getPlayer_id();
+								completeEventList.add(new Event(9999, "Ball received", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(), prevEvent.getYend(), 100 - thisEvent.getXstart(), 100 - thisEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1, thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getManpowerdifference(), thisEvent.getGoaldifference()));
+								prevEvent = completeEventList.get(completeEventList.size()-1);
+							//	System.out.println("Ball carry hvor foul committed");
+				         	}
+				         	catch (NumberFormatException E){
+				         		continue;
+				         	}	
+						}
+					}
 				}
+						
 				if (prevEvent.getAction_type().equals("Pass") || prevEvent.getAction_type().equals("Ball received") || prevEvent.getAction_type().equals("Long pass") || prevEvent.getAction_type().equals("Ball recovery") ||
 						prevEvent.getAction_type().equals("Throw in taken") || prevEvent.getAction_type().equals("Cross") || prevEvent.getAction_type().equals("Free kick pass") ||
 						prevEvent.getAction_type().equals("Corner taken")){
@@ -588,11 +608,12 @@ public class xmlReader {
 						}
 						else { // to forskjellige lag
 							if (thisEvent.getAction_type().equals("Foul committed")){
-								if (getCarryLength(prevEvent, thisEvent.getXstart(), thisEvent.getXstart(), thisEvent.getTeam_id()) > 7.5){
-									Element nextEvent = (Element) xmlEventList.item(i+1);
+								Event nextEvent = eventList.get(i+1);
+								if (getCarryLength(prevEvent, nextEvent.getXstart(), nextEvent.getYstart(), nextEvent.getTeam_id()) > 7.5){
+									
 									try {
-										int nextEventPlayerID = Integer.parseInt(nextEvent.getAttribute("player_id"));
-										completeEventList.add(new Event(9999, "Ball carry", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(), prevEvent.getYend(), 100 - thisEvent.getXstart(), 100 - thisEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1, thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getManpowerdifference(), thisEvent.getGoaldifference()));
+										int nextEventPlayerID = nextEvent.getPlayer_id();
+										completeEventList.add(new Event(9999, "Ball carry", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(), prevEvent.getYend(), nextEvent.getXstart(), nextEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1, thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getManpowerdifference(), thisEvent.getGoaldifference()));
 										prevEvent = completeEventList.get(completeEventList.size()-1);
 									//	System.out.println("Ball carry hvor foul committed");
 						         	}

@@ -22,7 +22,7 @@ public class Main {
 		}
 		
 		DatabaseHandler dbhandler = new DatabaseHandler();
-		 dbhandler.insertEvents(eventlist);
+		dbhandler.insertEvents(eventlist);
 		//Game game = new Game(839685,305,197,1,2016);
 //		ArrayList<State> stateList = StateBuilder.getStatesFromEvents(game);
 //		dbhandler.insertStates(stateList);
