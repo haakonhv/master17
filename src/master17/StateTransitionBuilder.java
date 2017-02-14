@@ -16,7 +16,7 @@ public class StateTransitionBuilder {
 		while(rs.next()){
 			counter++;
 			int currentStateID = rs.getInt("StateID");
-			if (!(prevAction.equals("Goal") || prevAction.equals("End of period"))){
+			if (!(prevAction.equals("Goal") || prevAction.equals("End of period") || prevAction.equals("Goalkeeper") || prevAction.equals("Out of play"))){
 				if(stateTransList.size()==0){
 					stateTransList.add(new StateTransition(prevStateID, currentStateID));
 				}

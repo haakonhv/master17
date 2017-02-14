@@ -74,7 +74,7 @@ public class FindPlayerValues {
 				
 			}
 			else { //prev og current event er fra samme game
-				if (currAction.equals("Out of play") || currAction.equals("Goal") || currAction.equals("End of period")){ //altså ingen verdier tildeles spiller fra current
+				if (currAction.equals(currAction.equals("Goal"))|| currAction.equals("End of period")){ //altså ingen verdier tildeles spiller fra current
 					prevTeamID = currTeamID;
 					prevPlayerID = currPlayerID;
 					prevGameID = currGameID;
