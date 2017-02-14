@@ -21,6 +21,7 @@ public class PlayerValues {
 	private double throwInTaken;
 	private double takeOn;
 	private double shot;
+	private double ballReceived;
 	private double total;
 
 	public PlayerValues(int playerID) {
@@ -44,6 +45,7 @@ public class PlayerValues {
 		this.throwInTaken = 0;
 		this.takeOn = 0;
 		this.shot = 0;
+		this.ballReceived = 0;
 		this.total=0;
 	}
 
@@ -122,11 +124,21 @@ public class PlayerValues {
 	public void updateShot(double value){
 		this.shot += value;
 	}
+	public void updateBallReceived(double value){
+		this.ballReceived += value;
+	}
 
+
+	public double getBallReceived() {
+		return ballReceived;
+	}
 
 	public void updateValue(String action, double value){
 		if(action.equals("Pass")){
 			this.updatePass(value);
+		}
+		else if(action.equals("Ball received")){
+			this.updateBallReceived(value);
 		}
 		else if(action.equals("Long pass")){
 			this.updateLongPass(value);

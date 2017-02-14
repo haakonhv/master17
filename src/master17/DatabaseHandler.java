@@ -161,7 +161,7 @@ public class DatabaseHandler {
 		Statement stmt = conn.createStatement();
 		String sql;
 		for(State s : stateList){
-			sql = "UPDATE State2 SET QValue=" + s.getqValue()+" WHERE StateID = "+s.getStateID()+";\n";
+			sql = "UPDATE State SET QValue=" + s.getqValue()+" WHERE StateID = "+s.getStateID()+";\n";
 			stmt.addBatch(sql);
 
 		}
@@ -209,7 +209,7 @@ public class DatabaseHandler {
 		String sql;
 		for(PlayerValues pv : playerValueList){
 			pv.setTotal();
-			sql = "INSERT INTO PlayerValues VALUES ("+pv.getPlayerID()+"," +pv.getTotal() +","+pv.getPass() +","+ pv.getLongPass() + "," + pv.getBallCarry() + "," + pv.getBallRecovery() +
+			sql = "INSERT INTO PlayerValues VALUES ("+pv.getPlayerID()+"," +pv.getTotal() +","+pv.getPass() +","+ pv.getLongPass() + "," + pv.getBallReceived() + "," + pv.getBallCarry() + "," + pv.getBallRecovery() +
 					"," + pv.getAerialDuel() + "," + pv.getClearance() + "," + pv.getThrowInTaken() + "," + pv.getBallTouch() + "," + pv.getInterception() + "," + pv.getCross()
 					+ "," + pv.getTackle() + "," + pv.getShot() + "," + pv.getTakeOn() + "," + pv.getFreekickPass() + "," + pv.getFoulCommitted() + "," + pv.getFouled()
 					+"," +pv.getDispossessed() + "," + pv.getCornerTaken()+");\n";
