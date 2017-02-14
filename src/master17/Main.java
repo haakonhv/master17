@@ -14,15 +14,6 @@ public class Main {
 
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException {
 		//File file = new File("data_files/f24-90-2016-839685-eventdetails.xml");
-		OptaDocument opta = new OptaDocument("data_files/f24-90-2016-839685-eventdetails.xml");
-		ArrayList<Event> eventlist = opta.getEventList();
-		System.out.println(eventlist.size());
-		for (Event e: eventlist){
-			//System.out.println(e);
-		}
-		
-		DatabaseHandler dbhandler = new DatabaseHandler();
-		dbhandler.insertEvents(eventlist);
 		//Game game = new Game(839685,305,197,1,2016);
 //		ArrayList<State> stateList = StateBuilder.getStatesFromEvents(game);
 //		dbhandler.insertStates(stateList);
@@ -32,7 +23,7 @@ public class Main {
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
 //		FindPlayerValues.findValues();
-//		sendEventsFromDataFiles();
+		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
@@ -71,7 +62,7 @@ public class Main {
 		File folder = new File("data_files");
 		File[] listOfFiles = folder.listFiles();
 		DatabaseHandler dbhandler = new DatabaseHandler();
-		for(int i = 0; i < listOfFiles.length; i++){
+		for(int i = 211; i < listOfFiles.length; i++){
 			long startTime = System.nanoTime();
 			System.out.println(listOfFiles[i].toString());
 			OptaDocument opta = new OptaDocument(listOfFiles[i].toString());
