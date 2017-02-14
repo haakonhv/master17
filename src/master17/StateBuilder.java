@@ -22,20 +22,20 @@ public class StateBuilder {
 			int matchStatus;
 			int manpowerDifference;
 			boolean home;
-			if (action.equals("Goalkeeper") || action.equals("Goal")){
+			if (action.equals(action.equals("Goal"))){
 				period = 0;
 				matchStatus = 0;
 				manpowerDifference = 0;
 				zone = 0;
 				home = rs.getInt("HomeID") == rs.getInt("TeamID");
 			}
-			else if (action.equals("Out of play")){
-				period = 0;
-				matchStatus = 0;
-				manpowerDifference = 0;
-				zone = 0;
-				home = false;
-			}
+//			else if (action.equals("Out of play")){
+//				period = 0;
+//				matchStatus = 0;
+//				manpowerDifference = 0;
+//				zone = 0;
+//				home = false;
+//			}
 			else if(action.equals("End of period")){
 				period = getPeriod(rs.getInt("Minute"), rs.getInt("Period"));
 				matchStatus = 0;
