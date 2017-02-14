@@ -89,16 +89,17 @@ public class xmlReader {
          		continue;
 			}
 
-         	if (action_type.equals("Goalkeeper")){
-         		eventList.add(new Event(event_id,action_type,1,team_id,0,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,0,0));
-         		sequence +=1;
-         		continue;
-         	}
+         	
 
          	try {
          		player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
          	}
          	catch (NumberFormatException E){
+         		continue;
+         	}
+         	if (action_type.equals("Goalkeeper control")){
+         		eventList.add(new Event(event_id,action_type,1,team_id,player_id,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,mp,gd));
+         		sequence +=1;
          		continue;
          	}
 
@@ -296,17 +297,18 @@ public class xmlReader {
 			return actiontype;
 		}
 		else if (typeid == 5){
-			if (Integer.parseInt(xmlEvent.getAttribute("outcome")) == 0){
-				if (Float.parseFloat(xmlEvent.getAttribute("x"))>100){
-					actiontype = "Out of play";
-				}
-				else {
-					actiontype = "skip";
-				}
-			}
-			else {
-				actiontype = "skip";
-			}
+//			if (Integer.parseInt(xmlEvent.getAttribute("outcome")) == 0){
+//				if (Float.parseFloat(xmlEvent.getAttribute("x"))>100){
+//					actiontype = "Out of play";
+//				}
+//				else {
+//					actiontype = "skip";
+//				}
+//			}
+//			else {
+//				actiontype = "skip";
+//			}
+			actiontype ="skip";
 			return actiontype;
 		}
 		else if (typeid == 17){
@@ -328,6 +330,22 @@ public class xmlReader {
 			actiontype = "Shot";
 			return actiontype;
 		}
+		else if (typeid == 10){
+			NodeList qualifierList = xmlEvent.getChildNodes();
+			for(int i=0; i<qualifierList.getLength();i++){
+				if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
+					Element q = (Element) qualifierList.item(i);
+		    		int qid = Integer.parseInt(q.getAttribute("qualifier_id"));
+		    		if (qid == 94){
+		    			actiontype = "Blocked shot";
+		    			return actiontype;
+		    		}
+				}
+			}
+			actiontype = "Shot saved";
+			return actiontype;
+		}
+		
 		else if(typeid == 52){
 			actiontype = "Goalkeeper";
 			return actiontype;
@@ -475,18 +493,19 @@ public class xmlReader {
          		continue;
 			}
 
-         	if (action_type.equals("Goalkeeper")){
-         		eventList.add(new Event(event_id,action_type,1,team_id,0,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,mp,gd));
-         		sequence +=1;
-         		continue;
-         	}
-
+         	
          	try {
          		player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
          	}
          	catch (NumberFormatException E){
          		continue;
          	}
+         	if (action_type.equals("Goalkeeper")){
+         		eventList.add(new Event(event_id,action_type,1,team_id,player_id,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,mp,gd));
+         		sequence +=1;
+         		continue;
+         	}
+
 
          	float[] endCoordinates = getEndCoordinates(xmlEvent);
          	float xend = endCoordinates[0];
