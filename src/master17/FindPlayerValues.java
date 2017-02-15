@@ -13,9 +13,9 @@ public class FindPlayerValues {
 			playerValueList.add(new PlayerValues(players.getInt("PlayerID")));
 		}
 		System.out.println("Laget playervalue list");
-		
+
 		events.next();
-		int prevTeamID = events.getInt("TeamID"); //lagrer previous events variabler. Nødvendig for å sjekke når game er ferdig, sjekke ballvinning osv
+		int prevTeamID = events.getInt("TeamID"); //lagrer previous events variabler. Nï¿½dvendig for ï¿½ sjekke nï¿½r game er ferdig, sjekke ballvinning osv
 		int prevPlayerID =  events.getInt("PlayerID");
 		int prevGameID = events.getInt("GameID");
 		int prevStateID = events.getInt("StateID");
@@ -24,7 +24,7 @@ public class FindPlayerValues {
 		int prevHomeID = events.getInt("HomeID");
 		int prevAwayID = events.getInt("AwayID");
 		int prevZone = events.getInt("Zone");
-		
+
 		events.next();
 		int currTeamID = events.getInt("TeamID"); //lagrer current events variabler
 		int currPlayerID =  events.getInt("PlayerID");
@@ -35,8 +35,8 @@ public class FindPlayerValues {
 		int currHomeID = events.getInt("HomeID");
 		int currAwayID = events.getInt("AwayID");
 		int currZone = events.getInt("Zone");
-		
-		
+
+
 		while (events.next()){ //traverserer alle events
 			int nextTeamID = events.getInt("TeamID"); //lagrer current events variabler
 			int nextPlayerID =  events.getInt("PlayerID");
@@ -60,7 +60,7 @@ public class FindPlayerValues {
 				prevHomeID = currHomeID;
 				prevAwayID = currAwayID;
 				prevZone = currZone;
-				
+
 				currTeamID = nextTeamID;
 				currPlayerID = nextPlayerID;
 				currGameID = nextGameID;
@@ -71,10 +71,10 @@ public class FindPlayerValues {
 				currAwayID = nextAwayID;
 				currZone = nextZone;
 				continue;
-				
+
 			}
 			else { //prev og current event er fra samme game
-				if (currAction.equals(currAction.equals("Goal"))|| currAction.equals("End of period")){ //altså ingen verdier tildeles spiller fra current
+				if (currAction.equals("Out of play") || currAction.equals("Goal")|| currAction.equals("End of period") || currAction.equals("Goalkeeper")){ //altsï¿½ ingen verdier tildeles spiller fra current
 					prevTeamID = currTeamID;
 					prevPlayerID = currPlayerID;
 					prevGameID = currGameID;
@@ -84,7 +84,7 @@ public class FindPlayerValues {
 					prevHomeID = currHomeID;
 					prevAwayID = currAwayID;
 					prevZone = currZone;
-					
+
 					currTeamID = nextTeamID;
 					currPlayerID = nextPlayerID;
 					currGameID = nextGameID;
@@ -94,29 +94,29 @@ public class FindPlayerValues {
 					currHomeID = nextHomeID;
 					currAwayID = nextAwayID;
 					currZone = nextZone;
-					continue; 		
+					continue;
 				}
 				double eventValue;
 				if (currTeamID == currHomeID){ //hjemmelags event
-					if (prevZone == 0) { //forrige event endte en sekvens -> må se på neste event
+					if (prevZone == 0) { //forrige event endte en sekvens -> mï¿½ se pï¿½ neste event
 						eventValue = nextQvalue - currQvalue;
 					}
 					else if (prevTeamID == currTeamID){ //current event er samme lag som previous
 						eventValue = nextQvalue - currQvalue;
 					}
-					else { // current event er ikke av samme lag som previous (altså ballvinning e.l.)
+					else { // current event er ikke av samme lag som previous (altsï¿½ ballvinning e.l.)
 						eventValue = nextQvalue - currQvalue;
 						//eventValue = nextQvalue - prevQvalue;
 					}
 				}
 				else { //bortelags event
-					if (prevZone == 0){ //forrige event endte en sekvens -> må se på neste event
+					if (prevZone == 0){ //forrige event endte en sekvens -> mï¿½ se pï¿½ neste event
 						eventValue = - (nextQvalue - currQvalue);
 					}
 					else if (prevTeamID == currTeamID){//current event er samme lag som previous
 						eventValue = - (nextQvalue - currQvalue);
 					}
-					else { //current event er fra annet lag enn previous (altså ballvinning e.l.)
+					else { //current event er fra annet lag enn previous (altsï¿½ ballvinning e.l.)
 						eventValue = - (nextQvalue - currQvalue);
 						//eventValue = - (nextQvalue - prevQvalue);
 					}
@@ -135,7 +135,7 @@ public class FindPlayerValues {
 				prevHomeID = currHomeID;
 				prevAwayID = currAwayID;
 				prevZone = currZone;
-				
+
 				currTeamID = nextTeamID;
 				currPlayerID = nextPlayerID;
 				currGameID = nextGameID;
@@ -145,9 +145,9 @@ public class FindPlayerValues {
 				currHomeID = nextHomeID;
 				currAwayID = nextAwayID;
 				currZone = nextZone;
-			}	
+			}
 		}
 		DatabaseHandler.insertPlayerValues(playerValueList);
-		
+
 	}
 }
