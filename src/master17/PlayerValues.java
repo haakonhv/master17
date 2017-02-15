@@ -23,6 +23,8 @@ public class PlayerValues {
 	private double shot;
 	private double ballReceived;
 	private double total;
+	private double blockedShot;
+	private double savedShot;
 
 	public PlayerValues(int playerID) {
 		super();
@@ -46,6 +48,8 @@ public class PlayerValues {
 		this.takeOn = 0;
 		this.shot = 0;
 		this.ballReceived = 0;
+		this.blockedShot = 0;
+		this.savedShot = 0;
 		this.total=0;
 	}
 
@@ -133,6 +137,24 @@ public class PlayerValues {
 		return ballReceived;
 	}
 
+	public void updateBlockedShot(double value){
+		this.blockedShot += value;
+	}
+
+
+	public double getBlockedShot() {
+		return blockedShot;
+	}
+
+	public void updateSavedShot(double value){
+		this.savedShot += value;
+	}
+
+
+	public double getSavedShot() {
+		return savedShot;
+	}
+
 	public void updateValue(String action, double value){
 		if(action.equals("Pass")){
 			this.updatePass(value);
@@ -191,6 +213,13 @@ public class PlayerValues {
 		else if(action.equals("Corner taken")){
 			this.updateCorner(value);
 		}
+		else if(action.equals("Blocked shot")){
+			this.updateBlockedShot(value);
+		}
+		else if(action.equals("Shot saved")){
+			this.updateSavedShot(value);
+		}
+
 	}
 
 	public double getTackle() {
@@ -272,8 +301,8 @@ public class PlayerValues {
 	public void setTotal() {
 		this.total = this.getAerialDuel()+this.getBallCarry()+this.getBallRecovery()+this.getBallTouch()+this.getClearance()+this.getCornerTaken()+this.getCross()+
 				this.getDispossessed()+this.getFoulCommitted()+this.getFouled()+this.getFreekickPass()+this.getInterception()+this.getLongPass()+this.getPass()+this.getShot()+
-				this.getTackle()+this.getTakeOn()+this.getThrowInTaken();
+				this.getTackle()+this.getTakeOn()+this.getThrowInTaken()+this.getBallReceived()+this.getBlockedShot()+this.getSavedShot();
 	}
-	
+
 
 }
