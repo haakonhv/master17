@@ -198,6 +198,7 @@ public class DatabaseHandler {
 				+ "FROM Event AS E \n"
 				+ "INNER JOIN State AS S ON E.StateID=S.StateID \n"
 				+ "INNER JOIN Game AS G ON E.GameID=G.GameID \n"
+				+ "WHERE G.SeasonID=2015 \n"
 				+ "ORDER BY EventID ASC;";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
