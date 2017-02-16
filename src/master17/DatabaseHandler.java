@@ -12,7 +12,7 @@ import java.util.Set;
 public class DatabaseHandler {
 
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovgame17";
+	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovtest";
 
 	static final String USER = "haakosh_master";
 	static final String PASS = "project16";
@@ -26,9 +26,9 @@ public class DatabaseHandler {
 		String sql="";
 		for(Event e : eventList){
 			sql="INSERT INTO Event (Action,Outcome,TeamID,PlayerID,GameID,XStart,YStart,Xend,Yend,Number,Sequence,Minute,Second,"
-					+"ManpowerDifference,GoalDifference,Period,OptaEventID)"+"\n"+"VALUES "+"('"+e.getAction_type()+"',"+e.getOutcome()+","+e.getTeam_id()+","+e.getPlayer_id()+","
-					+e.getGame_id()+","+e.getXstart()+","+e.getYstart()+","+e.getXend()+","+e.getYend()+","+e.getNumber()+","+e.getSequence()+","+e.getMinute()+","+e.getSecond()+","+e.getManpowerdifference()+
-					","+e.getGoaldifference()+","+e.getPeriod()+","+e.getEvent_id()+")"+";\n";
+					+"GoalDifference,Period,OptaEventID)"+"\n"+"VALUES "+"('"+e.getAction_type()+"',"+e.getOutcome()+","+e.getTeam_id()+","+e.getPlayer_id()+","
+					+e.getGame_id()+","+e.getXstart()+","+e.getYstart()+","+e.getXend()+","+e.getYend()+","+e.getNumber()+","+e.getSequence()+","+e.getMinute()+","+e.getSecond()+","
+					+e.getGoaldifference()+","+e.getPeriod()+","+e.getEvent_id()+")"+";\n";
 			stmt.addBatch(sql);
 
 		}
@@ -49,8 +49,8 @@ public class DatabaseHandler {
 			else{
 				home = 0;
 			}
-			sql="INSERT INTO State (StateID,Zone,Action,Home,Period,ManpowerDifference,MatchStatus,Occurrence,Reward)"+
-				"\n"+"VALUES "+"("+s.getStateID()+","+s.getZone()+",'"+s.getAction()+"',"+home+","+s.getPeriod()+","+s.getManpowerDiff()+","+
+			sql="INSERT INTO State (StateID,Zone,Action,Home,Period,MatchStatus,Occurrence,Reward)"+
+				"\n"+"VALUES "+"("+s.getStateID()+","+s.getZone()+",'"+s.getAction()+"',"+home+","+s.getPeriod()+","+
 				s.getMatchStatus()+","+s.getOccurrence()+","+s.getReward()+")"+";\n";
 			stmt.addBatch(sql);
 
@@ -114,7 +114,7 @@ public class DatabaseHandler {
 	public static ResultSet getDatabaseEvents() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT E.EventID, E.Action, E.Minute, E.Period, E.GoalDifference, E.TeamID, E.ManpowerDifference, E.Xstart, E.Ystart,"
+		String query = "SELECT E.EventID, E.Action, E.Minute, E.Period, E.GoalDifference, E.TeamID, E.Xstart, E.Ystart,"
 				+ "G.HomeID, G.AwayID FROM Event AS E INNER JOIN Game AS G ON E.GameID = G.GameID";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;

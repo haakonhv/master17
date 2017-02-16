@@ -7,28 +7,26 @@ public class State {
 	private boolean home;
 	private String action;
 	private int period;
-	private int manpowerDiff;
 	private int matchStatus;
 	private int occurrence;
 	private int reward;
 	private double qValue;
 
-	
 
-	public State(int stateID,int zone, boolean home, String action, int period, int manpowerDiff, int matchStatus, int reward) {
+
+	public State(int stateID,int zone, boolean home, String action, int period, int matchStatus, int reward) {
 		super();
 		this.stateID = stateID;
 		this.zone = zone;
 		this.home = home;
 		this.action = action;
 		this.period = period;
-		this.manpowerDiff = manpowerDiff;
 		this.matchStatus = matchStatus;
 		this.reward = reward;
 		this.occurrence = 1;
 	}
-	
-	
+
+
 	public State(int stateID, int reward, double qValue, int occurrence) {
 		super();
 		this.stateID = stateID;
@@ -62,9 +60,7 @@ public class State {
 	public int getPeriod() {
 		return period;
 	}
-	public int getManpowerDiff() {
-		return manpowerDiff;
-	}
+
 	public int getMatchStatus() {
 		return matchStatus;
 	}

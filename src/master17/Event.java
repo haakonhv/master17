@@ -15,7 +15,6 @@ public class Event {
 	private int sequence;
 	private int game_id;
 	private int period;
-	private int manpowerdifference;
 	private int goaldifference;
 	private int minute;
 	private int second;
@@ -60,10 +59,6 @@ public class Event {
 		return period;
 	}
 
-	public int getManpowerdifference() {
-		return manpowerdifference;
-	}
-
 	public int getGoaldifference() {
 		return goaldifference;
 	}
@@ -86,12 +81,12 @@ public class Event {
 		return "Event [event_id=" + event_id + ", action_type=" + action_type + ", outcome=" + outcome + ", team_id="
 				+ team_id + ", player_id=" + player_id + ", xstart=" + xstart + ", ystart=" + ystart + ", xend=" + xend
 				+ ", yend=" + yend + ", number=" + number + ", sequence=" + sequence + ", game_id=" + game_id
-				+ ", period=" + period + ", manpowerdifference=" + manpowerdifference + ", goaldifference="
+				+ ", period=" + period + ", goaldifference="
 				+ goaldifference + ", minute=" + minute + ", second=" + second + "]";
 	}
 
 	public Event(long event_id, String action_type, int outcome, int team_id, int player_id, float xstart, float ystart, float xend, float yend, int number,
-			int sequence, int game_id, int period, int minute, int second, int manpowerdifference, int goaldifference) {
+			int sequence, int game_id, int period, int minute, int second, int goaldifference) {
 		super();
 		this.event_id = event_id;
 		this.action_type = action_type;
@@ -108,7 +103,6 @@ public class Event {
 		this.period = period;
 		this.minute = minute;
 		this.second = second;
-		this.manpowerdifference = manpowerdifference;
 		this.goaldifference = goaldifference;
 	}
 

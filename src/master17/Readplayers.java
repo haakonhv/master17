@@ -84,13 +84,13 @@ public class Readplayers {
 							values+=", "+"'"+country+"'";
 						}
 					}
-					
+
 				}
 				columns+=")";
 				values+=")";
 				String sqlString=columns+" VALUES " +values;
 				try {
-					DataBaseConnector.insert("Player", sqlString);
+//					DataBaseConnector.insert("Player", sqlString);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -119,7 +119,7 @@ public class Readplayers {
 			e.printStackTrace();
 		}
 		try {
-			DataBaseConnector.closeConnection();
+//			DataBaseConnector.closeConnection();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
