@@ -12,7 +12,7 @@ import java.util.Set;
 public class DatabaseHandler {
 
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovgame17";
+	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovtest";
 
 	static final String USER = "haakosh_master";
 	static final String PASS = "project16";
@@ -26,9 +26,9 @@ public class DatabaseHandler {
 		String sql="";
 		for(Event e : eventList){
 			sql="INSERT INTO Event (Action,Outcome,TeamID,PlayerID,GameID,XStart,YStart,Xend,Yend,Number,Sequence,Minute,Second,"
-					+"ManpowerDifference,GoalDifference,Period,OptaEventID)"+"\n"+"VALUES "+"('"+e.getAction_type()+"',"+e.getOutcome()+","+e.getTeam_id()+","+e.getPlayer_id()+","
-					+e.getGame_id()+","+e.getXstart()+","+e.getYstart()+","+e.getXend()+","+e.getYend()+","+e.getNumber()+","+e.getSequence()+","+e.getMinute()+","+e.getSecond()+","+e.getManpowerdifference()+
-					","+e.getGoaldifference()+","+e.getPeriod()+","+e.getEvent_id()+")"+";\n";
+					+"GoalDifference,Period,OptaEventID)"+"\n"+"VALUES "+"('"+e.getAction_type()+"',"+e.getOutcome()+","+e.getTeam_id()+","+e.getPlayer_id()+","
+					+e.getGame_id()+","+e.getXstart()+","+e.getYstart()+","+e.getXend()+","+e.getYend()+","+e.getNumber()+","+e.getSequence()+","+e.getMinute()+","+e.getSecond()+","
+					+e.getGoaldifference()+","+e.getPeriod()+","+e.getEvent_id()+")"+";\n";
 			stmt.addBatch(sql);
 
 		}
@@ -50,7 +50,7 @@ public class DatabaseHandler {
 				home = 0;
 			}
 			sql="INSERT INTO State (StateID,Zone,Action,Home,Period,ManpowerDifference,MatchStatus,Occurrence,Reward)"+
-				"\n"+"VALUES "+"("+s.getStateID()+","+s.getZone()+",'"+s.getAction()+"',"+home+","+s.getPeriod()+","+s.getManpowerDiff()+","+
+				"\n"+"VALUES "+"("+s.getStateID()+","+s.getZone()+",'"+s.getAction()+"',"+home+","+s.getPeriod()+","+
 				s.getMatchStatus()+","+s.getOccurrence()+","+s.getReward()+")"+";\n";
 			stmt.addBatch(sql);
 

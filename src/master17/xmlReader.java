@@ -32,182 +32,182 @@ public class xmlReader {
         Game game = new Game(game_id, home_team_id, away_team_id, matchday, season);
         return game;
     }
-	public static ArrayList<Event> getEventList(Document doc, Game game){
-		int game_id = game.getGame_id();
-		NodeList xmlEventList = doc.getElementsByTagName("Event"); //nodelist med alle event-nodene fra XML-filen
-		ArrayList<Event> eventList = new ArrayList<Event>(); //forelï¿½pig tom liste som skal inneholde alle eventer fra XML-filen
-		int gd = 0; //goal difference
-		int mp = 0; //manpower difference
-		int tempID=game_id*1000;
-		int sequence=1; //sequence nummer internt i en game
-		int number = 0;
-		for (int i=0; i<xmlEventList.getLength();i++){ //lï¿½kke som gï¿½r gjennom hver event-node og lager event-objekter
-			Element xmlEvent = (Element) xmlEventList.item(i);
-			long event_id = Integer.parseInt(xmlEvent.getAttribute("id")); //setter opta-event id;
-			String action_type = getActionType(xmlEvent);
-			if (action_type.equals("skip")){
-				continue;
-			}
-			int team_id = Integer.parseInt(xmlEvent.getAttribute("team_id"));
-			if (action_type.equals("Red card")){
-				if (team_id == game.getHome_team_id()){
-					mp = mp - 1;
-				}
-				else {
-					mp = mp + 1;
-				}
-				continue;
-			}
-
-
-			number = number+1;
-			int period = 0;
-		  	if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==1){ //fï¿½rste omgang
-         		period = 1;
-         	}
-         	else if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==2){ //andre omgang
-         		period = 2;
-         	}
-         	else {
-         		period = 16;//optas pre-match period-kode
-         	}
-		  	int player_id = 0;
-
-
-		  	int minute = Integer.parseInt(xmlEvent.getAttribute("min"));
-		  	int second = Integer.parseInt(xmlEvent.getAttribute("sec"));
-		  	float xstart = Float.parseFloat(xmlEvent.getAttribute("x"));
-         	float ystart = Float.parseFloat(xmlEvent.getAttribute("y"));
-
-         	if (action_type.equals("End of period")){
-         		Event prevEvent = eventList.get(eventList.size()-1);
-         		if (!prevEvent.getAction_type().equals(action_type)){ //ligger to end of period elementer i xml. Trenger bare 1
-         			eventList.add(new Event(event_id, action_type, 1, 0, 0, 50, 50, 50, 50, number, sequence, game_id, period, minute, second, 0, 0));
-         			sequence += 1;
-         			continue;
-         		}
-         		continue;
-			}
-
-         	
-
-         	try {
-         		player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
-         	}
-         	catch (NumberFormatException E){
-         		continue;
-         	}
-         	if (action_type.equals("Goalkeeper control")){
-         		eventList.add(new Event(event_id,action_type,1,team_id,player_id,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,mp,gd));
-         		sequence +=1;
-         		continue;
-         	}
-
-         	float[] endCoordinates = getEndCoordinates(xmlEvent);
-         	float xend = endCoordinates[0];
-         	float yend = endCoordinates[1];
-         	int outcome = Integer.parseInt(xmlEvent.getAttribute("outcome"));
-         	boolean aerial = action_type.equals("Aerial duel");
-         	
-         	if (eventList.size() > 0){ //hvis lista ikke er tom må vi sjekke om ball received eller ball carry har forekommet. Må da sjekke forrige event.
-				Event prevEvent = eventList.get(eventList.size()-1);
-				String prevActionType = prevEvent.getAction_type();
-
-				if (prevEvent.getOutcome() == 1){ //sjekker ball carry fra forrige event til denne eventen
-				
-					
-					if ((prevActionType.equals("Pass")) || prevActionType.equals("Long pass") || prevActionType.equals("Ball recovery") || prevActionType.equals("Throw in taken") || prevActionType.equals("Cross") || prevActionType.equals("Free kick pass") || prevActionType.equals("Corner taken")){
-						if (!aerial){
-							if (prevEvent.getTeam_id() == team_id){ //hvis false: neste event mest sannsynlig foul committed
-								if (event_id==437012617){
-									System.out.println(getCarryLength(prevEvent, xstart, ystart, team_id) > 7.5);
-								}
-								if (getCarryLength(prevEvent, xstart, ystart, team_id) > 7.5){
-									eventList.add(new Event(tempID+1, "Ball carry", 1, team_id, player_id, prevEvent.getXend(), prevEvent.getYend(), xstart, ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
-									number+=1;
-									tempID+=1;
-								}
-							}
-							else { // to forskjellige lag
-								if (action_type.equals("Foul committed")){
-									if (getCarryLength(prevEvent, xstart, ystart, team_id) > 7.5){
-										Element nextEvent = (Element) xmlEventList.item(i+1);
-										try {
-											int nextEventPlayerID = Integer.parseInt(nextEvent.getAttribute("player_id"));
-											eventList.add(new Event(tempID+1, "Ball carry", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(), prevEvent.getYend(), 100 - xstart, 100 - ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
-											number+=1;
-											tempID+=1;
-							         	}
-							         	catch (NumberFormatException E){
-							         		continue;
-							         	}
-
-									}
-								}
-								else {
-									if (getCarryLength(prevEvent, xstart, ystart, team_id) > 7.5){
-										eventList.add(new Event(tempID+1, "Ball carry", 1, prevEvent.getTeam_id(), prevEvent.getPlayer_id(), prevEvent.getXend(), prevEvent.getYend(), 100 - xstart, 100 - ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
-										number+=1;
-										tempID+=1;
-									}
-								}
-							}
-						}
-					}
-         		}
-			}
-
-         	if (!action_type.equals("Goal")){
-         		eventList.add(new Event(event_id, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
-         	}
-         	else {
-         		NodeList qualifierList = xmlEvent.getChildNodes();
-         		boolean ownGoal = false;
-         		for (int j = 0; j < qualifierList.getLength(); j++){
-         			if (qualifierList.item(j).getNodeType() == Node.ELEMENT_NODE){
-         				Element q = (Element) qualifierList.item(j);
-         				int qualifierID = Integer.parseInt(q.getAttribute("qualifier_id"));
-         				if (qualifierID == 28){
-         					ownGoal = true;
-         					eventList.add(new Event(event_id, "Ball touch", 0, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
-         	         		number = number + 1;
-         	         		eventList.add(new Event(tempID+1, action_type, outcome, game.getOtherTeam(team_id), player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
-         	         		sequence += 1;
-         	         		tempID+=1;
-         	         		break;
-         				}
-         			}
-         		}
-         		if (!ownGoal){
-         			eventList.add(new Event(event_id, "Shot", outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
-	         		number = number + 1;
-	         		eventList.add(new Event(tempID+1, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
-	         		sequence += 1;
-	         		tempID+=1;
-         		}
-         		if (team_id == game.getHome_team_id()){
-         			if (ownGoal){
-         				gd = gd - 1;
-         			}
-         			else{
-         				gd = gd + 1;
-         			}
-         		}
-         		else {
-         			if (ownGoal){
-         				gd = gd + 1;
-         			}
-         			else{
-         				gd = gd - 1;
-         			}
-         		}
-         	}
-         	if (action_type.equals("Out of play")){
-         		sequence += 1;
-         	}
-		}
-		return eventList;
-	}
+//	public static ArrayList<Event> getEventList(Document doc, Game game){ //Ikke i bruk. Bruker buildEventList()
+//		int game_id = game.getGame_id();
+//		NodeList xmlEventList = doc.getElementsByTagName("Event"); //nodelist med alle event-nodene fra XML-filen
+//		ArrayList<Event> eventList = new ArrayList<Event>(); //forelï¿½pig tom liste som skal inneholde alle eventer fra XML-filen
+//		int gd = 0; //goal difference
+//		int mp = 0; //manpower difference
+//		int tempID=game_id*1000;
+//		int sequence=1; //sequence nummer internt i en game
+//		int number = 0;
+//		for (int i=0; i<xmlEventList.getLength();i++){ //lï¿½kke som gï¿½r gjennom hver event-node og lager event-objekter
+//			Element xmlEvent = (Element) xmlEventList.item(i);
+//			long event_id = Integer.parseInt(xmlEvent.getAttribute("id")); //setter opta-event id;
+//			String action_type = getActionType(xmlEvent);
+//			if (action_type.equals("skip")){
+//				continue;
+//			}
+//			int team_id = Integer.parseInt(xmlEvent.getAttribute("team_id"));
+//			if (action_type.equals("Red card")){
+//				if (team_id == game.getHome_team_id()){
+//					mp = mp - 1;
+//				}
+//				else {
+//					mp = mp + 1;
+//				}
+//				continue;
+//			}
+//
+//
+//			number = number+1;
+//			int period = 0;
+//		  	if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==1){ //fï¿½rste omgang
+//         		period = 1;
+//         	}
+//         	else if(Integer.parseInt(xmlEvent.getAttribute("period_id"))==2){ //andre omgang
+//         		period = 2;
+//         	}
+//         	else {
+//         		period = 16;//optas pre-match period-kode
+//         	}
+//		  	int player_id = 0;
+//
+//
+//		  	int minute = Integer.parseInt(xmlEvent.getAttribute("min"));
+//		  	int second = Integer.parseInt(xmlEvent.getAttribute("sec"));
+//		  	float xstart = Float.parseFloat(xmlEvent.getAttribute("x"));
+//         	float ystart = Float.parseFloat(xmlEvent.getAttribute("y"));
+//
+//         	if (action_type.equals("End of period")){
+//         		Event prevEvent = eventList.get(eventList.size()-1);
+//         		if (!prevEvent.getAction_type().equals(action_type)){ //ligger to end of period elementer i xml. Trenger bare 1
+//         			eventList.add(new Event(event_id, action_type, 1, 0, 0, 50, 50, 50, 50, number, sequence, game_id, period, minute, second, 0, 0));
+//         			sequence += 1;
+//         			continue;
+//         		}
+//         		continue;
+//			}
+//
+//
+//
+//         	try {
+//         		player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
+//         	}
+//         	catch (NumberFormatException E){
+//         		continue;
+//         	}
+//         	if (action_type.equals("Goalkeeper control")){
+//         		eventList.add(new Event(event_id,action_type,1,team_id,player_id,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,mp,gd));
+//         		sequence +=1;
+//         		continue;
+//         	}
+//
+//         	float[] endCoordinates = getEndCoordinates(xmlEvent);
+//         	float xend = endCoordinates[0];
+//         	float yend = endCoordinates[1];
+//         	int outcome = Integer.parseInt(xmlEvent.getAttribute("outcome"));
+//         	boolean aerial = action_type.equals("Aerial duel");
+//
+//         	if (eventList.size() > 0){ //hvis lista ikke er tom mï¿½ vi sjekke om ball received eller ball carry har forekommet. Mï¿½ da sjekke forrige event.
+//				Event prevEvent = eventList.get(eventList.size()-1);
+//				String prevActionType = prevEvent.getAction_type();
+//
+//				if (prevEvent.getOutcome() == 1){ //sjekker ball carry fra forrige event til denne eventen
+//
+//
+//					if ((prevActionType.equals("Pass")) || prevActionType.equals("Long pass") || prevActionType.equals("Ball recovery") || prevActionType.equals("Throw in taken") || prevActionType.equals("Cross") || prevActionType.equals("Free kick pass") || prevActionType.equals("Corner taken")){
+//						if (!aerial){
+//							if (prevEvent.getTeam_id() == team_id){ //hvis false: neste event mest sannsynlig foul committed
+//								if (event_id==437012617){
+//									System.out.println(getCarryLength(prevEvent, xstart, ystart, team_id) > 7.5);
+//								}
+//								if (getCarryLength(prevEvent, xstart, ystart, team_id) > 7.5){
+//									eventList.add(new Event(tempID+1, "Ball carry", 1, team_id, player_id, prevEvent.getXend(), prevEvent.getYend(), xstart, ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
+//									number+=1;
+//									tempID+=1;
+//								}
+//							}
+//							else { // to forskjellige lag
+//								if (action_type.equals("Foul committed")){
+//									if (getCarryLength(prevEvent, xstart, ystart, team_id) > 7.5){
+//										Element nextEvent = (Element) xmlEventList.item(i+1);
+//										try {
+//											int nextEventPlayerID = Integer.parseInt(nextEvent.getAttribute("player_id"));
+//											eventList.add(new Event(tempID+1, "Ball carry", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(), prevEvent.getYend(), 100 - xstart, 100 - ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
+//											number+=1;
+//											tempID+=1;
+//							         	}
+//							         	catch (NumberFormatException E){
+//							         		continue;
+//							         	}
+//
+//									}
+//								}
+//								else {
+//									if (getCarryLength(prevEvent, xstart, ystart, team_id) > 7.5){
+//										eventList.add(new Event(tempID+1, "Ball carry", 1, prevEvent.getTeam_id(), prevEvent.getPlayer_id(), prevEvent.getXend(), prevEvent.getYend(), 100 - xstart, 100 - ystart, number, sequence, game_id, period, prevEvent.getMinute(), prevEvent.getSecond(), mp, gd));
+//										number+=1;
+//										tempID+=1;
+//									}
+//								}
+//							}
+//						}
+//					}
+//         		}
+//			}
+//
+//         	if (!action_type.equals("Goal")){
+//         		eventList.add(new Event(event_id, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+//         	}
+//         	else {
+//         		NodeList qualifierList = xmlEvent.getChildNodes();
+//         		boolean ownGoal = false;
+//         		for (int j = 0; j < qualifierList.getLength(); j++){
+//         			if (qualifierList.item(j).getNodeType() == Node.ELEMENT_NODE){
+//         				Element q = (Element) qualifierList.item(j);
+//         				int qualifierID = Integer.parseInt(q.getAttribute("qualifier_id"));
+//         				if (qualifierID == 28){
+//         					ownGoal = true;
+//         					eventList.add(new Event(event_id, "Ball touch", 0, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+//         	         		number = number + 1;
+//         	         		eventList.add(new Event(tempID+1, action_type, outcome, game.getOtherTeam(team_id), player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+//         	         		sequence += 1;
+//         	         		tempID+=1;
+//         	         		break;
+//         				}
+//         			}
+//         		}
+//         		if (!ownGoal){
+//         			eventList.add(new Event(event_id, "Shot", outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+//	         		number = number + 1;
+//	         		eventList.add(new Event(tempID+1, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+//	         		sequence += 1;
+//	         		tempID+=1;
+//         		}
+//         		if (team_id == game.getHome_team_id()){
+//         			if (ownGoal){
+//         				gd = gd - 1;
+//         			}
+//         			else{
+//         				gd = gd + 1;
+//         			}
+//         		}
+//         		else {
+//         			if (ownGoal){
+//         				gd = gd + 1;
+//         			}
+//         			else{
+//         				gd = gd - 1;
+//         			}
+//         		}
+//         	}
+//         	if (action_type.equals("Out of play")){
+//         		sequence += 1;
+//         	}
+//		}
+//		return eventList;
+//	}
 
 	private static String getActionType(Element xmlEvent){ //finner actiontype til et event
 
@@ -311,21 +311,7 @@ public class xmlReader {
 //			actiontype ="skip";
 			return actiontype;
 		}
-		else if (typeid == 17){
-			NodeList qualifierList = xmlEvent.getChildNodes();
-			for(int i=0; i<qualifierList.getLength();i++){
-				if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
-					Element q = (Element) qualifierList.item(i);
-		    		int qid = Integer.parseInt(q.getAttribute("qualifier_id"));
-		    		if (qid == 32 || qid== 33){
-		    			actiontype = "Red card";
-		    			return actiontype;
-		    		}
-				}
-			}
-			actiontype = "skip";
-			return actiontype;
-		}
+
 		else if (typeid == 13 || typeid == 14 || typeid == 15){
 			actiontype = "Shot";
 			return actiontype;
@@ -345,7 +331,7 @@ public class xmlReader {
 			actiontype = "Shot saved";
 			return actiontype;
 		}
-		
+
 		else if(typeid == 52){
 			actiontype = "Goalkeeper";
 			return actiontype;
@@ -437,13 +423,13 @@ public class xmlReader {
 		}
 		return carryLength;
 	}
+
 	public static ArrayList<Event> buildEventList(Document doc, Game game){
 		ArrayList<Event> eventList = new ArrayList<Event>();
 		int game_id = game.getGame_id();
 		NodeList xmlEventList = doc.getElementsByTagName("Event"); //nodelist med alle event-nodene fra XML-filen
-		
+
 		int gd = 0; //goal difference
-		int mp = 0; //manpower difference
 		int tempID=game_id*1000;
 		int sequence=1; //sequence nummer internt i en game
 		int number = 0;
@@ -455,15 +441,6 @@ public class xmlReader {
 				continue;
 			}
 			int team_id = Integer.parseInt(xmlEvent.getAttribute("team_id"));
-			if (action_type.equals("Red card")){
-				if (team_id == game.getHome_team_id()){
-					mp = mp - 1;
-				}
-				else {
-					mp = mp + 1;
-				}
-				continue;
-			}
 
 			number = number+1;
 			int period = 0;
@@ -486,14 +463,14 @@ public class xmlReader {
          	if (action_type.equals("End of period")){
          		Event prevEvent = eventList.get(eventList.size()-1);
          		if (!prevEvent.getAction_type().equals(action_type)){ //ligger to end of period elementer i xml. Trenger bare 1
-         			eventList.add(new Event(event_id, action_type, 1, 0, 0, 50, 50, 50, 50, number, sequence, game_id, period, minute, second, 0, 0));
+         			eventList.add(new Event(event_id, action_type, 1, 0, 0, 50, 50, 50, 50, number, sequence, game_id, period, minute, second, 0));
          			sequence += 1;
          			continue;
          		}
          		continue;
 			}
 
-         	
+
          	try {
          		player_id = Integer.parseInt(xmlEvent.getAttribute("player_id"));
          	}
@@ -501,7 +478,7 @@ public class xmlReader {
          		continue;
          	}
          	if (action_type.equals("Goalkeeper")){
-         		eventList.add(new Event(event_id,action_type,1,team_id,player_id,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,mp,gd));
+         		eventList.add(new Event(event_id,action_type,1,team_id,player_id,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,gd));
          		sequence +=1;
          		continue;
          	}
@@ -511,20 +488,20 @@ public class xmlReader {
          	float xend = endCoordinates[0];
          	float yend = endCoordinates[1];
          	int outcome = Integer.parseInt(xmlEvent.getAttribute("outcome"));
-         	
-         	
-         	if (action_type.equals("Aerial duel") && outcome==1){ //laget som vinner hodeduellen kommer alltid først i eventlisten
+
+
+         	if (action_type.equals("Aerial duel") && outcome==1){ //laget som vinner hodeduellen kommer alltid fï¿½rst i eventlisten
          		Event prevEvent = eventList.get(eventList.size()-1);
          		if (prevEvent.getAction_type()=="Aerial duel"){
          			eventList.remove(eventList.get(eventList.size()-1));
-         			eventList.add(new Event(event_id, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+         			eventList.add(new Event(event_id, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, gd));
          			eventList.add(prevEvent);
          			continue;
          		}
          	}
-         	
+
          	if (!action_type.equals("Goal")){
-         		eventList.add(new Event(event_id, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+         		eventList.add(new Event(event_id, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, gd));
          	}
          	else {
          		NodeList qualifierList = xmlEvent.getChildNodes();
@@ -535,9 +512,9 @@ public class xmlReader {
          				int qualifierID = Integer.parseInt(q.getAttribute("qualifier_id"));
          				if (qualifierID == 28){
          					ownGoal = true;
-         					eventList.add(new Event(event_id, "Ball touch", 0, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+         					eventList.add(new Event(event_id, "Ball touch", 0, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, gd));
          	         		number = number + 1;
-         	         		eventList.add(new Event(tempID+1, action_type, outcome, game.getOtherTeam(team_id), player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+         	         		eventList.add(new Event(tempID+1, action_type, outcome, game.getOtherTeam(team_id), player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, gd));
          	         		sequence += 1;
          	         		tempID+=1;
          	         		break;
@@ -545,9 +522,9 @@ public class xmlReader {
          			}
          		}
          		if (!ownGoal){
-         			eventList.add(new Event(event_id, "Shot", outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+         			eventList.add(new Event(event_id, "Shot", outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, gd));
 	         		number = number + 1;
-	         		eventList.add(new Event(tempID+1, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, mp, gd));
+	         		eventList.add(new Event(tempID+1, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, gd));
 	         		sequence += 1;
 	         		tempID+=1;
          		}
@@ -571,26 +548,25 @@ public class xmlReader {
          	if (action_type.equals("Out of play")){
          		sequence += 1;
          	}
-      
 		}
 		ArrayList<Event> completeEventList = new ArrayList<Event>();
 		completeEventList.add(eventList.get(0));
 		System.out.println(eventList.size());
-		for (int i = 1; i < eventList.size(); i++){ //går gjennom eventlisten for å legge til "kunstige" events (ball carry, ball received osv.) 
+		for (int i = 1; i < eventList.size(); i++){ //gï¿½r gjennom eventlisten for ï¿½ legge til "kunstige" events (ball carry, ball received osv.)
 			Event prevEvent = completeEventList.get(completeEventList.size()-1);
 			//System.out.println(prevEvent);
 			Event thisEvent = eventList.get(i);
 
-			
+
 			//System.out.println(thisEvent);
 			if (prevEvent.getOutcome() == 1){
-				
+
 				if (prevEvent.getAction_type().equals("Pass") || prevEvent.getAction_type().equals("Long pass") || prevEvent.getAction_type().equals("Throw in taken")
 					|| prevEvent.getAction_type().equals("Cross") || prevEvent.getAction_type().equals("Free kick pass") || prevEvent.getAction_type().equals("Corner taken")){
 					if (prevEvent.getTeam_id()==thisEvent.getTeam_id()){
 						completeEventList.add(new Event(9999, "Ball received", 1, prevEvent.getTeam_id(), thisEvent.getPlayer_id(), prevEvent.getXend(),
 						prevEvent.getYend(), prevEvent.getXend(), prevEvent.getYend(), completeEventList.get(completeEventList.size()-1).getNumber()+1, thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), thisEvent.getMinute(),
-						thisEvent.getSecond(), thisEvent.getManpowerdifference(), thisEvent.getGoaldifference())); // legger til "Ball received" event etter pasninger som kom frem
+						thisEvent.getSecond(), thisEvent.getGoaldifference())); // legger til "Ball received" event etter pasninger som kom frem
 						prevEvent = completeEventList.get(completeEventList.size()-1);
 					}
 					else{ //lag er ulike
@@ -601,27 +577,31 @@ public class xmlReader {
 							}
 							try {
 								int nextEventPlayerID = nextEvent.getPlayer_id();
-								completeEventList.add(new Event(9999, "Ball received", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(), prevEvent.getYend(), 100 - thisEvent.getXstart(), 100 - thisEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1, thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getManpowerdifference(), thisEvent.getGoaldifference()));
+								completeEventList.add(new Event(9999, "Ball received", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(), prevEvent.getYend(),
+										100 - thisEvent.getXstart(), 100 - thisEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1,
+										thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getGoaldifference()));
 								prevEvent = completeEventList.get(completeEventList.size()-1);
 							//	System.out.println("Ball carry hvor foul committed");
 				         	}
 				         	catch (NumberFormatException E){
 				         		continue;
-				         	}	
+				         	}
 						}
 					}
 				}
-						
+
 				if (prevEvent.getAction_type().equals("Pass") || prevEvent.getAction_type().equals("Ball received") || prevEvent.getAction_type().equals("Long pass") || prevEvent.getAction_type().equals("Ball recovery") ||
 						prevEvent.getAction_type().equals("Throw in taken") || prevEvent.getAction_type().equals("Cross") || prevEvent.getAction_type().equals("Free kick pass") ||
 						prevEvent.getAction_type().equals("Corner taken")){
-					
+
 					if (!thisEvent.getAction_type().equals("Aerial duel")){
 						if (prevEvent.getTeam_id() == thisEvent.getTeam_id()){ //hvis false: neste event mest sannsynlig foul committed
-							
+
 							if (getCarryLength(prevEvent, thisEvent.getXstart(), thisEvent.getYstart(), thisEvent.getTeam_id()) > 7.5){
 								//System.out.println("Ball carry true hvor prevteam == currTeam");
-								completeEventList.add(new Event(9999, "Ball carry", 1, thisEvent.getTeam_id(), thisEvent.getPlayer_id(), prevEvent.getXend(), prevEvent.getYend(), thisEvent.getXstart(), thisEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1, thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getManpowerdifference(), thisEvent.getGoaldifference()));
+								completeEventList.add(new Event(9999, "Ball carry", 1, thisEvent.getTeam_id(), thisEvent.getPlayer_id(), prevEvent.getXend(),
+								prevEvent.getYend(), thisEvent.getXstart(), thisEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1,
+								thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getGoaldifference()));
 								prevEvent = completeEventList.get(completeEventList.size()-1);
 							}
 						}
@@ -629,10 +609,12 @@ public class xmlReader {
 							if (thisEvent.getAction_type().equals("Foul committed")){
 								Event nextEvent = eventList.get(i+1);
 								if (getCarryLength(prevEvent, nextEvent.getXstart(), nextEvent.getYstart(), nextEvent.getTeam_id()) > 7.5){
-									
+
 									try {
 										int nextEventPlayerID = nextEvent.getPlayer_id();
-										completeEventList.add(new Event(9999, "Ball carry", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(), prevEvent.getYend(), nextEvent.getXstart(), nextEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1, thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getManpowerdifference(), thisEvent.getGoaldifference()));
+										completeEventList.add(new Event(9999, "Ball carry", 1, prevEvent.getTeam_id(), nextEventPlayerID, prevEvent.getXend(),
+										prevEvent.getYend(), nextEvent.getXstart(), nextEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1,
+										thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getGoaldifference()));
 										prevEvent = completeEventList.get(completeEventList.size()-1);
 									//	System.out.println("Ball carry hvor foul committed");
 						         	}
@@ -643,7 +625,9 @@ public class xmlReader {
 							}
 							else {
 								if (getCarryLength(prevEvent, thisEvent.getXstart(), thisEvent.getYstart(), thisEvent.getTeam_id()) > 7.5){
-									completeEventList.add(new Event(9999, "Ball carry", 1, prevEvent.getTeam_id(), prevEvent.getPlayer_id(), prevEvent.getXend(), prevEvent.getYend(), 100 - thisEvent.getXstart(), 100 - thisEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1, thisEvent.getSequence(), thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getManpowerdifference(), thisEvent.getGoaldifference()));
+									completeEventList.add(new Event(9999, "Ball carry", 1, prevEvent.getTeam_id(), prevEvent.getPlayer_id(), prevEvent.getXend(), prevEvent.getYend(),
+									100 - thisEvent.getXstart(), 100 - thisEvent.getYstart(), completeEventList.get(completeEventList.size()-1).getNumber()+1, thisEvent.getSequence(),
+									thisEvent.getGame_id(), thisEvent.getPeriod(), prevEvent.getMinute(), prevEvent.getSecond(), thisEvent.getGoaldifference()));
 									prevEvent = completeEventList.get(completeEventList.size()-1);
 									//System.out.println("Ball carry hvor team er ulike");
 								}
@@ -654,14 +638,14 @@ public class xmlReader {
 			}
 			thisEvent.setNumber(completeEventList.get(completeEventList.size()-1).getNumber()+1);
 			completeEventList.add(thisEvent);
-		}	
-			
-			
-		
+		}
+
+
+
 		return completeEventList;
 	}
-	
-	
+
+
 }
 
 
