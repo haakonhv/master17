@@ -22,8 +22,8 @@ public class Main {
 //		sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
-//		FindPlayerValues.findValues();
-		sendEventsFromDataFiles();
+		FindPlayerValues.findValues();
+//		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
@@ -62,14 +62,14 @@ public class Main {
 		File folder = new File("data_files");
 		File[] listOfFiles = folder.listFiles();
 		DatabaseHandler dbhandler = new DatabaseHandler();
-		for(int i = 1; i < listOfFiles.length/4; i++){
+		for(int i = 0; i < listOfFiles.length; i++){
 			long startTime = System.nanoTime();
 			System.out.println(listOfFiles[i].toString());
 			OptaDocument opta = new OptaDocument(listOfFiles[i].toString());
 			ArrayList<Event> eventlist = opta.getEventList();
 			dbhandler.insertEvents(eventlist);
 			long endTime = System.nanoTime();
-			System.out.println("Eventlist " + (i+1) + " av " + listOfFiles.length/4 + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder");
+			System.out.println("Eventlist " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder");
 		}
 	}
 

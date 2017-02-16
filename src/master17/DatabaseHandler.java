@@ -49,7 +49,7 @@ public class DatabaseHandler {
 			else{
 				home = 0;
 			}
-			sql="INSERT INTO State (StateID,Zone,Action,Home,Period,ManpowerDifference,MatchStatus,Occurrence,Reward)"+
+			sql="INSERT INTO State (StateID,Zone,Action,Home,Period,MatchStatus,Occurrence,Reward)"+
 				"\n"+"VALUES "+"("+s.getStateID()+","+s.getZone()+",'"+s.getAction()+"',"+home+","+s.getPeriod()+","+
 				s.getMatchStatus()+","+s.getOccurrence()+","+s.getReward()+")"+";\n";
 			stmt.addBatch(sql);
@@ -114,7 +114,7 @@ public class DatabaseHandler {
 	public static ResultSet getDatabaseEvents() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT E.EventID, E.Action, E.Minute, E.Period, E.GoalDifference, E.TeamID, E.ManpowerDifference, E.Xstart, E.Ystart,"
+		String query = "SELECT E.EventID, E.Action, E.Minute, E.Period, E.GoalDifference, E.TeamID, E.Xstart, E.Ystart,"
 				+ "G.HomeID, G.AwayID FROM Event AS E INNER JOIN Game AS G ON E.GameID = G.GameID";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
