@@ -85,8 +85,17 @@ public class GameTimeReader {
 							Element qElement = (Element) qualifierList.item(m);
 				    		int qid = Integer.parseInt(qElement.getAttribute("qualifier_id"));
 				    		if (qid == 32 || qid== 33){
-				    			int id = Integer.parseInt(event.getAttribute("player_id"));
+				    			int id =0;
+				    			try{
+				    				id = Integer.parseInt(event.getAttribute("player_id"));
+				    			}
+				    			catch (NumberFormatException e){
+				    				continue;
+				    			}
+				    			
+				    			
 								int minute = Integer.parseInt(event.getAttribute("min"));
+								
 								PlayerGameTime ptg = fullTimeTable.get(id);
 								ptg.incrementGameTime(minute-gameTime.get(id), season);
 								fullTimeTable.put(id, ptg);

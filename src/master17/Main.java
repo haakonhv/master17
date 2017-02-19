@@ -22,39 +22,29 @@ public class Main {
 //		sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
-		FindPlayerValues.findValues();
+//		FindPlayerValues.findValues();
 //		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
-		//GameTimeReader.setPlayerGameTime();
+//		GameTimeReader.setPlayerGameTime();
 
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
 		File folder = new File("data_files");
 		File[] listOfFiles = folder.listFiles();
-		ArrayList<State> stateList = new ArrayList<State>();
-		DatabaseHandler dbhandler = new DatabaseHandler();
-		ArrayList<StateTransition> stateTransList = new ArrayList<StateTransition>();
+		ArrayList<Game> games = new ArrayList<Game>();
+	
 		for(int i = 0; i < listOfFiles.length; i++){
 			long startTime = System.nanoTime();
-			System.out.println(listOfFiles[i].toString());
-			OptaDocument opta = new OptaDocument(listOfFiles[i].toString());
-			ArrayList<Event> eventlist = opta.getEventList();
-			dbhandler.insertEvents(eventlist);
 			Document doc = xmlReader.getDocument(listOfFiles[i].toString());
 			Game game = xmlReader.getGame(doc);
-			System.out.println("Game created");
-//			stateList = StateBuilder.getStatesFromEvents(game, stateList);
-			System.out.println("Statelist created");
-//			stateTransList = StateTransitionBuilder.getStateTransitions(game, stateTransList);
 			long endTime = System.nanoTime();
-			System.out.println("Eventlist, statelist og statetrans oppdatert med fil " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder");
+			System.out.println("Game " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder");
+			games.add(game);
 		}
-		dbhandler.insertStates(stateList);
-		System.out.println("StateList inserted");
-		dbhandler.insertStateTransitions(stateTransList);
-		System.out.println("StateTransitions inserted");
+		DatabaseHandler.insertGames(games);
+
 		DatabaseHandler.closeConnection();
 	}
 
@@ -72,5 +62,4 @@ public class Main {
 			System.out.println("Eventlist " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder");
 		}
 	}
-
 }
