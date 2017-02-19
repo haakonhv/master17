@@ -1,0 +1,131 @@
+1	Jonas Svensson	Rosenborg	148	25	5,92
+2	Fredrik Midtsjø	Rosenborg	149	26	5,73
+3	Mike Jensen	Rosenborg	160	28	5,71
+4	Ghayas Zahid	Vålerenga	157	28	5,61
+5	Birger Meling	Stabæk	151	27	5,59
+6	Anders Konradsen	Rosenborg	134	24	5,58
+7	Samuel Adegbenro	Viking	150	27	5,56
+8	Fredrik Semb Berge	Odd	133	24	5,54
+9	William Troost-Ekong	Haugesund	133	24	5,54
+10	Hólmar Örn Eyjólfsson	Rosenborg	138	25	5,52
+11	Bismar Acosta	Brann	108	20	5,40
+12	Gilbert Koomson	Sogndal	151	28	5,39
+13	Sigurd Rosted	Sarpsborg 08	124	23	5,39
+14	Fredrik Haugen	Brann	134	25	5,36
+15	Alexander Stølås	Haugesund	144	27	5,33
+16	Vadim Demidov	Brann	138	26	5,31
+17	Filip Kiss	Haugesund	138	26	5,31
+18	Sander Berge	Vålerenga	122	23	5,30
+19	Pål André Helland	Rosenborg	106	20	5,30
+20	Per-Egil Flo	Molde	111	21	5,29
+21	Espen Ruud	Odd	153	29	5,28
+22	Christian Gytkjær	Rosenborg	126	24	5,25
+23	Fredrik Jensen	Odd	147	28	5,25
+24	Babacar Sarr	Molde	147	28	5,25
+25	Mathias Normann	Bodø/Glimt	136	26	5,23
+26	Bismark Adjei-Boateng	Strømsgodset	135	26	5,19
+27	Anders Trondsen	Sarpsborg 08	109	21	5,19
+28	Christophe Psyché	Sogndal	140	27	5,19
+29	Haris Hajradinovic	Haugesund	114	22	5,18
+30	Lars Vilsvik	Strømsgodset	150	29	5,17
+31	Rasmus Lindkvist	Vålerenga	129	25	5,16
+32	Hannu Patronen	Sogndal	113	22	5,14
+33	Jonathan Parr	Strømsgodset	123	24	5,12
+34	Taijo Teniste	Sogndal	138	27	5,11
+35	Sivert Heltne Nilsen	Brann	143	28	5,11
+36	Steffen Hagen	Odd	153	30	5,10
+37	Arnold Origi	Lillestrøm	117	23	5,09
+38	Mohammed Abu	Strømsgodset	137	27	5,07
+39	Piotr Leciejewski	Brann	137	27	5,07
+40	Andreas Lie	Aalesund	142	28	5,07
+41	Sondre Rossbach	Odd	152	30	5,07
+42	Matthías Vilhjálmsson	Rosenborg	106	21	5,05
+43	Ethan Horvath	Molde	111	22	5,05
+44	Bjørn Helge Riise	Aalesund	121	24	5,04
+45	Christian Grindheim	Vålerenga	136	27	5,04
+46	Sayouba Mandé	Stabæk	146	29	5,03
+47	Fredrik Nordkvelle	Odd	146	29	5,03
+48	Espen Bugge Pettersen	Strømsgodset	151	30	5,03
+49	Fitim Azemi	Bodø/Glimt	145	29	5,00
+50	Mathias Dyngeland	Sogndal	150	30	5,00
+51	Jakob Glesnes	Strømsgodset	120	24	5,00
+52	Petter Strand	Molde	135	27	5,00
+53	Kjetil Wæhler	Vålerenga	105	21	5,00
+54	Amin Nouri	Brann	149	30	4,97
+55	André Danielsen	Viking	144	29	4,97
+56	Ruben Gabrielsen	Molde	144	29	4,97
+57	Mikkel Kirkeskov	Aalesund	144	29	4,97
+58	Henrik Furebotn	Sogndal	129	26	4,96
+59	Luc Kassi	Stabæk	104	21	4,95
+60	Iven Austbø	Viking	148	30	4,93
+61	Morten Skjønsberg	Stabæk	148	30	4,93
+62	Ruben Kristiansen	Brann	138	28	4,93
+63	Kristoffer Tokstad	Strømsgodset	138	28	4,93
+64	Joachim Thomassen	Sarpsborg 08	133	27	4,93
+65	Vegard Skjerve	Haugesund	128	26	4,92
+66	Abdisalam Ibrahim	Viking	123	25	4,92
+67	Kristoffer Barmen	Brann	118	24	4,92
+68	Joackim Jørgensen	Viking	103	21	4,90
+69	Øyvind Storflor	Strømsgodset	98	20	4,90
+70	Olivier Occéan	Odd	132	27	4,89
+71	Oddbjørn Lie	Aalesund	127	26	4,88
+72	Cole Grossman	Stabæk	112	23	4,87
+73	Moussa Njie	Stabæk	112	23	4,87
+74	Marius Amundsen	Lillestrøm	141	29	4,86
+75	Fredrik Aursnes	Molde	102	21	4,86
+76	Kristoffer Haugen	Viking	126	26	4,85
+77	Daniel Braaten	Brann	121	25	4,84
+78	Kristoffer Haraldseid	Haugesund	121	25	4,84
+79	Martin Bjørnbak	Bodø/Glimt	145	30	4,83
+80	Jørgen Skjelvik	Rosenborg	116	24	4,83
+81	Simen Wangberg	Tromsø	111	23	4,83
+82	Jukka Raitala	Sogndal	135	28	4,82
+83	Hans Norbye	Tromsø	120	25	4,80
+84	Håkon Opdal	Start	144	30	4,80
+85	Mos	Aalesund	110	23	4,78
+86	Malaury Martin	Lillestrøm	129	27	4,78
+87	Vegard Forren	Molde	105	22	4,77
+88	Chidiebere Nwakali	Start	100	21	4,76
+89	Bentley	Odd	138	29	4,76
+90	Alexander Groven	Sarpsborg 08	95	20	4,75
+91	Pål Alexander Kirkevold	Sarpsborg 08	114	24	4,75
+92	Torbjørn Agdestein	Haugesund	128	27	4,74
+93	Magnar Ødegaard	Tromsø	128	27	4,74
+94	Aron Thrándarson	Aalesund	113	24	4,71
+95	Håkon Skogseid	Lillestrøm	127	27	4,70
+96	Gjermund Åsen	Tromsø	127	27	4,70
+97	Ernest Asante	Stabæk	94	20	4,70
+98	David Myrestam	Haugesund	141	30	4,70
+99	Per Kristian Bråtveit	Haugesund	108	23	4,70
+100	Harmeet Singh	Molde	108	23	4,70
+101	Bassel Jradi	Lillestrøm	122	26	4,69
+102	Peter Orry Larsen	Aalesund	103	22	4,68
+103	Thomas Grøgaard	Odd	117	25	4,68
+104	Franck Boli	Aalesund	126	27	4,67
+105	Erling Knudtzon	Lillestrøm	112	24	4,67
+106	Trond Olsen	Bodø/Glimt	135	29	4,66
+107	Christian Landu Landu	Tromsø	116	25	4,64
+108	Oliver Berg	Odd	102	22	4,64
+109	Simen Kind Mikalsen	Lillestrøm	125	27	4,63
+110	Martin Ramsland	Sogndal	125	27	4,63
+111	Matti Lund Nielsen	Sarpsborg 08	106	23	4,61
+112	Ole Amund Sveen	Sogndal	124	27	4,59
+113	Thomas Jacobsen	Bodø/Glimt	128	28	4,57
+114	Bonke Innocent	Lillestrøm	105	23	4,57
+115	Claes Kronberg	Viking	114	25	4,56
+116	Henrik Robstad	Start	132	29	4,55
+117	Emil Jonassen	Bodø/Glimt	91	20	4,55
+118	Eirik Birkelund	Sogndal	100	22	4,55
+119	Karol Mets	Viking	131	29	4,52
+120	Espen Børufsen	Start	120	27	4,44
+121	Simon Andreas Larsen	Vålerenga	115	26	4,42
+122	Thomas Lehne Olsen	Tromsø	110	25	4,40
+123	Rolf Daniel Vikstøl	Start	88	20	4,40
+124	Kent-Are Antonsen	Tromsø	92	21	4,38
+125	Tapio Heikkilä	Start	131	30	4,37
+126	Fredrik Carlsen	Aalesund	91	21	4,33
+127	Patrick Mortensen	Sarpsborg 08	95	22	4,32
+128	Vebjørn Hoff	Aalesund	86	20	4,30
+129	Adam Arnarson	Aalesund	103	24	4,29
+130	Jakob Orlov	Brann	98	23	4,26
+131	Magnus Andersen	Tromsø	114	27	4,22

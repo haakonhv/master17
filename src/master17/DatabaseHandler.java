@@ -191,6 +191,14 @@ public class DatabaseHandler {
 		return rs;
 	}
 
+	public static ResultSet getFullPlayers() throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT* FROM Player";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+	}
+
 	public static ResultSet getEventsAndValues() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
@@ -234,6 +242,21 @@ public class DatabaseHandler {
 			int total = time14+time15+time16+time17;
 			sql = "UPDATE PlayerGameTime SET S2014 = "+time14+ ", S2015 = "+time15+ ", S2016 = "+time16+ ", S2017 = "+time17+ ", Total = "+total+
 					" WHERE PlayerID = "+id+";\n";
+			stmt.addBatch(sql);
+
+		}
+		int [] updateCounts = stmt.executeBatch();
+		closeConnection();
+	}
+
+	public static void insertPlayerRating(Hashtable<Integer, PlayerRating> playerRatingTable) throws SQLException, ClassNotFoundException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql;
+		Set<Integer> keys = playerRatingTable.keySet();
+		for(int id : keys){
+			float aof16 = playerRatingTable.get(id).getAof16();
+			sql = "INSERT INTO PlayerRating VALUES ("+ id + "," + aof16 +");\n";
 			stmt.addBatch(sql);
 
 		}
