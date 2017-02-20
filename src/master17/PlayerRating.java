@@ -14,13 +14,11 @@ public class PlayerRating {
 	private float vg14;
 	private float vg15;
 	private float vg16;
+	private float vg17;
 	private float aof14;
 	private float aof15;
 	private float aof16;
 	private float aof17;
-
-
-
 
 	public PlayerRating(int playerID) {
 		super();
@@ -113,6 +111,12 @@ public class PlayerRating {
 	public void setVg16(float vg16) {
 		this.vg16 = vg16;
 	}
+	public float getVg17() {
+		return vg17;
+	}
+	public void setVg17(float vg17) {
+		this.vg17 = vg17;
+	}
 	public float getAof14() {
 		return aof14;
 	}
@@ -136,6 +140,40 @@ public class PlayerRating {
 	}
 	public void setAof17(float aof17) {
 		this.aof17 = aof17;
+	}
+
+	public void setAof(float aof, int season) {
+		switch (season){
+			case 14:
+				setAof14(aof);
+				break;
+			case 15:
+				setAof15(aof);
+				break;
+			case 16:
+				setAof16(aof);
+				break;
+			case 17:
+				setAof17(aof);
+				break;
+		}
+	}
+
+	public void setVg(float vg, int season) {
+		switch (season){
+			case 14:
+				setVg14(vg);
+				break;
+			case 15:
+				setVg15(vg);
+				break;
+			case 16:
+				setVg16(vg);
+				break;
+			case 17:
+				setVg17(vg);
+				break;
+		}
 	}
 
 
