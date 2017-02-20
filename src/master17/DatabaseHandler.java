@@ -249,16 +249,79 @@ public class DatabaseHandler {
 		closeConnection();
 	}
 
-	public static void insertPlayerRating(Hashtable<Integer, PlayerRating> playerRatingTable) throws SQLException, ClassNotFoundException{
+	public static void insertPlayerRatingAOF(Hashtable<Integer, PlayerRating> playerRatingTable, int season) throws SQLException, ClassNotFoundException{
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String sql;
 		Set<Integer> keys = playerRatingTable.keySet();
-		for(int id : keys){
-			float aof16 = playerRatingTable.get(id).getAof16();
-			sql = "INSERT INTO PlayerRating VALUES ("+ id + "," + aof16 +");\n";
-			stmt.addBatch(sql);
+		switch (season){
+			case 14:
+				for(int id : keys){
+					float aof14 = playerRatingTable.get(id).getAof14();
+					sql = "UPDATE PlayerRating SET AOF14 = " + aof14 +" WHERE PlayerID = " + id + ";\n";
+					stmt.addBatch(sql);
+				}
+				break;
+			case 15:
+				for(int id : keys){
+					float aof15 = playerRatingTable.get(id).getAof15();
+					sql = "UPDATE PlayerRating SET AOF15 = " + aof15 +" WHERE PlayerID = " + id + ";\n";
+					stmt.addBatch(sql);
+				}
+				break;
+			case 16:
+				for(int id : keys){
+					float aof16 = playerRatingTable.get(id).getAof16();
+					sql = "UPDATE PlayerRating SET AOF16 = " + aof16 +" WHERE PlayerID = " + id + ";\n";
+					stmt.addBatch(sql);
+				}
+				break;
+			case 17:
+				for(int id : keys){
+					float aof17 = playerRatingTable.get(id).getAof17();
+					sql = "UPDATE PlayerRating SET AOF17 = " + aof17 +" WHERE PlayerID = " + id + ";\n";
+					stmt.addBatch(sql);
+				}
+				break;
+		}
+		int [] updateCounts = stmt.executeBatch();
+		closeConnection();
+	}
 
+	public static void insertPlayerRatingVG(Hashtable<Integer, PlayerRating> playerRatingTable, int season) throws SQLException, ClassNotFoundException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql;
+		Set<Integer> keys = playerRatingTable.keySet();
+		switch (season){
+			case 14:
+				for(int id : keys){
+					float vg14 = playerRatingTable.get(id).getVg14();
+					sql = "UPDATE PlayerRating SET VG14 = " + vg14 +" WHERE PlayerID = " + id + ";\n";
+					stmt.addBatch(sql);
+				}
+				break;
+			case 15:
+				for(int id : keys){
+					float vg15 = playerRatingTable.get(id).getVg15();
+					sql = "UPDATE PlayerRating SET VG15 = " + vg15 +" WHERE PlayerID = " + id + ";\n";
+					stmt.addBatch(sql);
+				}
+				break;
+			case 16:
+				for(int id : keys){
+					float vg16 = playerRatingTable.get(id).getVg16();
+					sql = "UPDATE PlayerRating SET VG16 = " + vg16 +" WHERE PlayerID = " + id + ";\n";
+					stmt.addBatch(sql);
+				}
+				break;
+			case 17:
+				for(int id : keys){
+					float vg17 = playerRatingTable.get(id).getVg17();
+					sql = "UPDATE PlayerRating SET VG17 = " + vg17 +" WHERE PlayerID = " + id + ";\n";
+					stmt.addBatch(sql);
+				}
+				break;
 		}
 		int [] updateCounts = stmt.executeBatch();
 		closeConnection();
