@@ -19,11 +19,11 @@ public class Main {
 //		dbhandler.insertStates(stateList);
 		//ArrayList<StateTransition> stateTransList = StateTransitionBuilder.getStateTransitions(game);
 		//dbhandler.insertStateTransitions(stateTransList);
-//		sendGamesFromDataFiles();
+		//sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
 //		FindPlayerValues.findValues();
-//		sendEventsFromDataFiles();
+		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();

@@ -313,6 +313,17 @@ public class xmlReader {
 //		}
 
 		else if (typeid == 13 || typeid == 14 || typeid == 15){
+			NodeList qualifierList = xmlEvent.getChildNodes();
+			for(int i=0; i<qualifierList.getLength();i++){
+				if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
+					Element q = (Element) qualifierList.item(i);
+		    		int qid = Integer.parseInt(q.getAttribute("qualifier_id"));
+		    		if (qid == 15){
+		    			actiontype = "Headed shot";
+		    			return actiontype;
+		    		}
+				}
+			}
 			actiontype = "Shot";
 			return actiontype;
 		}
@@ -522,8 +533,22 @@ public class xmlReader {
          			}
          		}
          		if (!ownGoal){
-         			eventList.add(new Event(event_id, "Shot", outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, gd));
-	         		number = number + 1;
+         			boolean header = false;
+        			for(int j=0; j<qualifierList.getLength();j++){
+        				if(qualifierList.item(j).getNodeType() == Node.ELEMENT_NODE){
+        					Element q = (Element) qualifierList.item(j);
+        		    		int qid = Integer.parseInt(q.getAttribute("qualifier_id"));
+        		    		if (qid == 15){
+        		    			eventList.add(new Event(event_id, "Headed shot", outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, gd));
+        		         		number = number + 1;
+        		         		header = true;
+        		    		}
+        				}
+        			}
+         			if (!header){
+         				eventList.add(new Event(event_id, "Shot", outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, gd));
+         				number = number + 1;
+         			}
 	         		eventList.add(new Event(tempID+1, action_type, outcome, team_id, player_id, xstart, ystart, xend, yend, number, sequence, game_id, period, minute, second, gd));
 	         		sequence += 1;
 	         		tempID+=1;

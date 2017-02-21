@@ -12,7 +12,7 @@ import java.util.Set;
 public class DatabaseHandler {
 
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovtest";
+	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovgame17";
 
 	static final String USER = "haakosh_master";
 	static final String PASS = "project16";
@@ -220,7 +220,7 @@ public class DatabaseHandler {
 			pv.setTotal();
 			sql = "INSERT INTO PlayerValues VALUES ("+pv.getPlayerID()+"," +pv.getTotal() +","+pv.getPass() +","+ pv.getLongPass() + "," + pv.getBallCarry() + "," + pv.getBallRecovery() + "," + pv.getBallReceived() +
 					"," + pv.getAerialDuel() + "," + pv.getClearance() + "," + pv.getThrowInTaken() + "," + pv.getBallTouch() + "," + pv.getInterception() + "," + pv.getBlockedShot() + "," + pv.getSavedShot() + "," + pv.getCross()
-					+ "," + pv.getTackle() + "," + pv.getShot() + "," + pv.getTakeOn() + "," + pv.getFreekickPass() + "," + pv.getFoulCommitted() + "," + pv.getFouled()
+					+ "," + pv.getTackle() + "," + pv.getShot() + "," + pv.getHeadedShot() + "," + pv.getTakeOn() + "," + pv.getFreekickPass() + "," + pv.getFoulCommitted() + "," + pv.getFouled()
 					+"," +pv.getDispossessed() + "," + pv.getCornerTaken()+");\n";
 			stmt.addBatch(sql);
 
