@@ -218,7 +218,7 @@ public class DatabaseHandler {
 		String sql;
 		for(PlayerValues pv : playerValueList){
 			pv.setTotal();
-			sql = "INSERT INTO PlayerValues VALUES ("+pv.getPlayerID()+"," +pv.getTotal() +","+pv.getPass() +","+ pv.getLongPass() + "," + pv.getBallCarry() + "," + pv.getBallRecovery() + "," + pv.getBallReceived() +
+			sql = "INSERT INTO PlayerValues VALUES ("+pv.getPlayerID()+"," + pv.getGameID() + "," + pv.getTeamID() + "," +pv.getTotal() +","+pv.getPass() +","+ pv.getLongPass() + "," + pv.getBallCarry() + "," + pv.getBallRecovery() + "," + pv.getBallReceived() +
 					"," + pv.getAerialDuel() + "," + pv.getClearance() + "," + pv.getThrowInTaken() + "," + pv.getBallTouch() + "," + pv.getInterception() + "," + pv.getBlockedShot() + "," + pv.getSavedShot() + "," + pv.getCross()
 					+ "," + pv.getTackle() + "," + pv.getShot() + "," + pv.getHeadedShot() + "," + pv.getTakeOn() + "," + pv.getFreekickPass() + "," + pv.getFoulCommitted() + "," + pv.getFouled()
 					+"," +pv.getDispossessed() + "," + pv.getCornerTaken()+");\n";

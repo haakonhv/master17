@@ -22,8 +22,8 @@ public class Main {
 		//sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
-//		FindPlayerValues.findValues();
-		sendEventsFromDataFiles();
+		FindPlayerValues.findValues();
+//		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
