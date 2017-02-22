@@ -23,18 +23,18 @@ public class Main {
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
 //		FindPlayerValues.findValues();
-		sendEventsFromDataFiles();
+//		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
-//		GameTimeReader.setPlayerGameTime();
+		GameTimeReader.setPlayerGameTime();
 
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
 		File folder = new File("data_files");
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<Game> games = new ArrayList<Game>();
-	
+
 		for(int i = 0; i < listOfFiles.length; i++){
 			long startTime = System.nanoTime();
 			Document doc = xmlReader.getDocument(listOfFiles[i].toString());
