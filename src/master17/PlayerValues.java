@@ -29,7 +29,7 @@ public class PlayerValues {
 	private double blockedShot;
 	private double savedShot;
 
-	public PlayerValues(int playerID, int teamID, int gameID) {
+	public PlayerValues(int playerID, int gameID, int teamID) {
 		super();
 		this.playerID = playerID;
 		this.teamID = teamID;
@@ -324,7 +324,7 @@ public class PlayerValues {
 	public void setTotal() {
 		this.total = this.getAerialDuel()+this.getBallCarry()+this.getBallRecovery()+this.getBallTouch()+this.getClearance()+this.getCornerTaken()+this.getCross()+
 				this.getDispossessed()+this.getFoulCommitted()+this.getFouled()+this.getFreekickPass()+this.getInterception()+this.getLongPass()+this.getPass()+this.getShot()+
-				this.getTackle()+this.getTakeOn()+this.getThrowInTaken()+this.getBallReceived()+this.getBlockedShot()+this.getSavedShot()+this.headedShot;
+				this.getTackle()+this.getTakeOn()+this.getThrowInTaken()+this.getBallReceived()+this.getBlockedShot()+this.getSavedShot()+this.getHeadedShot();
 	}
 
 
