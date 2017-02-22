@@ -22,26 +22,17 @@ import org.w3c.dom.Node;
 public class GameTimeReader {
 
 	public static void setPlayerGameTime() throws ClassNotFoundException, SQLException, ParserConfigurationException, SAXException, IOException{
-//		Hashtable<Integer, PlayerGameTime> fullTimeTable = new Hashtable<Integer, PlayerGameTime>();
 
 		Hashtable<Integer, Hashtable<Integer, PlayerGameTime>> fullTeamTime = new Hashtable<Integer, Hashtable<Integer, PlayerGameTime>>();
-
-//		while (playerIDs.next()){
-//			int playerID = playerIDs.getInt("PlayerID");
-//			PlayerGameTime playerGameTime = new PlayerGameTime(playerID);
-//			fullTimeTable.put(playerID, playerGameTime);
-//		}
-
 		File folder = new File("data_files");
 		File[] listOfFiles = folder.listFiles();
 
-		for (int i = 1; i < listOfFiles.length; i++){ //i er en bestemt kamp
+		for (int i = 0; i < listOfFiles.length; i++){ //i er en bestemt kamp
 			Document doc = xmlReader.getDocument(listOfFiles[i].toString());
 			Node gameNode = doc.getElementsByTagName("Game").item(0); //Game-noden er det første og eneste elementet med TagName "Game"
 	        Element gameElement = (Element) gameNode;  //Node castes til Element for å kunne bruke getAttribute()
 	        int season = Integer.parseInt(gameElement.getAttribute("season_id"));
-//	        int homeID = Integer.parseInt(gameElement.getAttribute("home_id"));
-//	        int awayID = Integer.parseInt(gameElement.getAttribute("away_id"));
+
 	        Hashtable<Integer, Hashtable<Integer, Integer>> gameTeamTime = new Hashtable<Integer, Hashtable<Integer, Integer>>(); //inneholder de to lagenes hashtabeller gamePlayerTime
 			NodeList xmlEventList = doc.getElementsByTagName("Event"); //nodelist med alle event-nodene fra XML-filen
 			for (int j = 0; j < xmlEventList.getLength(); j++){ // j er en bestemt event i xml
