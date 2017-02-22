@@ -3,14 +3,16 @@ package master17;
 public class PlayerGameTime {
 
 	private int playerID;
+	private int teamID;
 	private int season2014;
 	private int season2015;
 	private int season2016;
 	private int season2017;
 
-	public PlayerGameTime(int playerID) {
+	public PlayerGameTime(int playerID, int teamID) {
 		super();
 		this.playerID = playerID;
+		this.teamID = teamID;
 		this.season2014 = 0;
 		this.season2015 = 0;
 		this.season2016 = 0;
@@ -21,6 +23,9 @@ public class PlayerGameTime {
 		return playerID;
 	}
 
+	public int getTeamID(){
+		return playerID;
+	}
 
 	public int getSeason2014() {
 		return season2014;
@@ -53,6 +58,7 @@ public class PlayerGameTime {
 	public void incrementGameTime2017(int time) {
 		this.season2017 += time;
 	}
+
 
 	public void incrementGameTime(int time, int season) {
 		switch (season){
