@@ -122,6 +122,17 @@ public class DatabaseHandler {
 		return rs;
 
 	}
+
+	public static ResultSet getDatabaseEventsModel2() throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT E.EventID, E.Action, E.Outcome, E.Minute, E.Period, E.GoalDifference, E.TeamID, E.Xstart, E.Ystart, E.Xend, E.Yend, "
+				+ "G.HomeID, G.AwayID FROM Event AS E INNER JOIN Game AS G ON E.GameID = G.GameID WHERE E.Action != 'Ball received";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+
+	}
+
 	public static ResultSet getDatabaseStates() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
@@ -205,8 +216,8 @@ public class DatabaseHandler {
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String query = "SELECT E.TeamID, E.EventID, E.PlayerID, E.Action, E.GameID, E.StateID, S.QValue, S.Zone, G.HomeID, G.AwayID \n"
-				+ "FROM EventTest AS E \n"
-				+ "INNER JOIN State2 AS S ON E.StateID=S.StateID \n"
+				+ "FROM Event AS E \n"
+				+ "INNER JOIN State AS S ON E.StateID=S.StateID \n"
 				+ "INNER JOIN Game AS G ON E.GameID=G.GameID \n"
 				+ "WHERE G.SeasonID=2016 \n"
 				+ "ORDER BY EventID ASC;";
@@ -334,7 +345,7 @@ public class DatabaseHandler {
 		int [] updateCounts = stmt.executeBatch();
 		closeConnection();
 	}
-	
+
 	public static void insertFreeKicks(ArrayList<FreeKick> fkList) throws ClassNotFoundException, SQLException{
 
 		openConnection();
@@ -342,8 +353,8 @@ public class DatabaseHandler {
 
 		String sql="";
 		for(FreeKick fk : fkList){
-			sql="INSERT INTO FreeKick (OptaID, GameID, TeamID, PlayerID, Inswing, Xstart, Ystart, Xend, Yend, Goal, Shot) VALUES ("+fk.getOptaID() +"," + fk.getGameID() + "," + fk.getTeamID() + "," 
-					+ fk.getPlayerID() + "," + fk.getInswing() + "," + fk.getXstart() + "," + fk.getYstart() + "," 
+			sql="INSERT INTO FreeKick (OptaID, GameID, TeamID, PlayerID, Inswing, Xstart, Ystart, Xend, Yend, Goal, Shot) VALUES ("+fk.getOptaID() +"," + fk.getGameID() + "," + fk.getTeamID() + ","
+					+ fk.getPlayerID() + "," + fk.getInswing() + "," + fk.getXstart() + "," + fk.getYstart() + ","
 					+ fk.getXend() + "," + fk.getYstart() + "," + fk.getGoal() + "," + fk.getShot()	+");\n";
 			stmt.addBatch(sql);
 
