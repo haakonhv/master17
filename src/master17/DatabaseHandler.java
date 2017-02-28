@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Set;
 
+import Freekick.FreeKick;
+
 public class DatabaseHandler {
 
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovgame17";
+	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovtest";
 
 	static final String USER = "haakosh_master";
 	static final String PASS = "project16";
@@ -203,8 +205,8 @@ public class DatabaseHandler {
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String query = "SELECT E.TeamID, E.EventID, E.PlayerID, E.Action, E.GameID, E.StateID, S.QValue, S.Zone, G.HomeID, G.AwayID \n"
-				+ "FROM Event AS E \n"
-				+ "INNER JOIN State AS S ON E.StateID=S.StateID \n"
+				+ "FROM EventTest AS E \n"
+				+ "INNER JOIN State2 AS S ON E.StateID=S.StateID \n"
 				+ "INNER JOIN Game AS G ON E.GameID=G.GameID \n"
 				+ "WHERE G.SeasonID=2015 \n"
 				+ "ORDER BY EventID ASC;";
@@ -325,5 +327,24 @@ public class DatabaseHandler {
 		}
 		int [] updateCounts = stmt.executeBatch();
 		closeConnection();
+	}
+	
+	public static void insertFreeKicks(ArrayList<FreeKick> fkList) throws ClassNotFoundException, SQLException{
+
+		openConnection();
+		Statement stmt = conn.createStatement();
+
+		String sql="";
+		for(FreeKick fk : fkList){
+			sql="INSERT INTO FreeKick (OptaID, GameID, TeamID, PlayerID, Inswing, Xstart, Ystart, Xend, Yend, Goal, Shot) VALUES ("+fk.getOptaID() +"," + fk.getGameID() + "," + fk.getTeamID() + "," 
+					+ fk.getPlayerID() + "," + fk.getInswing() + "," + fk.getXstart() + "," + fk.getYstart() + "," 
+					+ fk.getXend() + "," + fk.getYstart() + "," + fk.getGoal() + "," + fk.getShot()	+");\n";
+			stmt.addBatch(sql);
+
+		}
+
+		int [] updateCounts = stmt.executeBatch();
+		closeConnection();
+
 	}
 }
