@@ -143,7 +143,7 @@ public class PlayerValues {
 		this.shot += value;
 	}
 	public void updateHeadedShot(double value){
-		this.headedShot =+ value;
+		this.headedShot += value;
 	}
 	public void updateBallReceived(double value){
 		this.ballReceived += value;
