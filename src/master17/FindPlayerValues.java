@@ -11,12 +11,10 @@ public class FindPlayerValues {
 		ResultSet players = DatabaseHandler.getPlayers();
 		ResultSet events = DatabaseHandler.getEventsAndValues();
 		ArrayList<PlayerValues> playerValueList= new ArrayList<PlayerValues>();
+
 		
 		Hashtable<Integer,Hashtable<Integer, PlayerValues>> playerValues = new Hashtable<Integer, Hashtable<Integer, PlayerValues>>();
-//		while (players.next()){ //bygger playerValues objekter for alle players i databasen
-//			playerValueList.add(new PlayerValues(players.getInt("PlayerID")));
-//		}
-//		System.out.println("Laget playervalue list");
+
 
 		events.next();
 		int prevTeamID = events.getInt("TeamID"); //lagrer previous events variabler. N�dvendig for � sjekke n�r game er ferdig, sjekke ballvinning osv
@@ -141,6 +139,13 @@ public class FindPlayerValues {
 					pv.updateValue(currAction, eventValue);
 					gameValues.put(currPlayerID, pv);
 				}
+				
+				if(currPlayerID==63100 && currAction.equals("Headed shot")){
+					soderHeader+=eventValue;
+				}
+				if(currPlayerID==63100 && currAction.equals("Shot")){
+					soderShot+=eventValue;
+				}
 				prevTeamID = currTeamID;
 				prevPlayerID = currPlayerID;
 				prevGameID = currGameID;
@@ -162,6 +167,7 @@ public class FindPlayerValues {
 				currZone = nextZone;
 			}
 		}
+
 		
 		Set<Integer> gameIDs = playerValues.keySet();
 		for (Integer gameID: gameIDs){
@@ -172,6 +178,7 @@ public class FindPlayerValues {
 			}
 		}
 		DatabaseHandler.insertPlayerValues(playerValueList);
+
 
 	}
 }
