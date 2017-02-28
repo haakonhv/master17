@@ -22,7 +22,7 @@ public class Main {
 		//sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
-		FindPlayerValues.findValues();
+
 //		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
@@ -34,7 +34,7 @@ public class Main {
 		File folder = new File("data_files");
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<Game> games = new ArrayList<Game>();
-	
+
 		for(int i = 0; i < listOfFiles.length; i++){
 			long startTime = System.nanoTime();
 			Document doc = xmlReader.getDocument(listOfFiles[i].toString());

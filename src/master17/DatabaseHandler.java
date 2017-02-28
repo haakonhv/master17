@@ -231,20 +231,26 @@ public class DatabaseHandler {
 		closeConnection();
 	}
 
-	public static void insertPlayerGameTime (Hashtable<Integer, PlayerGameTime> playerGameTimeTable) throws SQLException, ClassNotFoundException{
+	public static void insertPlayerGameTime (Hashtable<Integer, Hashtable<Integer, PlayerGameTime>> teamGameTimeTable) throws SQLException, ClassNotFoundException{
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String sql;
-		Set<Integer> keys = playerGameTimeTable.keySet();
-		for(int id : keys){
-			int time14 = playerGameTimeTable.get(id).getSeason2014();
-			int time15 = playerGameTimeTable.get(id).getSeason2015();
-			int time16 = playerGameTimeTable.get(id).getSeason2016();
-			int time17 = playerGameTimeTable.get(id).getSeason2017();
-			int total = time14+time15+time16+time17;
-			sql = "UPDATE PlayerGameTime SET S2014 = "+time14+ ", S2015 = "+time15+ ", S2016 = "+time16+ ", S2017 = "+time17+ ", Total = "+total+
-					" WHERE PlayerID = "+id+";\n";
-			stmt.addBatch(sql);
+
+		Set<Integer> teamKeys = teamGameTimeTable.keySet();
+
+		for(int teamID : teamKeys){
+			Hashtable<Integer, PlayerGameTime> playerGameTime = teamGameTimeTable.get(teamID);
+			Set<Integer> playerKeys = playerGameTime.keySet();
+			for (int playerID : playerKeys){
+				int time14 = playerGameTime.get(playerID).getSeason2014();
+				int time15 = playerGameTime.get(playerID).getSeason2015();
+				int time16 = playerGameTime.get(playerID).getSeason2016();
+				int time17 = playerGameTime.get(playerID).getSeason2017();
+				int total = time14+time15+time16+time17;
+				sql = "INSERT INTO PlayerGameTime VALUES ("+ playerID +"," + teamID + "," + time14 + "," + time15 + ","+ time16 + "," + time17 + "," + total +");\n";
+				stmt.addBatch(sql);
+			}
+
 
 		}
 		int [] updateCounts = stmt.executeBatch();
