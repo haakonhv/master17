@@ -140,12 +140,6 @@ public class FindPlayerValues {
 					gameValues.put(currPlayerID, pv);
 				}
 				
-				if(currPlayerID==63100 && currAction.equals("Headed shot")){
-					soderHeader+=eventValue;
-				}
-				if(currPlayerID==63100 && currAction.equals("Shot")){
-					soderShot+=eventValue;
-				}
 				prevTeamID = currTeamID;
 				prevPlayerID = currPlayerID;
 				prevGameID = currGameID;
