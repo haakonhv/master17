@@ -3,6 +3,8 @@ package master17;
 public class PlayerValues {
 
 	private int playerID;
+	private int gameID;
+	private int teamID;
 	private double tackle;
 	private double clearance;
 	private double aerialDuel;
@@ -27,9 +29,11 @@ public class PlayerValues {
 	private double blockedShot;
 	private double savedShot;
 
-	public PlayerValues(int playerID) {
+	public PlayerValues(int playerID, int gameID, int teamID) {
 		super();
 		this.playerID = playerID;
+		this.teamID = teamID;
+		this.gameID = gameID;
 		this.tackle = 0;
 		this.clearance = 0;
 		this.aerialDuel = 0;
@@ -53,6 +57,14 @@ public class PlayerValues {
 		this.blockedShot = 0;
 		this.savedShot = 0;
 		this.total=0;
+	}
+
+	public int getGameID() {
+		return gameID;
+	}
+
+	public int getTeamID() {
+		return teamID;
 	}
 
 	public int getPlayerID() {
@@ -131,7 +143,7 @@ public class PlayerValues {
 		this.shot += value;
 	}
 	public void updateHeadedShot(double value){
-		this.headedShot =+ value;
+		this.headedShot += value;
 	}
 	public void updateBallReceived(double value){
 		this.ballReceived += value;

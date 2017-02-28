@@ -3,18 +3,18 @@ package master17;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Set;
 
 public class FindPlayerValues {
 	public static void findValues() throws ClassNotFoundException, SQLException {
 		ResultSet players = DatabaseHandler.getPlayers();
 		ResultSet events = DatabaseHandler.getEventsAndValues();
 		ArrayList<PlayerValues> playerValueList= new ArrayList<PlayerValues>();
-		double soderHeader = 0;
-		double soderShot = 0;
-		while (players.next()){ //bygger playerValues objekter for alle players i databasen
-			playerValueList.add(new PlayerValues(players.getInt("PlayerID")));
-		}
-		System.out.println("Laget playervalue list");
+
+		
+		Hashtable<Integer,Hashtable<Integer, PlayerValues>> playerValues = new Hashtable<Integer, Hashtable<Integer, PlayerValues>>();
+
 
 		events.next();
 		int prevTeamID = events.getInt("TeamID"); //lagrer previous events variabler. N�dvendig for � sjekke n�r game er ferdig, sjekke ballvinning osv
@@ -37,6 +37,9 @@ public class FindPlayerValues {
 		int currHomeID = events.getInt("HomeID");
 		int currAwayID = events.getInt("AwayID");
 		int currZone = events.getInt("Zone");
+		
+		Hashtable<Integer, PlayerValues> gameValues = new Hashtable<Integer, PlayerValues>();
+		playerValues.put(currGameID, gameValues);
 
 
 		while (events.next()){ //traverserer alle events
@@ -52,6 +55,8 @@ public class FindPlayerValues {
 			//System.out.println(currGameID);
 			//System.out.println("Current Q= " + currQvalue + " previous Q= "+prevQvalue+" nextQ = "+nextQvalue);
 			if (prevGameID!=currGameID){ //sjekker om forrige event er fra en annen game enn current
+				gameValues = new Hashtable<Integer, PlayerValues>();
+				playerValues.put(currGameID, gameValues);
 				System.out.println("Ferdig med game " +currGameID);
 				prevTeamID = currTeamID;
 				prevPlayerID = currPlayerID;
@@ -123,10 +128,16 @@ public class FindPlayerValues {
 						//eventValue = - (nextQvalue - prevQvalue);
 					}
 				}
-				for (int j = 1; j < playerValueList.size(); j++){
-					if (playerValueList.get(j).getPlayerID() == currPlayerID){
-						playerValueList.get(j).updateValue(currAction, eventValue);
-					}
+				
+				if(gameValues.containsKey(currPlayerID)){
+					PlayerValues pv = gameValues.get(currPlayerID);
+					pv.updateValue(currAction, eventValue);
+					gameValues.put(currPlayerID, pv);
+				}
+				else {
+					PlayerValues pv = new PlayerValues(currPlayerID, currGameID, currTeamID);
+					pv.updateValue(currAction, eventValue);
+					gameValues.put(currPlayerID, pv);
 				}
 				
 				if(currPlayerID==63100 && currAction.equals("Headed shot")){
@@ -156,9 +167,18 @@ public class FindPlayerValues {
 				currZone = nextZone;
 			}
 		}
-		System.out.println(soderHeader);
-		System.out.println(soderShot);
-//		DatabaseHandler.insertPlayerValues(playerValueList);
+
+		
+		Set<Integer> gameIDs = playerValues.keySet();
+		for (Integer gameID: gameIDs){
+			Hashtable<Integer, PlayerValues> playervals = playerValues.get(gameID);
+			Set<Integer> playerIDs = playervals.keySet();
+			for (Integer playerID: playerIDs){
+				playerValueList.add(playervals.get(playerID));
+			}
+		}
+		DatabaseHandler.insertPlayerValues(playerValueList);
+
 
 	}
 }
