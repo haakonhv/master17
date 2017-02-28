@@ -9,6 +9,8 @@ public class FindPlayerValues {
 		ResultSet players = DatabaseHandler.getPlayers();
 		ResultSet events = DatabaseHandler.getEventsAndValues();
 		ArrayList<PlayerValues> playerValueList= new ArrayList<PlayerValues>();
+		double soderHeader = 0;
+		double soderShot = 0;
 		while (players.next()){ //bygger playerValues objekter for alle players i databasen
 			playerValueList.add(new PlayerValues(players.getInt("PlayerID")));
 		}
@@ -126,6 +128,13 @@ public class FindPlayerValues {
 						playerValueList.get(j).updateValue(currAction, eventValue);
 					}
 				}
+				
+				if(currPlayerID==63100 && currAction.equals("Headed shot")){
+					soderHeader+=eventValue;
+				}
+				if(currPlayerID==63100 && currAction.equals("Shot")){
+					soderShot+=eventValue;
+				}
 				prevTeamID = currTeamID;
 				prevPlayerID = currPlayerID;
 				prevGameID = currGameID;
@@ -147,7 +156,9 @@ public class FindPlayerValues {
 				currZone = nextZone;
 			}
 		}
-		DatabaseHandler.insertPlayerValues(playerValueList);
+		System.out.println(soderHeader);
+		System.out.println(soderShot);
+//		DatabaseHandler.insertPlayerValues(playerValueList);
 
 	}
 }
