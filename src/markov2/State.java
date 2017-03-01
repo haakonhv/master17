@@ -41,6 +41,9 @@ public class State {
 	public void setqValue(double qValue) {
 		this.qValue = qValue;
 	}
+	public void setOccurrenceZero(){
+		this.occurrence = 0;
+	}
 
 	public int getStateID(){
 		return stateID;
