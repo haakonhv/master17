@@ -129,7 +129,8 @@ public class DatabaseHandler {
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String query = "SELECT E.EventID, E.Action, E.Outcome, E.Minute, E.Period, E.GoalDifference, E.TeamID, E.Xstart, E.Ystart, E.Xend, E.Yend, E.Number, "
-				+ "G.HomeID, G.AwayID FROM Event AS E INNER JOIN Game AS G ON E.GameID = G.GameID WHERE E.Action != 'Ball received' AND E.Action != 'Fouled' AND !(Action = 'Take on' AND Outcome = 0)";
+				+ "G.HomeID, G.AwayID FROM Event AS E INNER JOIN Game AS G ON E.GameID = G.GameID WHERE E.Action != 'Ball received' AND E.Action != 'Fouled' AND !(Action = 'Take on' AND Outcome = 0) "
+				+ "AND !(Action = 'Aerial duel' AND Outcome=0);";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 
@@ -379,7 +380,7 @@ public class DatabaseHandler {
 		int[] updateCounts = stmt.executeBatch();
 		System.out.println("States inserted");
 		for (StateTransition st : transitionArray){
-			sql = "INSERT INTO StateTransition (StartID, EndID, Action, Occurrence) VALUES (" +st.getStartState().getStateID() +"," + st.getEndState().getStateID() + "," + "'" + st.getAction() 
+			sql = "INSERT INTO StateTransition (TransitionID, StartID, EndID, Action, Occurrence) VALUES (" + st.getStateTransitionID() + "," +st.getStartState().getStateID() +"," + st.getEndState().getStateID() + "," + "'" + st.getAction() 
 			+ "'" + "," + st.getOccurrence() + ");\n";
 			stmt.addBatch(sql);
 		}

@@ -22,8 +22,8 @@ public class Main {
 		//sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
-		FindPlayerValues.findValues();
-//		sendEventsFromDataFiles();
+//		FindPlayerValues.findValues();
+		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
@@ -60,6 +60,7 @@ public class Main {
 			dbhandler.insertEvents(eventlist);
 			long endTime = System.nanoTime();
 			System.out.println("Eventlist " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder");
+			break;
 		}
 	}
 }

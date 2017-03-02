@@ -19,14 +19,16 @@ public class Builder {
 		ResultSet eventSet = DatabaseHandler.getDatabaseEventsModel2();
 		ArrayList<State> stateList = new ArrayList<State>();
 		ArrayList<StateTransition> transList = new ArrayList<StateTransition>();
-		Hashtable<Integer, Hashtable<Integer, Hashtable<String, StateTransition>>> transitions = new Hashtable<Integer, Hashtable<Integer, Hashtable<String, StateTransition>>>();
+		ArrayList<String> sqlList = new ArrayList<String>();
 		State startState = null;
 		State endState = null;
 		boolean prevEndOfPeriod = false;
 		String prevAction = "";
 		int stateID = 1;
-		System.out.println(eventSet.getFetchSize());
+		int stateTransitionID = 1;
 		
+		int stateincCount = 0;
+
 		while(eventSet.next()){
 			String action = eventSet.getString("Action");
 			int outcome = eventSet.getInt("Outcome");
@@ -41,11 +43,12 @@ public class Builder {
 			float xEnd = eventSet.getFloat("Xend");
 			float yEnd = eventSet.getFloat("Yend");
 			int eventNumber = eventSet.getInt("Number");
-			System.out.println(action);
+			int eventID = eventSet.getInt("EventID");
+
 			int startZone = StateBuilder.getZoneFromCoordinates(xStart, yStart);
 			int endZone = StateBuilder.getZoneFromCoordinates(xEnd, yEnd);
 			int statePeriod = StateBuilder.getPeriod(minute, period);
-			int matchStatus = StateBuilder.getMatchStatus(goalDifference, homeID, teamID);
+			
 			int reward = StateBuilder.getReward(action, teamID==homeID);
 			String team = "";
 			String otherTeam="";
@@ -60,7 +63,9 @@ public class Builder {
 				team = "Away";
 				otherTeam = "Home";
 			}
-			if (action.equals("Goal")){
+			int matchStatus = getMatchStatus(team, goalDifference);
+			if (action.equals("Goal") || action.equals("Out of play")){
+				//				System.out.println(action);
 				prevAction = action;
 				continue;
 			}
@@ -68,11 +73,11 @@ public class Builder {
 				prevEndOfPeriod = true;
 				continue;
 			}
-			prevEndOfPeriod = false;
 
 
 
 			if (eventNumber == 1 || prevEndOfPeriod || prevAction.equals("Goal")) { //lager kun startState for event når det er første event i en omgang!
+				if (prevEndOfPeriod) prevEndOfPeriod = false;
 				if (stateList.size() == 0){ //hvis statelist tom -> legg til ny state
 					startState = new State(stateID, startZone, team, statePeriod, matchStatus, 0);
 					stateList.add(startState);
@@ -88,6 +93,7 @@ public class Builder {
 							s.incrementOccurrence();
 							startState = s;
 							startStateExists = true;
+							stateincCount++;
 							break;
 						}
 						if (!startStateExists){
@@ -103,12 +109,17 @@ public class Builder {
 			int nextZone = StateBuilder.getZoneFromCoordinates(eventSet.getFloat("Xstart"), eventSet.getFloat("Ystart"));
 			int nextTeamID = eventSet.getInt("TeamID");
 			String nextTeam = "";
-			if (homeID==eventSet.getInt("TeamID")){
+			String nextOtherTeam = "";
+			
+			if (homeID==nextTeamID){
 				nextTeam = "Home";
+				nextOtherTeam ="Away";
 			}
 			else {
 				nextTeam = "Away";
+				nextOtherTeam = "Home";
 			}
+			int nextMatchStatus = getMatchStatus(nextTeam, goalDifference);
 			int nextReward = StateBuilder.getReward(nextAction, nextTeamID==homeID);
 			eventSet.previous();
 
@@ -123,6 +134,7 @@ public class Builder {
 									&& s.getTeam().equals(team) && s.getMatchStatus() == matchStatus
 									&& s.getReward() == reward){
 								s.incrementOccurrence();
+								stateincCount++;
 								endState = s;
 								endStateExists = true;
 								break;
@@ -135,22 +147,79 @@ public class Builder {
 						}
 					}
 					else {//outcome ==0 -> start state hos team som slo pasning, end state har ikke noe team
-						boolean endStateExists = false;
-						for (int i = 0; i < stateList.size(); i++){
-							State s = stateList.get(i);
-							if(s.getZone() == endZone && s.getPeriod() == statePeriod //hvis state finnes fra før
-									&& s.getTeam().equals("None") && s.getMatchStatus() == StateBuilder.getMatchStatus(goalDifference, homeID, homeID)
-									&& s.getReward() == reward){
-								s.incrementOccurrence();
-								endState = s;
-								endStateExists = true;
-								break;
+						if (nextAction.equals("Out of play")){
+							if (eventID== 6472650) System.out.println(eventID + " " + nextAction);
+							eventSet.next();
+							eventSet.next();
+							nextZone = StateBuilder.getZoneFromCoordinates(eventSet.getFloat("Xstart"), eventSet.getFloat("Ystart"));
+							eventSet.previous();
+							eventSet.previous();
+							boolean endStateExists = false;
+							for (int i = 0; i < stateList.size(); i++){
+								State s = stateList.get(i);
+								if(s.getZone() == nextZone && s.getPeriod() == statePeriod //hvis state finnes fra før
+										&& s.getTeam().equals(otherTeam) && s.getMatchStatus() == -matchStatus
+										&& s.getReward() == reward){
+									s.incrementOccurrence();
+									stateincCount++;
+									endState = s;
+									endStateExists = true;
+									break;
+								}
+							}
+							if (!endStateExists){
+								endState = new State(stateID, nextZone, otherTeam, period, -matchStatus, reward);
+								stateList.add(endState);
+								stateID++;
+							}							
+						}
+						else if (nextAction.equals("Shot") || nextAction.equals("Headed shot") || nextAction.equals("Pass") || nextAction.equals("Ball carry") || nextAction.equals("Take on") 
+								|| nextAction.equals("Long pass") || nextAction.equals("Cross")){
+							//if (eventID== 6472650) System.out.println(eventID + " " + "123" +nextAction) ;
+							boolean endStateExists = false;
+							for (int i = 0; i < stateList.size(); i++){
+								State s = stateList.get(i);
+								if(s.getZone() == nextZone && s.getPeriod() == statePeriod //hvis state finnes fra før
+										&& s.getTeam().equals(nextTeam) && s.getMatchStatus() == nextMatchStatus
+										&& s.getReward() == reward){
+									s.incrementOccurrence();
+									stateincCount++;
+									endState = s;
+									endStateExists = true;
+									break;
+								}
+							}
+							if (!endStateExists){
+								endState = new State(stateID, nextZone, nextTeam, period, nextMatchStatus, reward);
+								stateList.add(endState);
+								stateID++;
 							}
 						}
-						if (!endStateExists){
-							endState = new State(stateID, endZone, "None", period, StateBuilder.getMatchStatus(goalDifference, homeID, homeID), reward);
-							stateList.add(endState);
-							stateID++;
+						else {
+							
+//							if (eventID == 6472637 || eventID == 6472650) System.out.println(eventID + " " + stateList.size());
+							boolean endStateExists = false;
+							for (int i = 0; i < stateList.size(); i++){
+								if (eventID==6472650) System.out.println(6472650);
+								State s = stateList.get(i);
+								if(s.getZone() == nextZone && s.getPeriod() == statePeriod //hvis state finnes fra før
+										&& s.getTeam().equals("None") && s.getMatchStatus() == getMatchStatus("None", goalDifference)
+										&& s.getReward() == reward){
+									s.incrementOccurrence();
+									stateincCount++;
+									endState = s;
+									endStateExists = true;
+									
+									break;
+								}
+							}
+							if (!endStateExists){
+								if (eventID == 6472650) System.out.println(6472650);
+								endState = new State(stateID, nextZone, "None", period, getMatchStatus("None", goalDifference), reward);
+								stateList.add(endState);
+								stateID++;
+							}
+							
 						}
 					}
 				}
@@ -159,19 +228,40 @@ public class Builder {
 					for (int i = 0; i < stateList.size(); i++){
 						State s = stateList.get(i);
 						if(s.getZone() == endZone && s.getPeriod() == statePeriod //hvis state finnes fra før
-								&& s.getTeam().equals("None") && s.getMatchStatus() == StateBuilder.getMatchStatus(goalDifference, homeID, homeID)
+								&& s.getTeam().equals("None") && s.getMatchStatus() == getMatchStatus("None", goalDifference)
 								&& s.getReward() == reward){
 							s.incrementOccurrence();
+							stateincCount++;
 							endState = s;
 							endStateExists = true;
 							break;
 						}
 					}
 					if (!endStateExists){
-						endState = new State(stateID, endZone, "None", period, StateBuilder.getMatchStatus(goalDifference, homeID, homeID), reward);
+						endState = new State(stateID, endZone, "None", period, getMatchStatus("None", goalDifference), reward);
 						stateList.add(endState);
 						stateID++;
 					}
+				}
+			}
+			else if (nextAction.equals("Ball recovery")){
+				boolean endStateExists = false;
+				for (int i = 0; i < stateList.size(); i++){
+					State s = stateList.get(i);
+					if(s.getZone() == nextZone && s.getPeriod() == statePeriod //hvis state finnes fra før
+							&& s.getTeam().equals("None") && s.getMatchStatus() == getMatchStatus("None", goalDifference)
+							&& s.getReward() == reward){
+						s.incrementOccurrence();
+						stateincCount++;
+						endState = s;
+						endStateExists = true;
+						break;
+					}
+				}
+				if (!endStateExists){
+					endState = new State(stateID, endZone, "None", statePeriod, getMatchStatus("None", goalDifference), reward);
+					stateList.add(endState);
+					stateID++;
 				}
 			}
 			else if (action.equals("Ball carry") || action.equals("Aerial duel") || action.equals("Ball recovery")){
@@ -182,6 +272,7 @@ public class Builder {
 							&& s.getTeam().equals(team) && s.getMatchStatus() == matchStatus
 							&& s.getReward() == reward){
 						s.incrementOccurrence();
+						stateincCount++;
 						endState = s;
 						endStateExists = true;
 						break;
@@ -198,21 +289,22 @@ public class Builder {
 				for (int i = 0; i < stateList.size(); i++){
 					State s = stateList.get(i);
 					if(s.getZone() == endZone && s.getPeriod() == statePeriod //hvis state finnes fra før
-							&& s.getTeam().equals(otherTeam) && s.getMatchStatus() == matchStatus
+							&& s.getTeam().equals(nextTeam) && s.getMatchStatus() == nextMatchStatus
 							&& s.getReward() == reward){
 						s.incrementOccurrence();
+						stateincCount++;
 						endState = s;
 						endStateExists = true;
 						break;
 					}
 				}
 				if (!endStateExists){
-					endState = new State(stateID, endZone, otherTeam, statePeriod, matchStatus, reward);
+					endState = new State(stateID, endZone, otherTeam, statePeriod, nextMatchStatus, reward);
 					stateList.add(endState);
 					stateID++;
 				}
 			}
-			
+
 			else if(nextAction.equals("Goal")){
 				boolean endStateExists = false;
 				for (int i = 0; i < stateList.size(); i++){
@@ -221,6 +313,7 @@ public class Builder {
 							&& s.getTeam().equals(nextTeam) && s.getMatchStatus() == 0
 							&& s.getReward() == nextReward){
 						s.incrementOccurrence();
+						stateincCount++;
 						endState = s;
 						endStateExists = true;
 						break;
@@ -233,6 +326,7 @@ public class Builder {
 				}
 			}
 			else if (nextAction.equals("End of period")){ //neste event er ikke mål
+				prevEndOfPeriod = true;
 				boolean endStateExists = false;
 				for (int i = 0; i < stateList.size(); i++){
 					State s = stateList.get(i);
@@ -240,6 +334,7 @@ public class Builder {
 							&& s.getTeam().equals("None") && s.getMatchStatus() == 0
 							&& s.getReward() == nextReward){
 						s.incrementOccurrence();
+						stateincCount++;
 						endState = s;
 						endStateExists = true;
 						break;
@@ -251,72 +346,130 @@ public class Builder {
 					stateID++;
 				}
 			}
-			else {
-				boolean endStateExists = false;
-				for (int i = 0; i < stateList.size(); i++){
-					State s = stateList.get(i);
-					if(s.getZone() == nextZone && s.getPeriod() == period //hvis state finnes fra før
-							&& s.getTeam().equals(nextTeam) && s.getMatchStatus() == matchStatus
-							&& s.getReward() == nextReward){
-						s.incrementOccurrence();
-						endState = s;
-						endStateExists = true;
-						break;
+			else { //action er en av de som ikke er sjekket eksplisitt (i.e. tackle, interception etc)
+
+				if (nextAction.equals("Out of play")){ //neste er out of play
+					eventSet.next();
+					eventSet.next();
+					nextZone = StateBuilder.getZoneFromCoordinates(eventSet.getFloat("Xstart"), eventSet.getFloat("Ystart"));
+					eventSet.previous();
+					eventSet.previous();
+					boolean endStateExists = false;
+					for (int i = 0; i < stateList.size(); i++){
+						State s = stateList.get(i);
+						if(s.getZone() == nextZone && s.getPeriod() == period //hvis state finnes fra før
+								&& s.getTeam().equals(otherTeam) && s.getMatchStatus() == -matchStatus
+								&& s.getReward() == nextReward){
+							s.incrementOccurrence();
+							stateincCount++;
+							endState = s;
+							endStateExists = true;
+							break;
+						}
 					}
+					if (!endStateExists){
+						endState = new State(stateID, nextZone, otherTeam, period, -matchStatus, nextReward);
+						stateList.add(endState);
+						stateID++;
+					}					
 				}
-				if (!endStateExists){
-					endState = new State(stateID, nextZone, nextTeam, period, matchStatus, nextReward);
-					stateList.add(endState);
-					stateID++;
+				else if (nextAction.equals("Foul committed")){
+					eventSet.next();
+					eventSet.next();
+					nextZone = StateBuilder.getZoneFromCoordinates(eventSet.getFloat("Xstart"), eventSet.getFloat("Ystart"));
+					eventSet.previous();
+					eventSet.previous();
+					boolean endStateExists = false;
+					for (int i = 0; i < stateList.size(); i++){
+						State s = stateList.get(i);
+						if(s.getZone() == nextZone && s.getPeriod() == period //hvis state finnes fra før
+								&& s.getTeam().equals(nextOtherTeam) && s.getMatchStatus() == -matchStatus
+								&& s.getReward() == nextReward){
+							s.incrementOccurrence();
+							stateincCount++;
+							endState = s;
+							endStateExists = true;
+							break;
+						}
+					}
+					if (!endStateExists){
+						endState = new State(stateID, nextZone, nextOtherTeam, period, -matchStatus, nextReward);
+						stateList.add(endState);
+						stateID++;
+					}				
 				}
+				else {
+					boolean endStateExists = false;
+					for (int i = 0; i < stateList.size(); i++){
+						State s = stateList.get(i);
+						if(s.getZone() == nextZone && s.getPeriod() == period //hvis state finnes fra før
+								&& s.getTeam().equals(nextTeam) && s.getMatchStatus() == nextMatchStatus
+								&& s.getReward() == nextReward){
+							s.incrementOccurrence();
+							stateincCount++;
+							endState = s;
+							endStateExists = true;
+							break;
+						}
+					}
+					if (!endStateExists){
+						endState = new State(stateID, nextZone, nextTeam, period, nextMatchStatus, nextReward);
+						stateList.add(endState);
+						stateID++;
+					}					
+				}
+
 			}
 
 			//lager eller oppdaterer transitions
 			StateTransition thisTransition = new StateTransition(startState, endState, action); 
 			boolean transitionExists = false;
-			if (transitions.containsKey(startState.getStateID())){
-				Hashtable<Integer, Hashtable<String, StateTransition>> endStates = transitions.get(startState.getStateID());
-				if (endStates.containsKey(endState.getStateID())){
-					Hashtable<String, StateTransition> actiontrans = endStates.get(endState.getStateID());
-					if (actiontrans.containsKey(action)){
-						thisTransition = actiontrans.get(action);
-						thisTransition.incrementOccurence();
-						actiontrans.put(action, thisTransition);
-						endStates.put(endState.getStateID(), actiontrans);
-						transitions.put(startState.getStateID(), endStates);
+			if (transList.size()==0){
+				thisTransition.setStateTransitionID(stateTransitionID);
+				transList.add(thisTransition);
+				String sql = "UPDATE Event SET StateTransitionID="+stateTransitionID+" WHERE EventID="+eventID;
+				stateTransitionID++;
+				sqlList.add(sql);
+			}
+			else {
+				for (int i = 0; i < transList.size(); i++){
+					StateTransition st = transList.get(i);
+					if (st.getAction().equals(thisTransition.getAction()) && st.getStartState().getStateID() == thisTransition.getStartState().getStateID() && st.getEndState().getStateID() == thisTransition.getEndState().getStateID()){
+						st.incrementOccurence();
 						transitionExists = true;
+						String sql = "UPDATE Event SET StateTransitionID="+st.getStateTransitionID()+" WHERE EventID="+eventID;
+						sqlList.add(sql);
 					}
 				}
+				if (!transitionExists){
+					thisTransition.setStateTransitionID(stateTransitionID);
+					transList.add(thisTransition);
+					String sql = "UPDATE Event SET StateTransitionID="+stateTransitionID+" WHERE EventID="+eventID;
+					stateTransitionID++;
+					sqlList.add(sql);
+				}
 			}
-			if (!transitionExists){
-				Hashtable<String, StateTransition> actiontrans = new Hashtable<String, StateTransition>();
-				actiontrans.put(action, thisTransition);
-				Hashtable<Integer,Hashtable<String,StateTransition>> endStates = new Hashtable<Integer, Hashtable<String, StateTransition>>();
-				endStates.put(endState.getStateID(), actiontrans);
-				transitions.put(startState.getStateID(), endStates);
-			}
+
 			startState = endState;
 			prevAction = action;
 		}
-		Set<Integer> startIDS = transitions.keySet();
-		Set<Integer> endIDS;
-		Set<String> actions;
-		ArrayList<StateTransition> transitionArray = new ArrayList<StateTransition>();
-		for (Integer start: startIDS){
-			Hashtable<Integer, Hashtable<String, StateTransition>> endIDhash = new Hashtable<Integer, Hashtable<String, StateTransition>>();
-			endIDhash = transitions.get(start);
-			endIDS = endIDhash.keySet();
-			for (Integer endID: endIDS){
-				Hashtable<String, StateTransition> actiontransHash = new Hashtable<String, StateTransition>();
-				actiontransHash = endIDhash.get(endID);
-				actions = actiontransHash.keySet();
-				for (String action: actions){
-					transitionArray.add(actiontransHash.get(action));
-				}
-			}
-		}
-		DatabaseHandler.insertStatesAndTrans(stateList, transitionArray);
+		System.out.println(stateincCount);
+
+		DatabaseHandler.updateEventStateID(sqlList);
+		DatabaseHandler.insertStatesAndTrans(stateList, transList);
+		
 	}
-	
+	private static int getMatchStatus(String team, int goaldifference){
+		int matchStatus = 0;
+		if (team.equals("Home")||team.equals("None")){
+			if (goaldifference>0) return 1;
+			else if (goaldifference<0) return -1;
+		}
+		else {
+			if (goaldifference>0) return -1;
+			else if (goaldifference<0) return 1;
+		}
+		return matchStatus;
+	}
 
 }
