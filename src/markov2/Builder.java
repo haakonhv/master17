@@ -63,7 +63,7 @@ public class Builder {
 				team = "Away";
 				otherTeam = "Home";
 			}
-			int matchStatus = getMatchStatus(team, goalDifference);
+			int matchStatus = getMatchStatus(goalDifference);
 			if (action.equals("Goal") || action.equals("Out of play")){
 				//				System.out.println(action);
 				prevAction = action;
@@ -95,12 +95,12 @@ public class Builder {
 							startStateExists = true;
 							stateincCount++;
 							break;
-						}
-						if (!startStateExists){
-							startState = new State(stateID, startZone, team, statePeriod, matchStatus, 0);
-							stateList.add(startState);
-							stateID++;
-						}
+						}	
+					}
+					if (!startStateExists){
+						startState = new State(stateID, startZone, team, statePeriod, matchStatus, 0);
+						stateList.add(startState);
+						stateID++;
 					}
 				}
 			}
@@ -119,7 +119,7 @@ public class Builder {
 				nextTeam = "Away";
 				nextOtherTeam = "Home";
 			}
-			int nextMatchStatus = getMatchStatus(nextTeam, goalDifference);
+			int nextMatchStatus = getMatchStatus(goalDifference);
 			int nextReward = StateBuilder.getReward(nextAction, nextTeamID==homeID);
 			eventSet.previous();
 
@@ -157,8 +157,8 @@ public class Builder {
 							boolean endStateExists = false;
 							for (int i = 0; i < stateList.size(); i++){
 								State s = stateList.get(i);
-								if(s.getZone() == nextZone && s.getPeriod() == statePeriod //hvis state finnes fra før
-										&& s.getTeam().equals(otherTeam) && s.getMatchStatus() == -matchStatus
+								if(s.getZone() == nextZone && s.getPeriod() == period //hvis state finnes fra før
+										&& s.getTeam().equals(otherTeam) && s.getMatchStatus() == matchStatus
 										&& s.getReward() == reward){
 									s.incrementOccurrence();
 									stateincCount++;
@@ -168,7 +168,7 @@ public class Builder {
 								}
 							}
 							if (!endStateExists){
-								endState = new State(stateID, nextZone, otherTeam, period, -matchStatus, reward);
+								endState = new State(stateID, nextZone, otherTeam, period, matchStatus, reward);
 								stateList.add(endState);
 								stateID++;
 							}							
@@ -179,7 +179,7 @@ public class Builder {
 							boolean endStateExists = false;
 							for (int i = 0; i < stateList.size(); i++){
 								State s = stateList.get(i);
-								if(s.getZone() == nextZone && s.getPeriod() == statePeriod //hvis state finnes fra før
+								if(s.getZone() == nextZone && s.getPeriod() == period //hvis state finnes fra før
 										&& s.getTeam().equals(nextTeam) && s.getMatchStatus() == nextMatchStatus
 										&& s.getReward() == reward){
 									s.incrementOccurrence();
@@ -202,8 +202,8 @@ public class Builder {
 							for (int i = 0; i < stateList.size(); i++){
 								if (eventID==6472650) System.out.println(6472650);
 								State s = stateList.get(i);
-								if(s.getZone() == nextZone && s.getPeriod() == statePeriod //hvis state finnes fra før
-										&& s.getTeam().equals("None") && s.getMatchStatus() == getMatchStatus("None", goalDifference)
+								if(s.getZone() == nextZone && s.getPeriod() == period //hvis state finnes fra før
+										&& s.getTeam().equals("None") && s.getMatchStatus() == getMatchStatus(goalDifference)
 										&& s.getReward() == reward){
 									s.incrementOccurrence();
 									stateincCount++;
@@ -215,7 +215,7 @@ public class Builder {
 							}
 							if (!endStateExists){
 								if (eventID == 6472650) System.out.println(6472650);
-								endState = new State(stateID, nextZone, "None", period, getMatchStatus("None", goalDifference), reward);
+								endState = new State(stateID, nextZone, "None", period, getMatchStatus(goalDifference), reward);
 								stateList.add(endState);
 								stateID++;
 							}
@@ -227,8 +227,8 @@ public class Builder {
 					boolean endStateExists = false;
 					for (int i = 0; i < stateList.size(); i++){
 						State s = stateList.get(i);
-						if(s.getZone() == endZone && s.getPeriod() == statePeriod //hvis state finnes fra før
-								&& s.getTeam().equals("None") && s.getMatchStatus() == getMatchStatus("None", goalDifference)
+						if(s.getZone() == endZone && s.getPeriod() == period //hvis state finnes fra før
+								&& s.getTeam().equals("None") && s.getMatchStatus() == getMatchStatus(goalDifference)
 								&& s.getReward() == reward){
 							s.incrementOccurrence();
 							stateincCount++;
@@ -238,7 +238,7 @@ public class Builder {
 						}
 					}
 					if (!endStateExists){
-						endState = new State(stateID, endZone, "None", period, getMatchStatus("None", goalDifference), reward);
+						endState = new State(stateID, endZone, "None", period, getMatchStatus(goalDifference), reward);
 						stateList.add(endState);
 						stateID++;
 					}
@@ -249,7 +249,7 @@ public class Builder {
 				for (int i = 0; i < stateList.size(); i++){
 					State s = stateList.get(i);
 					if(s.getZone() == nextZone && s.getPeriod() == statePeriod //hvis state finnes fra før
-							&& s.getTeam().equals("None") && s.getMatchStatus() == getMatchStatus("None", goalDifference)
+							&& s.getTeam().equals("None") && s.getMatchStatus() == getMatchStatus(goalDifference)
 							&& s.getReward() == reward){
 						s.incrementOccurrence();
 						stateincCount++;
@@ -259,7 +259,7 @@ public class Builder {
 					}
 				}
 				if (!endStateExists){
-					endState = new State(stateID, endZone, "None", statePeriod, getMatchStatus("None", goalDifference), reward);
+					endState = new State(stateID, nextZone, "None", statePeriod, getMatchStatus(goalDifference), reward);
 					stateList.add(endState);
 					stateID++;
 				}
@@ -289,7 +289,7 @@ public class Builder {
 				for (int i = 0; i < stateList.size(); i++){
 					State s = stateList.get(i);
 					if(s.getZone() == endZone && s.getPeriod() == statePeriod //hvis state finnes fra før
-							&& s.getTeam().equals(nextTeam) && s.getMatchStatus() == nextMatchStatus
+							&& s.getTeam().equals(otherTeam) && s.getMatchStatus() == nextMatchStatus
 							&& s.getReward() == reward){
 						s.incrementOccurrence();
 						stateincCount++;
@@ -358,7 +358,7 @@ public class Builder {
 					for (int i = 0; i < stateList.size(); i++){
 						State s = stateList.get(i);
 						if(s.getZone() == nextZone && s.getPeriod() == period //hvis state finnes fra før
-								&& s.getTeam().equals(otherTeam) && s.getMatchStatus() == -matchStatus
+								&& s.getTeam().equals(otherTeam) && s.getMatchStatus() == matchStatus
 								&& s.getReward() == nextReward){
 							s.incrementOccurrence();
 							stateincCount++;
@@ -368,7 +368,7 @@ public class Builder {
 						}
 					}
 					if (!endStateExists){
-						endState = new State(stateID, nextZone, otherTeam, period, -matchStatus, nextReward);
+						endState = new State(stateID, nextZone, otherTeam, period, matchStatus, nextReward);
 						stateList.add(endState);
 						stateID++;
 					}					
@@ -383,7 +383,7 @@ public class Builder {
 					for (int i = 0; i < stateList.size(); i++){
 						State s = stateList.get(i);
 						if(s.getZone() == nextZone && s.getPeriod() == period //hvis state finnes fra før
-								&& s.getTeam().equals(nextOtherTeam) && s.getMatchStatus() == -matchStatus
+								&& s.getTeam().equals(nextOtherTeam) && s.getMatchStatus() == matchStatus
 								&& s.getReward() == nextReward){
 							s.incrementOccurrence();
 							stateincCount++;
@@ -393,7 +393,7 @@ public class Builder {
 						}
 					}
 					if (!endStateExists){
-						endState = new State(stateID, nextZone, nextOtherTeam, period, -matchStatus, nextReward);
+						endState = new State(stateID, nextZone, nextOtherTeam, period, matchStatus, nextReward);
 						stateList.add(endState);
 						stateID++;
 					}				
@@ -459,17 +459,10 @@ public class Builder {
 		DatabaseHandler.insertStatesAndTrans(stateList, transList);
 		
 	}
-	private static int getMatchStatus(String team, int goaldifference){
-		int matchStatus = 0;
-		if (team.equals("Home")||team.equals("None")){
-			if (goaldifference>0) return 1;
-			else if (goaldifference<0) return -1;
-		}
-		else {
-			if (goaldifference>0) return -1;
-			else if (goaldifference<0) return 1;
-		}
-		return matchStatus;
+	private static int getMatchStatus(int goaldifference){
+		if (goaldifference>0) return 1;
+		else if (goaldifference<0) return -1;
+		else return 0;
 	}
 
 }
