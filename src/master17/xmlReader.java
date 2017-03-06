@@ -271,7 +271,7 @@ public class xmlReader {
 			actiontype = "Tackle";
 			return actiontype;
 		}
-		else if (typeid == 8){
+		else if (typeid == 8 || typeid == 74){
 			actiontype = "Interception";
 			return actiontype;
 		}
@@ -296,21 +296,17 @@ public class xmlReader {
 			}
 			return actiontype;
 		}
-//		else if (typeid == 5){
-//			if (Integer.parseInt(xmlEvent.getAttribute("outcome")) == 0){
-//				if (Float.parseFloat(xmlEvent.getAttribute("x"))>100){
-//					actiontype = "Out of play";
-//				}
-//				else {
-//					actiontype = "skip";
-//				}
-//			}
-//			else {
-//				actiontype = "skip";
-//			}
-////			actiontype ="skip";
-//			return actiontype;
-//		}
+		else if (typeid == 5){
+			if (Integer.parseInt(xmlEvent.getAttribute("outcome")) == 0){
+				actiontype = "Out of play";
+
+			}
+			else {
+				actiontype = "skip";
+			}
+//			actiontype ="skip";
+			return actiontype;
+		}
 
 		else if (typeid == 13 || typeid == 14 || typeid == 15){
 			NodeList qualifierList = xmlEvent.getChildNodes();

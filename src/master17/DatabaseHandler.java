@@ -10,6 +10,8 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import Freekick.FreeKick;
+import markov2.State;
+import markov2.StateTransition;
 
 public class DatabaseHandler {
 
@@ -126,8 +128,9 @@ public class DatabaseHandler {
 	public static ResultSet getDatabaseEventsModel2() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT E.EventID, E.Action, E.Outcome, E.Minute, E.Period, E.GoalDifference, E.TeamID, E.Xstart, E.Ystart, E.Xend, E.Yend, "
-				+ "G.HomeID, G.AwayID FROM Event AS E INNER JOIN Game AS G ON E.GameID = G.GameID WHERE E.Action != 'Ball received";
+		String query = "SELECT E.EventID, E.Action, E.Outcome, E.Minute, E.Period, E.GoalDifference, E.TeamID, E.Xstart, E.Ystart, E.Xend, E.Yend, E.Number, "
+				+ "G.HomeID, G.AwayID FROM Event AS E INNER JOIN Game AS G ON E.GameID = G.GameID WHERE E.Action != 'Ball received' AND E.Action != 'Fouled' AND !(Action = 'Take on' AND Outcome = 0) "
+				+ "AND !(Action = 'Aerial duel' AND Outcome=0);";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 
@@ -219,7 +222,7 @@ public class DatabaseHandler {
 				+ "FROM Event AS E \n"
 				+ "INNER JOIN State AS S ON E.StateID=S.StateID \n"
 				+ "INNER JOIN Game AS G ON E.GameID=G.GameID \n"
-				+ "WHERE G.SeasonID=2016 \n"
+				+ "WHERE G.SeasonID=2014 \n"
 				+ "ORDER BY EventID ASC;";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
@@ -363,5 +366,27 @@ public class DatabaseHandler {
 		int [] updateCounts = stmt.executeBatch();
 		closeConnection();
 
+	}
+
+	public static void insertStatesAndTrans(ArrayList<State> stateList, ArrayList<StateTransition> transitionArray) throws ClassNotFoundException, SQLException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "";
+		for (State s : stateList){
+			sql = "INSERT INTO State VALUES (" + s.getStateID() + "," + s.getZone() + "," + "'"+s.getTeam()+"'" + "," + s.getPeriod() + "," + s.getMatchStatus() + "," 
+					+ s.getOccurrence() + "," + s.getqValue() + ","+s.getReward() + ");\n";
+			stmt.addBatch(sql);
+		}
+		int[] updateCounts = stmt.executeBatch();
+		System.out.println("States inserted");
+		for (StateTransition st : transitionArray){
+			sql = "INSERT INTO StateTransition (TransitionID, StartID, EndID, Action, Occurrence) VALUES (" + st.getStateTransitionID() + "," +st.getStartState().getStateID() +"," + st.getEndState().getStateID() + "," + "'" + st.getAction() 
+			+ "'" + "," + st.getOccurrence() + ");\n";
+			stmt.addBatch(sql);
+		}
+		
+		updateCounts = stmt.executeBatch();
+		System.out.println("StateTransitions inserted");
+		closeConnection();
 	}
 }
