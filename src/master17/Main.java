@@ -23,11 +23,13 @@ public class Main {
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
 //		FindPlayerValues.findValues();
-		sendEventsFromDataFiles();
+//		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
 //		GameTimeReader.setPlayerGameTime();
+//		markov2.Builder.setStateAction();
+		markov2.Reinforcement.learningAlgorithm();
 
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{

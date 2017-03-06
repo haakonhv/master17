@@ -11,6 +11,7 @@ import java.util.Set;
 
 import Freekick.FreeKick;
 import markov2.State;
+import markov2.StateAction;
 import markov2.StateTransition;
 
 public class DatabaseHandler {
@@ -123,6 +124,14 @@ public class DatabaseHandler {
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 
+	}
+
+	public static ResultSet getDatabaseStateAction() throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT * FROM StateAction";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
 	}
 
 	public static ResultSet getDatabaseEventsModel2() throws ClassNotFoundException, SQLException{
@@ -373,20 +382,70 @@ public class DatabaseHandler {
 		Statement stmt = conn.createStatement();
 		String sql = "";
 		for (State s : stateList){
-			sql = "INSERT INTO State VALUES (" + s.getStateID() + "," + s.getZone() + "," + "'"+s.getTeam()+"'" + "," + s.getPeriod() + "," + s.getMatchStatus() + "," 
+			sql = "INSERT INTO State VALUES (" + s.getStateID() + "," + s.getZone() + "," + "'"+s.getTeam()+"'" + "," + s.getPeriod() + "," + s.getMatchStatus() + ","
 					+ s.getOccurrence() + "," + s.getqValue() + ","+s.getReward() + ");\n";
 			stmt.addBatch(sql);
 		}
 		int[] updateCounts = stmt.executeBatch();
 		System.out.println("States inserted");
 		for (StateTransition st : transitionArray){
-			sql = "INSERT INTO StateTransition (TransitionID, StartID, EndID, Action, Occurrence) VALUES (" + st.getStateTransitionID() + "," +st.getStartState().getStateID() +"," + st.getEndState().getStateID() + "," + "'" + st.getAction() 
+			sql = "INSERT INTO StateTransition (TransitionID, StartID, EndID, Action, Occurrence) VALUES (" + st.getStateTransitionID() + "," +st.getStartState().getStateID() +"," + st.getEndState().getStateID() + "," + "'" + st.getAction()
 			+ "'" + "," + st.getOccurrence() + ");\n";
 			stmt.addBatch(sql);
 		}
-		
+
 		updateCounts = stmt.executeBatch();
 		System.out.println("StateTransitions inserted");
 		closeConnection();
 	}
+
+	public static void insertStateAction(Hashtable<Integer, Hashtable<String, Integer>> stateActions) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "";
+		Set<Integer> stateIDs = stateActions.keySet();
+		for (int stateID : stateIDs){
+			Set<String> actions = stateActions.get(stateID).keySet();
+			for(String action : actions){
+				int occurrence = stateActions.get(stateID).get(action);
+				sql = "INSERT INTO StateAction (StateID, Action, Occurrence, Value) VALUES ( "+ stateID + ",'"+ action + "'," + occurrence + "," + 0 +");\n";
+				stmt.addBatch(sql);
+			}
+		}
+		int[] updateCounts = stmt.executeBatch();
+		System.out.println("StateActions inserted");
+		closeConnection();
+	}
+
+	public static void updateStateActionQ(Hashtable<Integer, Hashtable<String, StateAction>> stateActions) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "";
+		Set<Integer> stateIDs = stateActions.keySet();
+		for (int stateID : stateIDs){
+			Set<String> actions = stateActions.get(stateID).keySet();
+			for(String action : actions){
+				StateAction sa = stateActions.get(stateID).get(action);
+				sql = "UPDATE StateAction SET Value = "+ sa.getValue() + " WHERE StateID = " + sa.getStateID() + " AND Action = '" + sa.getAction()+ "';\n";
+				stmt.addBatch(sql);
+			}
+		}
+		int[] updateCounts = stmt.executeBatch();
+		System.out.println("StateActions Qvalues updated ");
+		closeConnection();
+	}
+	public static void updateStateValues(ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql;
+		for(State s : stateList){
+			sql = "UPDATE State SET Value=" + s.getValue()+" WHERE StateID = "+s.getStateID()+";\n";
+			stmt.addBatch(sql);
+
+		}
+		int [] updateCounts = stmt.executeBatch();
+		closeConnection();
+	}
+
+
 }

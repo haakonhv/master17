@@ -9,7 +9,7 @@ public class State {
 	private int matchStatus;
 	private int occurrence;
 	private int reward;
-	private double qValue;
+	private double value;
 
 
 
@@ -25,21 +25,21 @@ public class State {
 	}
 
 
-	public State(int stateID, int reward, double qValue, int occurrence) {
+	public State(int stateID, int reward, double value, int occurrence) {
 		super();
 		this.stateID = stateID;
 		this.reward = reward;
-		this.qValue = qValue;
+		this.value = value;
 		this.occurrence = occurrence;
 	}
 
 
-	public double getqValue() {
-		return qValue;
+	public double getValue() {
+		return value;
 	}
 
-	public void setqValue(double qValue) {
-		this.qValue = qValue;
+	public void setValue(double value) {
+		this.value = value;
 	}
 	public void setOccurrenceZero(){
 		this.occurrence = 0;
