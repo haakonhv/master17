@@ -383,7 +383,7 @@ public class DatabaseHandler {
 		String sql = "";
 		for (State s : stateList){
 			sql = "INSERT INTO State VALUES (" + s.getStateID() + "," + s.getZone() + "," + "'"+s.getTeam()+"'" + "," + s.getPeriod() + "," + s.getMatchStatus() + ","
-					+ s.getOccurrence() + "," + s.getqValue() + ","+s.getReward() + ");\n";
+					+ s.getOccurrence() + "," + s.getValue() + ","+s.getReward() + ");\n";
 			stmt.addBatch(sql);
 		}
 		int[] updateCounts = stmt.executeBatch();

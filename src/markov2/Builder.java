@@ -11,9 +11,6 @@ import master17.DatabaseHandler;
 import master17.StateBuilder;
 
 public class Builder {
-	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		buildFromEvents();
-	}
 
 	public static void buildFromEvents() throws ClassNotFoundException, SQLException{
 		ResultSet eventSet = DatabaseHandler.getDatabaseEventsModel2();
@@ -288,7 +285,7 @@ public class Builder {
 				boolean endStateExists = false;
 				for (int i = 0; i < stateList.size(); i++){
 					State s = stateList.get(i);
-					if(s.getZone() == endZone && s.getPeriod() == statePeriod //hvis state finnes fra f�r
+					if(s.getZone() == nextZone && s.getPeriod() == statePeriod //hvis state finnes fra f�r
 							&& s.getTeam().equals(otherTeam) && s.getMatchStatus() == nextMatchStatus
 							&& s.getReward() == reward){
 						s.incrementOccurrence();
@@ -299,7 +296,7 @@ public class Builder {
 					}
 				}
 				if (!endStateExists){
-					endState = new State(stateID, endZone, otherTeam, statePeriod, nextMatchStatus, reward);
+					endState = new State(stateID, nextZone, otherTeam, statePeriod, nextMatchStatus, reward);
 					stateList.add(endState);
 					stateID++;
 				}
@@ -480,9 +477,9 @@ public class Builder {
 					stateAction.put(stateID, actionOccurrence);
 				}
 				else{
-					Hashtable<String, Integer> actionOcc = new Hashtable<String, Integer>();
-					actionOcc.put(action, occurrence);
-					stateAction.put(stateID, actionOcc);
+					actionOccurrence.put(action, occurrence);
+					stateAction.put(stateID, actionOccurrence);
+
 				}
 			}
 			else{
@@ -491,6 +488,18 @@ public class Builder {
 				stateAction.put(stateID, actionOcc);
 			}
 		}
+//		Set<Integer> stateids = stateAction.keySet();
+//		for (int stateid: stateids){
+//			Hashtable<String, Integer> actionset = stateAction.get(stateid);
+//			Set<String> actionkeys = actionset.keySet();
+//			System.out.println(actionkeys.size());
+////			for (String action: actionkeys){
+////				
+////			}
+//		}
+		
+		
+//		System.out.println(count);
 		DatabaseHandler.insertStateAction(stateAction);
 	}
 
