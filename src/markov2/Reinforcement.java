@@ -13,7 +13,7 @@ public class Reinforcement {
 		double lastValue = 0;
 		double currentValue = 0;
 		boolean converged = false;
-		int maxIterations = 1;
+		int maxIterations = 10;
 		double convergeCriterion = 0.00001;
 
 		ResultSet stateSet = DatabaseHandler.getDatabaseStates();
@@ -94,25 +94,35 @@ public class Reinforcement {
 				double stateValue = 0.0;
 				for (int stateID: stateIDs){
 					Set<String> actions = tempStateAction.get(stateID).keySet();
+					int Qcount=0;
 					for (String action: actions){
 						StateAction tempSA = tempStateAction.get(stateID).get(action);
-						if(tempSA.getValue()!=0){
+						int occurrence = tempSA.getOccurrence();
+						double newValue = tempSA.getValue();
+						if(tempSA.getValue()>1){
 							System.out.println("!!");
 							System.out.println(tempSA.getStateID());
 						}
-						Hashtable<String, StateAction> completeActiontable = stateAction.get(stateID);
-						completeActiontable.get(action).setValue(tempSA.getValue());
-						System.out.println(completeActiontable.get(action));
-						stateAction.put(stateID, completeActiontable);
-						if (tempSA.getValue()!=0){
-							System.out.println(stateAction.get(stateIDs).get(action).getValue());
-							
-						}
-						tempStateAction.get(stateID).get(action).setValue(0.0);
-						if (tempSA.getValue()!=0){
-							System.out.println(stateAction.get(stateIDs).get(action).getValue());
-						}
+						Hashtable<String, StateAction> realActiontable = stateAction.get(stateID);
+						StateAction realStateAction = new StateAction(stateID, action, occurrence);
+						realStateAction.setValue(newValue);
+						realActiontable.put(action, realStateAction);
+						stateAction.put(stateID, realActiontable);
+						tempSA.setValue(0.0);
+						tempStateAction.get(stateID).put(action, tempSA);
+						stateValue += (double) realStateAction.getOccurrence()*realStateAction.getValue();
+						Qcount+=occurrence;
 					}
+					if (stateValue/(double) stateList.get(stateID).getOccurrence()>1){
+						System.out.println(stateID);
+						System.out.println(stateValue);
+						System.out.println(Qcount);
+						System.out.println(stateList.get(stateID).getOccurrence());
+						System.out.println(stateValue/stateList.get(stateID).getOccurrence());
+					}
+					stateValue = stateValue/(double) (stateList.get(stateID).getOccurrence());
+					
+					stateList.get(stateID).setValue(stateValue);
 				}
 				
 				
@@ -138,15 +148,17 @@ public class Reinforcement {
 			stateArray.add(stateList.get(stateID));
 		}
 		Set<Integer> stateids2=stateAction.keySet();
-		for(Integer stateid : stateids2){
-			Set<String> actions = stateAction.get(stateid).keySet();
-			for (String action:actions){
-				if (stateAction.get(stateid).get(action).getValue()!=0){
-					System.out.println("9999");
-				}
-//				else System.out.println(0);
-			}
-		}
+//		for(Integer stateid : stateids2){
+//			Set<String> actions = stateAction.get(stateid).keySet();
+//			for (String action:actions){
+////				if (stateAction.get(stateid).get(action).getValue()!=0){
+////					System.out.println("9999");
+////					System.out.println(stateAction.get(stateid).get(action).getValue());
+////				}
+////				else System.out.println(0);
+//			}
+////			System.out.println(stateList.get(stateid).getValue());
+//		}
 
 		DatabaseHandler.updateStateActionQ(stateAction);
 		DatabaseHandler.updateStateValues(stateArray);
