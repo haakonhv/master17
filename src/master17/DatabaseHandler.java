@@ -13,6 +13,7 @@ import Freekick.FreeKick;
 import markov2.State;
 import markov2.StateAction;
 import markov2.StateTransition;
+import markov2.StateActionNext;
 
 public class DatabaseHandler {
 
@@ -176,6 +177,16 @@ public class DatabaseHandler {
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String query = "SELECT* FROM Event ORDER BY EventID ASC";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+
+	}
+	
+	public static ResultSet getOrderedEventsJoinTrans() throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT* FROM Event AS E INNER JOIN StateTransition AS ST ON E.StateTransitionID=ST.TransitionID "
+				+ "INNER JOIN State as End ON ST.EndID = End.StateID WHERE E.StateTransitionID IS NOT NULL ORDER BY EventID ASC";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 
@@ -446,6 +457,29 @@ public class DatabaseHandler {
 		int [] updateCounts = stmt.executeBatch();
 		closeConnection();
 	}
+
+	public static void insertStateActionNext(ArrayList<StateActionNext> stateActionList) throws ClassNotFoundException, SQLException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql;
+		for (StateActionNext sa: stateActionList){
+			sql = "INSERT INTO StateActionNext (StartID, StartAction, NextID, NextAction, Occurrence) VALUES ("+ sa.getStateID() + ",'"+sa.getAction()+"'," + sa.getNextStateID() +",'"+sa.getNextAction()
+			+"',"+ sa.getOccurrence()+");\n";
+			System.out.println(sql);
+			stmt.addBatch(sql);
+		}
+		int[] updateCounts = stmt.executeBatch();
+		closeConnection();
+	}
+	
+	public static ResultSet getStateActionNext() throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT SA.StartID, SA.StartAction, SA.NextID, SA.NextAction, SA.Occurrence FROM StateActionNext AS SA";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+	}
+	
 
 
 }

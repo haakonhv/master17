@@ -502,5 +502,67 @@ public class Builder {
 //		System.out.println(count);
 		DatabaseHandler.insertStateAction(stateAction);
 	}
+	
+	public static void buildStateAction() throws ClassNotFoundException, SQLException{
+		ResultSet events = DatabaseHandler.getOrderedEventsJoinTrans();
+		ArrayList<StateActionNext> stateActionList = new ArrayList<StateActionNext>();
+		
+		int thisStateID = 0;
+		int nextStateID = 0;
+		String nextAction = "";
+		String thisAction = "";
+		int stateActionID = 1;
+		
+		
+		while(events.next()){
+			
+			if (thisStateID == 0){
+				thisAction = events.getString("E.Action");
+				thisStateID = events.getInt("StartID");				
+			}
+			if (events.next()){
+				nextAction = events.getString("E.Action");
+				nextStateID = events.getInt("StartID");
+				events.previous();	
+			}
+			else {
+				break;
+			}
+			if (nextStateID == 0 ){
+				nextAction = thisAction;
+				nextStateID = thisStateID;
+				continue;
+			}
+			else if(thisAction.equals("HomeGoal") || thisAction.equals("AwayGoal")){
+				thisAction = nextAction;
+				thisStateID = nextStateID;
+				continue;
+			}
+			if (events.getInt("Reward") == 1){
+				nextAction = "HomeGoal";
+				nextStateID = events.getInt("EndID");
+			}
+			else if (events.getInt("Reward") == -1){
+				nextAction = "AwayGoal";
+				nextStateID = events.getInt("EndID");
+			}
+			boolean found = false;
+			for (int i = 0; i < stateActionList.size(); i++){
+				StateActionNext sa = stateActionList.get(i);
+				if (thisAction.equals(sa.getAction()) && thisStateID == sa.getStateID() && nextAction.equals(sa.getNextAction()) && nextStateID == sa.getStateID()){
+					sa.incrementOccurrence();
+					found = true;
+					break;
+				}
+			}
+			if (!found){
+				StateActionNext sa = new StateActionNext(thisStateID, nextStateID, thisAction, nextAction);
+				stateActionList.add(sa);
+			}
+			thisAction = nextAction;
+			thisStateID = nextStateID;
+		}
+		DatabaseHandler.insertStateActionNext(stateActionList);
+	}
 
 }

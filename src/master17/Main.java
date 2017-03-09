@@ -23,14 +23,16 @@ public class Main {
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
 //		FindPlayerValues.findValues();
-//		sendEventsFromDataFiles();
+		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
 //		markov2.Builder.buildFromEvents();
 //		GameTimeReader.setPlayerGameTime();
 //		markov2.Builder.setStateAction();
-		markov2.Reinforcement.learningAlgorithm();
+//		markov2.Reinforcement.learningAlgorithm();
+//		markov2.Builder.buildStateAction();
+//		markov2.Reinforcement.learning();
 
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
@@ -63,7 +65,6 @@ public class Main {
 			dbhandler.insertEvents(eventlist);
 			long endTime = System.nanoTime();
 			System.out.println("Eventlist " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder");
-			break;
 		}
 	}
 }

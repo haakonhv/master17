@@ -15,6 +15,12 @@ public class StateAction {
 		this.value = 0;
 	}
 
+	@Override
+	public String toString() {
+		return "StateAction [stateID=" + stateID + ", action=" + action + ", occurrence=" + occurrence + ", value="
+				+ value + "]";
+	}
+
 	public void setValue(double value) {
 		this.value = value;
 	}
@@ -33,6 +39,13 @@ public class StateAction {
 
 	public double getValue() {
 		return value;
+	}
+	public void incrementOccurrence(){
+		this.occurrence++;
+	}
+
+	public void setOccurrence(int occurrence) {
+		this.occurrence = occurrence;
 	}
 
 
