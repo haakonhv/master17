@@ -181,7 +181,7 @@ public class DatabaseHandler {
 		return rs;
 
 	}
-	
+
 	public static ResultSet getOrderedEventsJoinTrans() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
@@ -244,6 +244,21 @@ public class DatabaseHandler {
 				+ "INNER JOIN Game AS G ON E.GameID=G.GameID \n"
 				+ "WHERE G.SeasonID=2014 \n"
 				+ "ORDER BY EventID ASC;";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+	}
+
+	public static ResultSet getEventsAndValuesMod2() throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT E.Number, E.EventID, E.Action, E.TeamID, E.PlayerID, E.GameID, E.StateTransitionID, "
+				+ "ST.TransitionID, ST.StartID, ST.EndID, SA.StateID, SA.Action, SA.Value AS QValue, EndS.Value AS EndValue, G.HomeID, G.AwayID "
+				+ "FROM `Event` AS E "
+				+ "INNER JOIN StateTransition AS ST ON E.StateTransitionID=ST.TransitionID "
+				+ "INNER JOIN StateAction AS SA ON ST.StartID=SA.StateID "
+				+ "INNER JOIN State AS EndS	ON ST.EndID=EndS.StateID "
+				+ "INNER JOIN Game AS G	ON E.GameID=G.GameID WHERE SA.Action = E.Action "
+				+ "ORDER BY E.EventID ASC";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 	}
@@ -428,18 +443,18 @@ public class DatabaseHandler {
 		closeConnection();
 	}
 
-	public static void updateStateActionQ(Hashtable<Integer, Hashtable<String, StateAction>> stateActions) throws ClassNotFoundException, SQLException{
+	public static void updateStateActionQ(Hashtable<String, StateAction> stateActions) throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String sql = "";
-		Set<Integer> stateIDs = stateActions.keySet();
-		for (int stateID : stateIDs){
-			Set<String> actions = stateActions.get(stateID).keySet();
-			for(String action : actions){
-				StateAction sa = stateActions.get(stateID).get(action);
-				sql = "UPDATE StateAction SET Value = "+ sa.getValue() + " WHERE StateID = " + sa.getStateID() + " AND Action = '" + sa.getAction()+ "';\n";
-				stmt.addBatch(sql);
-			}
+		Set<String> keys = stateActions.keySet();
+
+		for(String key: keys ){
+			int stateID = Integer.parseInt(key.replaceAll("[^\\d.]", ""));
+			String action = key.replaceAll(Integer.toString(stateID), "");
+			double qValue = stateActions.get(key).getValue();
+			sql = "UPDATE StateAction SET Value = "+ qValue + " WHERE StateID = " + stateID + " AND Action = '" + action+ "';\n";
+			stmt.addBatch(sql);
 		}
 		int[] updateCounts = stmt.executeBatch();
 		System.out.println("StateActions Qvalues updated ");
@@ -458,6 +473,23 @@ public class DatabaseHandler {
 		closeConnection();
 	}
 
+	public static void updateStateValuesMod2(Hashtable<Integer, State> states) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql;
+		Set<Integer> keys = states.keySet();
+		for(Integer stateID : keys){
+			State state = states.get(stateID);
+			double stateValue = state.getValue();
+			sql = "UPDATE State SET Value=" + stateValue +" WHERE StateID = "+stateID+";\n";
+			stmt.addBatch(sql);
+
+		}
+		int [] updateCounts = stmt.executeBatch();
+		System.out.println("StateValues updated on State");
+		closeConnection();
+	}
+
 	public static void insertStateActionNext(ArrayList<StateActionNext> stateActionList) throws ClassNotFoundException, SQLException {
 		openConnection();
 		Statement stmt = conn.createStatement();
@@ -471,7 +503,7 @@ public class DatabaseHandler {
 		int[] updateCounts = stmt.executeBatch();
 		closeConnection();
 	}
-	
+
 	public static ResultSet getStateActionNext() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
@@ -479,7 +511,7 @@ public class DatabaseHandler {
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 	}
-	
+
 
 
 }

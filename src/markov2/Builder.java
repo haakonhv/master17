@@ -145,7 +145,6 @@ public class Builder {
 					}
 					else {//outcome ==0 -> start state hos team som slo pasning, end state har ikke noe team
 						if (nextAction.equals("Out of play")){
-							if (eventID== 6472650) System.out.println(eventID + " " + nextAction);
 							eventSet.next();
 							eventSet.next();
 							nextZone = StateBuilder.getZoneFromCoordinates(eventSet.getFloat("Xstart"), eventSet.getFloat("Ystart"));
@@ -197,7 +196,6 @@ public class Builder {
 //							if (eventID == 6472637 || eventID == 6472650) System.out.println(eventID + " " + stateList.size());
 							boolean endStateExists = false;
 							for (int i = 0; i < stateList.size(); i++){
-								if (eventID==6472650) System.out.println(6472650);
 								State s = stateList.get(i);
 								if(s.getZone() == nextZone && s.getPeriod() == period //hvis state finnes fra f�r
 										&& s.getTeam().equals("None") && s.getMatchStatus() == getMatchStatus(goalDifference)
@@ -494,36 +492,36 @@ public class Builder {
 //			Set<String> actionkeys = actionset.keySet();
 //			System.out.println(actionkeys.size());
 ////			for (String action: actionkeys){
-////				
+////
 ////			}
 //		}
-		
-		
+
+
 //		System.out.println(count);
 		DatabaseHandler.insertStateAction(stateAction);
 	}
-	
+
 	public static void buildStateAction() throws ClassNotFoundException, SQLException{
 		ResultSet events = DatabaseHandler.getOrderedEventsJoinTrans();
 		ArrayList<StateActionNext> stateActionList = new ArrayList<StateActionNext>();
-		
+
 		int thisStateID = 0;
 		int nextStateID = 0;
 		String nextAction = "";
 		String thisAction = "";
 		int stateActionID = 1;
-		
-		
+
+
 		while(events.next()){
-			
+
 			if (thisStateID == 0){
 				thisAction = events.getString("E.Action");
-				thisStateID = events.getInt("StartID");				
+				thisStateID = events.getInt("StartID");
 			}
 			if (events.next()){
 				nextAction = events.getString("E.Action");
 				nextStateID = events.getInt("StartID");
-				events.previous();	
+				events.previous();
 			}
 			else {
 				break;

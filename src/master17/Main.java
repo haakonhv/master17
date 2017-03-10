@@ -19,20 +19,21 @@ public class Main {
 //		dbhandler.insertStates(stateList);
 		//ArrayList<StateTransition> stateTransList = StateTransitionBuilder.getStateTransitions(game);
 		//dbhandler.insertStateTransitions(stateTransList);
-		//sendGamesFromDataFiles();
+//		sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
 //		FindPlayerValues.findValues();
-		sendEventsFromDataFiles();
+//		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
-//		markov2.Builder.buildFromEvents();
+		markov2.Builder.buildFromEvents();
 //		GameTimeReader.setPlayerGameTime();
 //		markov2.Builder.setStateAction();
 //		markov2.Reinforcement.learningAlgorithm();
 //		markov2.Builder.buildStateAction();
 //		markov2.Reinforcement.learning();
+//		markov2.PlayerValueBuilder.buildPlayerValues();;
 
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
@@ -40,7 +41,7 @@ public class Main {
 		File[] listOfFiles = folder.listFiles();
 		ArrayList<Game> games = new ArrayList<Game>();
 
-		for(int i = 0; i < listOfFiles.length; i++){
+		for(int i = 1; i < listOfFiles.length; i++){
 			long startTime = System.nanoTime();
 			Document doc = xmlReader.getDocument(listOfFiles[i].toString());
 			Game game = xmlReader.getGame(doc);
@@ -57,7 +58,7 @@ public class Main {
 		File folder = new File("data_files");
 		File[] listOfFiles = folder.listFiles();
 		DatabaseHandler dbhandler = new DatabaseHandler();
-		for(int i = 0; i < listOfFiles.length; i++){
+		for(int i = 596; i < listOfFiles.length; i++){
 			long startTime = System.nanoTime();
 			System.out.println(listOfFiles[i].toString());
 			OptaDocument opta = new OptaDocument(listOfFiles[i].toString());

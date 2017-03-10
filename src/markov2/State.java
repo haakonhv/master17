@@ -33,6 +33,13 @@ public class State {
 		this.occurrence = occurrence;
 	}
 
+	public State(int stateID, double value, int occurrence) {
+		super();
+		this.stateID = stateID;
+		this.value = value;
+		this.occurrence = occurrence;
+	}
+
 
 	public double getValue() {
 		return value;
@@ -43,6 +50,10 @@ public class State {
 	}
 	public void setOccurrenceZero(){
 		this.occurrence = 0;
+	}
+
+	public void setOccurrence(int occurrence){
+		this.occurrence = occurrence;
 	}
 
 	public int getStateID(){
