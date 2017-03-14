@@ -16,6 +16,7 @@ public class Builder {
 		ResultSet eventSet = DatabaseHandler.getDatabaseEventsModel2();
 		ArrayList<State> stateList = new ArrayList<State>();
 		ArrayList<StateTransition> transList = new ArrayList<StateTransition>();
+		Hashtable<String, StateTransition> transHash = new Hashtable<String, StateTransition>();
 		ArrayList<String> sqlList = new ArrayList<String>();
 		State startState = null;
 		State endState = null;
@@ -25,7 +26,7 @@ public class Builder {
 		int stateTransitionID = 1;
 
 		int stateincCount = 0;
-
+		int eventCount = 0;
 		while(eventSet.next()){
 			String action = eventSet.getString("Action");
 			int outcome = eventSet.getInt("Outcome");
@@ -419,37 +420,40 @@ public class Builder {
 			//lager eller oppdaterer transitions
 			StateTransition thisTransition = new StateTransition(startState, endState, action);
 			boolean transitionExists = false;
-			if (transList.size()==0){
+			if (transHash.isEmpty()){
 				thisTransition.setStateTransitionID(stateTransitionID);
-				transList.add(thisTransition);
+				String key = thisTransition.getStartState().getStateID() + thisTransition.getAction() + thisTransition.getEndState().getStateID();
+				transHash.put(key, thisTransition);	
 				String sql = "UPDATE Event SET StateTransitionID="+stateTransitionID+" WHERE EventID="+eventID;
 				stateTransitionID++;
 				sqlList.add(sql);
 			}
-			else {
-				for (int i = 0; i < transList.size(); i++){
-					StateTransition st = transList.get(i);
-					if (st.getAction().equals(thisTransition.getAction()) && st.getStartState().getStateID() == thisTransition.getStartState().getStateID() && st.getEndState().getStateID() == thisTransition.getEndState().getStateID()){
-						st.incrementOccurence();
-						transitionExists = true;
-						String sql = "UPDATE Event SET StateTransitionID="+st.getStateTransitionID()+" WHERE EventID="+eventID;
-						sqlList.add(sql);
-					}
-				}
-				if (!transitionExists){
+			else {	
+				String transKey = thisTransition.getStartState().getStateID() + thisTransition.getAction() + thisTransition.getEndState().getStateID();
+				if (transHash.containsKey(transKey)){
+					transHash.get(transKey).incrementOccurence();
+					transitionExists = true;
+					String sql = "UPDATE Event SET StateTransitionID="+transHash.get(transKey).getStateTransitionID()+" WHERE EventID="+eventID;
+					sqlList.add(sql);
+				}	
+				else {
 					thisTransition.setStateTransitionID(stateTransitionID);
-					transList.add(thisTransition);
+					transHash.put(transKey, thisTransition);
 					String sql = "UPDATE Event SET StateTransitionID="+stateTransitionID+" WHERE EventID="+eventID;
 					stateTransitionID++;
 					sqlList.add(sql);
 				}
 			}
-
+			eventCount++;
+			if (eventCount%1000 == 0) System.out.println(eventCount + " eventer er behandlet.");
 			startState = endState;
 			prevAction = action;
 		}
 		System.out.println(stateincCount);
-
+		Set<String> transKeys = transHash.keySet();
+		for (String key: transKeys){
+			transList.add(transHash.get(key));
+		}
 		DatabaseHandler.updateEventStateID(sqlList);
 		DatabaseHandler.insertStatesAndTrans(stateList, transList);
 
@@ -504,6 +508,7 @@ public class Builder {
 	public static void buildStateAction() throws ClassNotFoundException, SQLException{
 		ResultSet events = DatabaseHandler.getOrderedEventsJoinTrans();
 		ArrayList<StateActionNext> stateActionList = new ArrayList<StateActionNext>();
+		Hashtable<String, ArrayList<StateActionNext>> stateActionHash = new Hashtable<String, ArrayList<StateActionNext>>();
 
 		int thisStateID = 0;
 		int nextStateID = 0;
@@ -511,7 +516,7 @@ public class Builder {
 		String thisAction = "";
 		int stateActionID = 1;
 
-
+		int eventCount=0;
 		while(events.next()){
 
 			if (thisStateID == 0){
@@ -545,20 +550,38 @@ public class Builder {
 				nextStateID = events.getInt("EndID");
 			}
 			boolean found = false;
-			for (int i = 0; i < stateActionList.size(); i++){
-				StateActionNext sa = stateActionList.get(i);
-				if (thisAction.equals(sa.getAction()) && thisStateID == sa.getStateID() && nextAction.equals(sa.getNextAction()) && nextStateID == sa.getStateID()){
-					sa.incrementOccurrence();
-					found = true;
-					break;
+			
+			String key = thisStateID + thisAction;
+			if (stateActionHash.containsKey(key)){
+				ArrayList<StateActionNext> nextList = stateActionHash.get(key);
+				for (int i = 0; i < nextList.size(); i++){
+					StateActionNext sa = nextList.get(i);
+					if (nextAction.equals(sa.getNextAction()) && nextStateID == sa.getNextStateID()){
+						sa.incrementOccurrence();
+						found = true;
+						break;
+					}
+				}
+				if (!found){
+					nextList.add(new StateActionNext(thisStateID, nextStateID, thisAction, nextAction));
 				}
 			}
-			if (!found){
-				StateActionNext sa = new StateActionNext(thisStateID, nextStateID, thisAction, nextAction);
-				stateActionList.add(sa);
+			else {
+				ArrayList<StateActionNext> nextList = new ArrayList<StateActionNext>();
+				nextList.add(new StateActionNext(thisStateID, nextStateID, thisAction, nextAction));
+				stateActionHash.put(key, nextList);
 			}
 			thisAction = nextAction;
 			thisStateID = nextStateID;
+			eventCount++;
+			if (eventCount%1000==0) System.out.println(eventCount + " eventer behandlet.");
+		}
+		Set<String> keys = stateActionHash.keySet();
+		for (String key: keys){
+			ArrayList<StateActionNext> sa = stateActionHash.get(key);
+			for (int i = 0; i <sa.size(); i++){
+				stateActionList.add(sa.get(i));
+			}
 		}
 		DatabaseHandler.insertStateActionNext(stateActionList);
 	}
