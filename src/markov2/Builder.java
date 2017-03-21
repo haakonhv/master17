@@ -62,7 +62,7 @@ public class Builder {
 				otherTeam = "Home";
 			}
 			int matchStatus = getMatchStatus(goalDifference);
-			if (action.equals("Goal") || action.equals("Out of play")){
+			if (action.equals("Goal") || action.equals("Out of play") || action.equals("Goalkeeper")){
 				//				System.out.println(action);
 				prevAction = action;
 				continue;
@@ -74,7 +74,7 @@ public class Builder {
 
 
 
-			if (eventNumber == 1 || prevEndOfPeriod || prevAction.equals("Goal")) { //lager kun startState for event n�r det er f�rste event i en omgang!
+			if (eventNumber == 1 || prevEndOfPeriod || prevAction.equals("Goal") || prevAction.equals("Goalkeeper")) { //lager kun startState for event n�r det er f�rste event i en omgang!
 				if (prevEndOfPeriod) prevEndOfPeriod = false;
 				if (stateList.size() == 0){ //hvis statelist tom -> legg til ny state
 					startState = new State(stateID, startZone, team, statePeriod, matchStatus, 0);
@@ -121,7 +121,28 @@ public class Builder {
 			int nextReward = StateBuilder.getReward(nextAction, nextTeamID==homeID);
 			eventSet.previous();
 
-			if (action.equals("Pass") || action.equals("Long pass") || action.equals("Cross") || action.equals("Free kick pass") || action.equals("Throw in taken") || action.equals("Corner taken")){
+			if(nextAction.equals("Goalkeeper")){
+				boolean endStateExists = false;
+				for (int i = 0; i < stateList.size(); i++){
+					State s = stateList.get(i);
+					if(s.getZone() == 0 && s.getPeriod() == 0 //hvis state finnes fra f�r
+							&& s.getTeam().equals("None") && s.getMatchStatus() == 0
+							&& s.getReward() == nextReward){
+						s.incrementOccurrence();
+						stateincCount++;
+						endState = s;
+						endStateExists = true;
+						break;
+					}
+				}
+				if (!endStateExists){
+					endState = new State(stateID, 0, "None", 0, 0, nextReward);
+					stateList.add(endState);
+					stateID++;
+				}
+			}
+
+			else if (action.equals("Pass") || action.equals("Long pass") || action.equals("Cross") || action.equals("Free kick pass") || action.equals("Throw in taken") || action.equals("Corner taken")){
 				if (!nextAction.equals("Aerial duel")){
 					if (outcome == 1){ // hvis outcome er 1 -> start og end state har samme lag
 						//lager end state
@@ -423,19 +444,19 @@ public class Builder {
 			if (transHash.isEmpty()){
 				thisTransition.setStateTransitionID(stateTransitionID);
 				String key = thisTransition.getStartState().getStateID() + thisTransition.getAction() + thisTransition.getEndState().getStateID();
-				transHash.put(key, thisTransition);	
+				transHash.put(key, thisTransition);
 				String sql = "UPDATE Event SET StateTransitionID="+stateTransitionID+" WHERE EventID="+eventID;
 				stateTransitionID++;
 				sqlList.add(sql);
 			}
-			else {	
+			else {
 				String transKey = thisTransition.getStartState().getStateID() + thisTransition.getAction() + thisTransition.getEndState().getStateID();
 				if (transHash.containsKey(transKey)){
 					transHash.get(transKey).incrementOccurence();
 					transitionExists = true;
 					String sql = "UPDATE Event SET StateTransitionID="+transHash.get(transKey).getStateTransitionID()+" WHERE EventID="+eventID;
 					sqlList.add(sql);
-				}	
+				}
 				else {
 					thisTransition.setStateTransitionID(stateTransitionID);
 					transHash.put(transKey, thisTransition);
@@ -550,7 +571,7 @@ public class Builder {
 				nextStateID = events.getInt("EndID");
 			}
 			boolean found = false;
-			
+
 			String key = thisStateID + thisAction;
 			if (stateActionHash.containsKey(key)){
 				ArrayList<StateActionNext> nextList = stateActionHash.get(key);
