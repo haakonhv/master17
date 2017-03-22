@@ -18,7 +18,7 @@ import markov2.StateActionNext;
 public class DatabaseHandler {
 
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovtest";
+	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovmodel2";
 
 	static final String USER = "haakosh_master";
 	static final String PASS = "project16";
@@ -192,11 +192,11 @@ public class DatabaseHandler {
 
 	}
 
-	public static void updateQValues(ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
+	public static void updateQValues(ArrayList<master17.State> stateArray) throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String sql;
-		for(State s : stateList){
+		for(master17.State s : stateArray){
 			sql = "UPDATE State SET QValue=" + s.getqValue()+" WHERE StateID = "+s.getStateID()+";\n";
 			stmt.addBatch(sql);
 

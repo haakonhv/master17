@@ -25,12 +25,12 @@ public class ReinforcementLearning {
 		while(stateSet.next()){
 			stateList.put(stateSet.getInt("StateID"), new State(stateSet.getInt("StateID"), stateSet.getInt("Reward"), 0.0, stateSet.getInt("Occurrence")));
 			if (stateSet.getInt("Reward")!=0){
-				System.out.println("mål");
+				System.out.println("mï¿½l");
 			}
 			tempQvalues.put(stateSet.getInt("StateID"), 0.0);
 		}
 		Set<Integer> keys = stateList.keySet();
-		
+
 
 		for (int i=0; i<maxIterations; i++){
 			long startTime = System.nanoTime();
@@ -60,14 +60,14 @@ public class ReinforcementLearning {
 			}
 			if (!converged){
 				if((currentValue - lastValue)/currentValue < convergeCriterion){
-					System.out.println("converged");
+					System.err.println("converged");
 					converged = true;
 				}
 			}
 			lastValue = currentValue;
 			currentValue = 0;
 			long endTime = System.nanoTime();
-			System.out.println("Iterasjon "+(i+1)+" ferdig. Tid: "+(endTime-startTime)/Math.pow(10, 9)+" sekunder");
+			if(i%100==0)System.out.println("Iterasjon "+(i+1)+" ferdig. Tid: "+(endTime-startTime)/Math.pow(10, 9)+" sekunder");
 			stateTransSet.beforeFirst();
 		}
 

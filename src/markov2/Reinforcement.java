@@ -340,8 +340,8 @@ public class Reinforcement {
 //		}
 
 
-		DatabaseHandler.updateStateActionQAlt(saList);
-		DatabaseHandler.updateStateValuesMod2Alt(states);
+		DatabaseHandler.updateStateActionQ(saList);
+		DatabaseHandler.updateStateValuesMod2(states);
 
 
 	}
