@@ -18,7 +18,7 @@ import markov2.StateActionNext;
 public class DatabaseHandler {
 
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovtest";
+	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovmodel2";
 
 	static final String USER = "haakosh_master";
 	static final String PASS = "project16";
@@ -192,11 +192,11 @@ public class DatabaseHandler {
 
 	}
 
-	public static void updateQValues(ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
+	public static void updateQValues(ArrayList<master17.State> stateArray) throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String sql;
-		for(State s : stateList){
+		for(master17.State s : stateArray){
 			sql = "UPDATE State SET QValue=" + s.getqValue()+" WHERE StateID = "+s.getStateID()+";\n";
 			stmt.addBatch(sql);
 
@@ -460,6 +460,24 @@ public class DatabaseHandler {
 		System.out.println("StateActions Qvalues updated ");
 		closeConnection();
 	}
+
+	public static void updateStateActionQAlt(Hashtable<String, StateAction> stateActions) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "";
+		Set<String> keys = stateActions.keySet();
+
+		for(String key: keys ){
+			int stateID = Integer.parseInt(key.replaceAll("[^\\d.]", ""));
+			String action = key.replaceAll(Integer.toString(stateID), "");
+			double qValue = stateActions.get(key).getValue();
+			sql = "UPDATE StateAction2 SET Value = "+ qValue + " WHERE StateID = " + stateID + " AND Action = '" + action+ "';\n";
+			stmt.addBatch(sql);
+		}
+		int[] updateCounts = stmt.executeBatch();
+		System.out.println("StateActions Qvalues updated ");
+		closeConnection();
+	}
 	public static void updateStateValues(ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
@@ -482,6 +500,23 @@ public class DatabaseHandler {
 			State state = states.get(stateID);
 			double stateValue = state.getValue();
 			sql = "UPDATE State SET Value=" + stateValue +" WHERE StateID = "+stateID+";\n";
+			stmt.addBatch(sql);
+
+		}
+		int [] updateCounts = stmt.executeBatch();
+		System.out.println("StateValues updated on State");
+		closeConnection();
+	}
+
+	public static void updateStateValuesMod2Alt(Hashtable<Integer, State> states) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql;
+		Set<Integer> keys = states.keySet();
+		for(Integer stateID : keys){
+			State state = states.get(stateID);
+			double stateValue = state.getValue();
+			sql = "UPDATE State2 SET Value=" + stateValue +" WHERE StateID = "+stateID+";\n";
 			stmt.addBatch(sql);
 
 		}

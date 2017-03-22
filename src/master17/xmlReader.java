@@ -298,7 +298,10 @@ public class xmlReader {
 		}
 		else if (typeid == 5){
 			if (Integer.parseInt(xmlEvent.getAttribute("outcome")) == 0){
-				actiontype = "Out of play";
+				if(Float.parseFloat(xmlEvent.getAttribute("x"))>100){
+					actiontype = "Goalkeeper";
+				}
+				else actiontype = "Out of play";
 
 			}
 			else {
@@ -339,35 +342,35 @@ public class xmlReader {
 			return actiontype;
 		}
 
-//		else if(typeid == 52){
-//			actiontype = "Goalkeeper";
-//			return actiontype;
-//		}
-//		else if (typeid == 10){
-//			NodeList qualifierList = xmlEvent.getChildNodes();
-//			for(int i=0; i<qualifierList.getLength();i++){
-//				if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
-//					Element q = (Element) qualifierList.item(i);
-//		    		int qid = Integer.parseInt(q.getAttribute("qualifier_id"));
-//		    		if (qid == 176 || qid== 177 || qid == 92 || qid == 93){
-//		    			actiontype = "Goalkeeper";
-//		    			return actiontype;
-//		    		}
-//				}
-//			}
-//			actiontype = "skip";
-//			return actiontype;
-//		}
-//		else if (typeid == 11){
-//			if (Integer.parseInt(xmlEvent.getAttribute("outcome"))==1){
-//				actiontype = "Goalkeeper";
-//				return actiontype;
-//			}
-//			else{
-//				actiontype = "skip";
-//				return actiontype;
-//			}
-//		}
+		else if(typeid == 52){
+			actiontype = "Goalkeeper";
+			return actiontype;
+		}
+		else if (typeid == 10){
+			NodeList qualifierList = xmlEvent.getChildNodes();
+			for(int i=0; i<qualifierList.getLength();i++){
+				if(qualifierList.item(i).getNodeType() == Node.ELEMENT_NODE){
+					Element q = (Element) qualifierList.item(i);
+		    		int qid = Integer.parseInt(q.getAttribute("qualifier_id"));
+		    		if (qid == 176 || qid== 177 || qid == 92 || qid == 93){
+		    			actiontype = "Goalkeeper";
+		    			return actiontype;
+		    		}
+				}
+			}
+			actiontype = "skip";
+			return actiontype;
+		}
+		else if (typeid == 11){
+			if (Integer.parseInt(xmlEvent.getAttribute("outcome"))==1){
+				actiontype = "Goalkeeper";
+				return actiontype;
+			}
+			else{
+				actiontype = "skip";
+				return actiontype;
+			}
+		}
 		else if (typeid == 16){
 			actiontype = "Goal";
 			return actiontype;
@@ -484,11 +487,11 @@ public class xmlReader {
          	catch (NumberFormatException E){
          		continue;
          	}
-//         	if (action_type.equals("Goalkeeper")){
-//         		eventList.add(new Event(event_id,action_type,1,team_id,player_id,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,gd));
-//         		sequence +=1;
-//         		continue;
-//         	}
+         	if (action_type.equals("Goalkeeper")){
+         		eventList.add(new Event(event_id,action_type,1,team_id,player_id,xstart,ystart,xstart,ystart,number,sequence,game_id,period,minute,second,gd));
+         		sequence +=1;
+         		continue;
+         	}
 
 
          	float[] endCoordinates = getEndCoordinates(xmlEvent);
