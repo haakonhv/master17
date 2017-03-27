@@ -18,7 +18,7 @@ import markov2.StateActionNext;
 public class DatabaseHandler {
 
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovmodel2";
+	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovgame17";
 
 	static final String USER = "haakosh_master";
 	static final String PASS = "project16";
@@ -238,7 +238,7 @@ public class DatabaseHandler {
 	public static ResultSet getEventsAndValues() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT E.TeamID, E.EventID, E.PlayerID, E.Action, E.GameID, E.StateID, S.QValue, S.Zone, G.HomeID, G.AwayID \n"
+		String query = "SELECT E.TeamID, E.EventID, E.PlayerID, E.Action, E.GameID, E.StateID, S.QValue, S.Zone, S.Period, S.Home, S.MatchStatus, G.HomeID, G.AwayID \n"
 				+ "FROM Event AS E \n"
 				+ "INNER JOIN State AS S ON E.StateID=S.StateID \n"
 				+ "INNER JOIN Game AS G ON E.GameID=G.GameID \n"
@@ -268,11 +268,13 @@ public class DatabaseHandler {
 		Statement stmt = conn.createStatement();
 		String sql;
 		for(PlayerValues pv : playerValueList){
+			pv.setAverageActionValues();
 			pv.setTotal();
 			sql = "INSERT INTO PlayerValues VALUES ("+pv.getPlayerID()+"," + pv.getGameID() + "," + pv.getTeamID() + "," +pv.getTotal() +","+pv.getPass() +","+ pv.getLongPass() + "," + pv.getBallCarry() + "," + pv.getBallRecovery() + "," + pv.getBallReceived() +
 					"," + pv.getAerialDuel() + "," + pv.getClearance() + "," + pv.getThrowInTaken() + "," + pv.getBallTouch() + "," + pv.getInterception() + "," + pv.getBlockedShot() + "," + pv.getSavedShot() + "," + pv.getCross()
 					+ "," + pv.getTackle() + "," + pv.getShot() + "," + pv.getHeadedShot() + "," + pv.getTakeOn() + "," + pv.getFreekickPass() + "," + pv.getFoulCommitted() + "," + pv.getFouled()
 					+"," +pv.getDispossessed() + "," + pv.getCornerTaken()+");\n";
+			System.out.println(sql);
 			stmt.addBatch(sql);
 
 		}
@@ -545,6 +547,35 @@ public class DatabaseHandler {
 		String query = "SELECT SA.StartID, SA.StartAction, SA.NextID, SA.NextAction, SA.Occurrence FROM StateActionNext AS SA";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
+	}
+
+	public static ResultSet getStatesMod1() throws ClassNotFoundException, SQLException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String query = "SELECT* FROM State";
+		ResultSet rs = stmt.executeQuery(query);
+		return rs;
+
+	}
+	public static void insertPlayerValuesMod1(ArrayList<PlayerValues> playerValues) throws SQLException, ClassNotFoundException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		for (int i = 0 ; i < playerValues.size() ; i++){
+			PlayerValues pv = playerValues.get(i);
+			pv.setAverageActionValues();
+			for (int j = 0; j < pv.getTotal().size() ; j++){
+				int index = j+1;
+				
+				String sql = "INSERT INTO PlayerValues"+index+" VALUES ("+pv.getPlayerID()+"," + pv.getGameID() + "," + pv.getTeamID() + "," +pv.getTotal().get(j) +","+pv.getPass().get(j) +","+ pv.getLongPass().get(j) + "," + pv.getBallCarry().get(j) + "," + pv.getBallRecovery().get(j) + "," + pv.getBallReceived().get(j) +
+						"," + pv.getAerialDuel().get(j) + "," + pv.getClearance().get(j) + "," + pv.getThrowInTaken().get(j) + "," + pv.getBallTouch().get(j) + "," + pv.getInterception().get(j) + "," + pv.getBlockedShot().get(j) + "," + pv.getSavedShot().get(j) + "," + pv.getCross().get(j)
+						+ "," + pv.getTackle().get(j) + "," + pv.getShot().get(j) + "," + pv.getHeadedShot().get(j) + "," + pv.getTakeOn().get(j) + "," + pv.getFreekickPass().get(j) + "," + pv.getFoulCommitted().get(j) + "," + pv.getFouled().get(j)
+						+"," +pv.getDispossessed().get(j) + "," + pv.getCornerTaken().get(j)+");\n";
+				stmt.addBatch(sql);
+				System.out.println(sql);
+			}
+		}
+		int[] updateCounts = stmt.executeBatch();
+		closeConnection();
 	}
 
 
