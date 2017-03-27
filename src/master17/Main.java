@@ -22,12 +22,12 @@ public class Main {
 //		sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
-//		FindPlayerValues.findValues();
+		FindPlayerValues.findValues();
 //		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
 //		ReinforcementLearning.learningAlgorithm();
-		markov2.Builder.buildFromEvents();
+//		markov2.Builder.buildFromEvents();
 //		GameTimeReader.setPlayerGameTime();
 //		markov2.Builder.setStateAction();
 //		markov2.Reinforcement.learningAlgorithm();

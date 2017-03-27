@@ -11,11 +11,13 @@ public class FindPlayerValues {
 		ResultSet players = DatabaseHandler.getPlayers();
 		ResultSet events = DatabaseHandler.getEventsAndValues();
 		ArrayList<PlayerValues> playerValueList= new ArrayList<PlayerValues>();
-
+		ResultSet states = DatabaseHandler.getStatesMod1();
 		
 		Hashtable<Integer,Hashtable<Integer, PlayerValues>> playerValues = new Hashtable<Integer, Hashtable<Integer, PlayerValues>>();
-
-
+		//gameID->PlayerID->PlayerValues
+		Hashtable<String, Double> stateNoAction = getStateNoAction(states);
+		
+		
 		events.next();
 		int prevTeamID = events.getInt("TeamID"); //lagrer previous events variabler. N�dvendig for � sjekke n�r game er ferdig, sjekke ballvinning osv
 		int prevPlayerID =  events.getInt("PlayerID");
@@ -26,6 +28,10 @@ public class FindPlayerValues {
 		int prevHomeID = events.getInt("HomeID");
 		int prevAwayID = events.getInt("AwayID");
 		int prevZone = events.getInt("Zone");
+		int prevPeriod = events.getInt("Period");
+		int prevMatchStatus = events.getInt("MatchStatus");
+		int prevHome = events.getInt("Home");
+		
 
 		events.next();
 		int currTeamID = events.getInt("TeamID"); //lagrer current events variabler
@@ -37,6 +43,10 @@ public class FindPlayerValues {
 		int currHomeID = events.getInt("HomeID");
 		int currAwayID = events.getInt("AwayID");
 		int currZone = events.getInt("Zone");
+		int currPeriod = events.getInt("Period");
+		int currMatchStatus = events.getInt("MatchStatus");
+		int currHome = events.getInt("Home");
+		
 		
 		Hashtable<Integer, PlayerValues> gameValues = new Hashtable<Integer, PlayerValues>();
 		playerValues.put(currGameID, gameValues);
@@ -52,7 +62,10 @@ public class FindPlayerValues {
 			int nextHomeID = events.getInt("HomeID");
 			int nextAwayID = events.getInt("AwayID");
 			int nextZone = events.getInt("Zone");
-			//System.out.println(currGameID);
+			int nextPeriod = events.getInt("Period");
+			int nextMatchStatus = events.getInt("MatchStatus");
+			int nextHome = events.getInt("Home");
+			
 			//System.out.println("Current Q= " + currQvalue + " previous Q= "+prevQvalue+" nextQ = "+nextQvalue);
 			if (prevGameID!=currGameID){ //sjekker om forrige event er fra en annen game enn current
 				gameValues = new Hashtable<Integer, PlayerValues>();
@@ -67,6 +80,9 @@ public class FindPlayerValues {
 				prevHomeID = currHomeID;
 				prevAwayID = currAwayID;
 				prevZone = currZone;
+				prevPeriod = currPeriod;
+				prevMatchStatus = currMatchStatus;
+				prevHome = currHome;
 
 				currTeamID = nextTeamID;
 				currPlayerID = nextPlayerID;
@@ -77,6 +93,9 @@ public class FindPlayerValues {
 				currHomeID = nextHomeID;
 				currAwayID = nextAwayID;
 				currZone = nextZone;
+				currPeriod = nextPeriod;
+				currMatchStatus = nextMatchStatus;
+				currHome = nextHome;
 				continue;
 
 			}
@@ -91,6 +110,9 @@ public class FindPlayerValues {
 					prevHomeID = currHomeID;
 					prevAwayID = currAwayID;
 					prevZone = currZone;
+					prevPeriod = currPeriod;
+					prevMatchStatus = currMatchStatus;
+					prevHome = currHome;
 
 					currTeamID = nextTeamID;
 					currPlayerID = nextPlayerID;
@@ -101,42 +123,34 @@ public class FindPlayerValues {
 					currHomeID = nextHomeID;
 					currAwayID = nextAwayID;
 					currZone = nextZone;
+					currPeriod = nextPeriod;
+					currMatchStatus = nextMatchStatus;
+					currHome = nextHome;
 					continue;
 				}
-				double eventValue;
+				ArrayList<Double> eventValues = new ArrayList<Double>();
+				String stateKey = "" + currZone + currHome + currPeriod + currMatchStatus;
 				if (currTeamID == currHomeID){ //hjemmelags event
-					if (prevZone == 0) { //forrige event endte en sekvens -> m� se p� neste event
-						eventValue = nextQvalue - currQvalue;
-					}
-					else if (prevTeamID == currTeamID){ //current event er samme lag som previous
-						eventValue = nextQvalue - currQvalue;
-					}
-					else { // current event er ikke av samme lag som previous (alts� ballvinning e.l.)
-						eventValue = nextQvalue - currQvalue;
-						//eventValue = nextQvalue - prevQvalue;
-					}
+					eventValues.add(currQvalue);
+					eventValues.add(nextQvalue - currQvalue);
+					eventValues.add(nextQvalue - prevQvalue);
+					eventValues.add(currQvalue - stateNoAction.get(stateKey));
 				}
 				else { //bortelags event
-					if (prevZone == 0){ //forrige event endte en sekvens -> m� se p� neste event
-						eventValue = - (nextQvalue - currQvalue);
-					}
-					else if (prevTeamID == currTeamID){//current event er samme lag som previous
-						eventValue = - (nextQvalue - currQvalue);
-					}
-					else { //current event er fra annet lag enn previous (alts� ballvinning e.l.)
-						eventValue = - (nextQvalue - currQvalue);
-						//eventValue = - (nextQvalue - prevQvalue);
-					}
+					eventValues.add(-currQvalue);
+					eventValues.add(- (nextQvalue - currQvalue));
+					eventValues.add(-(nextQvalue - prevQvalue));
+					eventValues.add(-(currQvalue - stateNoAction.get(stateKey)));
 				}
 				
 				if(gameValues.containsKey(currPlayerID)){
 					PlayerValues pv = gameValues.get(currPlayerID);
-					pv.updateValue(currAction, eventValue);
+					pv.updateValue(currAction, eventValues);
 					gameValues.put(currPlayerID, pv);
 				}
 				else {
 					PlayerValues pv = new PlayerValues(currPlayerID, currGameID, currTeamID);
-					pv.updateValue(currAction, eventValue);
+					pv.updateValue(currAction, eventValues);
 					gameValues.put(currPlayerID, pv);
 				}
 				
@@ -149,6 +163,9 @@ public class FindPlayerValues {
 				prevHomeID = currHomeID;
 				prevAwayID = currAwayID;
 				prevZone = currZone;
+				prevPeriod = currPeriod;
+				prevMatchStatus = currMatchStatus;
+				prevHome = currHome;
 
 				currTeamID = nextTeamID;
 				currPlayerID = nextPlayerID;
@@ -159,6 +176,9 @@ public class FindPlayerValues {
 				currHomeID = nextHomeID;
 				currAwayID = nextAwayID;
 				currZone = nextZone;
+				currPeriod = nextPeriod;
+				currMatchStatus = nextMatchStatus;
+				currHome = nextHome;
 			}
 		}
 
@@ -171,8 +191,34 @@ public class FindPlayerValues {
 				playerValueList.add(playervals.get(playerID));
 			}
 		}
-		DatabaseHandler.insertPlayerValues(playerValueList);
+		DatabaseHandler.insertPlayerValuesMod1(playerValueList);
 
 
+	}
+
+	private static Hashtable<String, Double> getStateNoAction(ResultSet states) throws SQLException {
+		Hashtable<String, Double> stateNoAction = new Hashtable<String, Double>();
+		Hashtable<String, Integer> stateCount = new Hashtable<String, Integer>();
+		while(states.next()){
+			String key;
+			int zone = states.getInt("Zone"); 
+			int home = states.getInt("Home");
+			int period = states.getInt("Period"); 
+			int matchStatus = states.getInt("matchStatus");
+			key = "" + zone+home+period+matchStatus;
+			if (stateNoAction.containsKey(key)){
+				stateCount.put(key, stateCount.get(key) + 1);
+				stateNoAction.put(key, stateNoAction.get(key) + states.getDouble("QValue"));
+			}
+			else{
+				stateCount.put(key, 1);
+				stateNoAction.put(key, states.getDouble("QValue"));
+			}
+		}
+		Set<String> keyset = stateNoAction.keySet();
+		for (String key : keyset){
+			stateNoAction.put(key, stateNoAction.get(key)/stateCount.get(key));
+		}
+		return stateNoAction;
 	}
 }
