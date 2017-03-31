@@ -10,8 +10,14 @@ public class shotVector {
 	private int header;
 	private int fastBreak;
 	private int followsDribble;
-	private float distance;
-	private float angle;
+	private int cross;
+	private int pullBack;
+	private int throughBall;
+	private int secondThrough;
+	private double distance;
+	private double angle;
+	
+	
 
 	public shotVector(int goal) {
 		super();
@@ -24,7 +30,18 @@ public class shotVector {
 		header = 0;
 		fastBreak = 0;
 		followsDribble = 0;
-		
+		cross = 0;
+		pullBack = 0;
+		throughBall = 0;
+		secondThrough = 0;
+	}
+	@Override
+	public String toString() {
+		return "shotVector [goal=" + goal + ", directFK=" + directFK + ", corner=" + corner + ", intentional_assist="
+				+ intentional_assist + ", penalty=" + penalty + ", volley=" + volley + ", header=" + header
+				+ ", fastBreak=" + fastBreak + ", followsDribble=" + followsDribble + ", cross=" + cross + ", pullBack="
+				+ pullBack + ", throughBall=" + throughBall + ", secondThrough=" + secondThrough + ", distance="
+				+ distance + ", angle=" + angle + "]";
 	}
 	public int getGoal() {
 		return goal;
@@ -85,6 +102,42 @@ public class shotVector {
 	}
 	public void setFollowsDribble(int followsDribble) {
 		this.followsDribble = followsDribble;
+	}
+	public int getCross() {
+		return cross;
+	}
+	public void setCross(int cross) {
+		this.cross = cross;
+	}
+	public int getPullBack() {
+		return pullBack;
+	}
+	public void setPullBack(int pullBack) {
+		this.pullBack = pullBack;
+	}
+	public int getThroughBall() {
+		return throughBall;
+	}
+	public void setThroughBall(int throughBall) {
+		this.throughBall = throughBall;
+	}
+	public double getDistance() {
+		return distance;
+	}
+	public void setDistance(double distance) {
+		this.distance = distance;
+	}
+	public double getAngle() {
+		return angle;
+	}
+	public void setAngle(double angle) {
+		this.angle = angle;
+	}
+	public int getSecondThrough() {
+		return secondThrough;
+	}
+	public void setSecondThrough(int secondThrough) {
+		this.secondThrough = secondThrough;
 	}
 	
 	
