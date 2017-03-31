@@ -18,7 +18,7 @@ import markov2.StateActionNext;
 public class DatabaseHandler {
 
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovgame17";
+	static final String DB_URL = "jdbc:mysql://mysql.stud.ntnu.no:3306/haakosh_markovmodel2";
 
 	static final String USER = "haakosh_master";
 	static final String PASS = "project16";
@@ -252,9 +252,10 @@ public class DatabaseHandler {
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String query = "SELECT E.Number, E.EventID, E.Action, E.TeamID, E.PlayerID, E.GameID, E.StateTransitionID, "
-				+ "ST.TransitionID, ST.StartID, ST.EndID, SA.StateID, SA.Action, SA.Value AS QValue, EndS.Value AS EndValue, G.HomeID, G.AwayID "
+				+ "ST.TransitionID, ST.StartID, ST.EndID, SA.StateID, SA.Action, SA.Value AS QValue, StartS.Value AS StartValue, EndS.Value AS EndValue, G.HomeID, G.AwayID "
 				+ "FROM `Event` AS E "
 				+ "INNER JOIN StateTransition AS ST ON E.StateTransitionID=ST.TransitionID "
+				+ "INNER JOIN State AS StartS ON ST.StartID=StartS.StateID "
 				+ "INNER JOIN StateAction AS SA ON ST.StartID=SA.StateID "
 				+ "INNER JOIN State AS EndS	ON ST.EndID=EndS.StateID "
 				+ "INNER JOIN Game AS G	ON E.GameID=G.GameID WHERE SA.Action = E.Action "
@@ -578,6 +579,25 @@ public class DatabaseHandler {
 		closeConnection();
 	}
 
-
+	public static void insertPlayerValuesMod2(ArrayList<PlayerValues> playerValues) throws SQLException, ClassNotFoundException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		for (int i = 0 ; i < playerValues.size() ; i++){
+			PlayerValues pv = playerValues.get(i);
+			for (int j = 0; j < pv.getTotal().size() ; j++){
+				int index = j+1;
+				
+				String sql = "INSERT INTO PlayerValues"+index+" VALUES ("+pv.getPlayerID()+"," + pv.getGameID() + "," + pv.getTeamID() + "," +pv.getTotal().get(j) +","+pv.getPass().get(j) +","+ pv.getLongPass().get(j) + "," + pv.getBallCarry().get(j) + "," + pv.getBallRecovery().get(j) + "," + pv.getBallReceived().get(j) +
+						"," + pv.getAerialDuel().get(j) + "," + pv.getClearance().get(j) + "," + pv.getThrowInTaken().get(j) + "," + pv.getBallTouch().get(j) + "," + pv.getInterception().get(j) + "," + pv.getBlockedShot().get(j) + "," + pv.getSavedShot().get(j) + "," + pv.getCross().get(j)
+						+ "," + pv.getTackle().get(j) + "," + pv.getShot().get(j) + "," + pv.getHeadedShot().get(j) + "," + pv.getTakeOn().get(j) + "," + pv.getFreekickPass().get(j) + "," + pv.getFoulCommitted().get(j) + "," + pv.getFouled().get(j)
+						+"," +pv.getDispossessed().get(j) + "," + pv.getCornerTaken().get(j)+");\n";
+				stmt.addBatch(sql);
+				System.out.println(sql);
+			}
+		}
+		int[] updateCounts = stmt.executeBatch();
+		closeConnection();
+	}
+	
 
 }

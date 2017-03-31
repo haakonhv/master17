@@ -473,7 +473,6 @@ public class PlayerValues {
 	}
 
 	public void setTotal() {
-		System.out.println(total.size());
 		for (int i = 0; i < 8; i++){
 			double totalVal = this.getAerialDuel().get(i)+this.getBallCarry().get(i)+this.getBallRecovery().get(i)+this.getBallTouch().get(i)+this.getClearance().get(i)+this.getCornerTaken().get(i)+this.getCross().get(i)+
 					this.getDispossessed().get(i)+this.getFoulCommitted().get(i)+this.getFouled().get(i)+this.getFreekickPass().get(i)+this.getInterception().get(i)+this.getLongPass().get(i)+this.getPass().get(i)+this.getShot().get(i)+
@@ -548,9 +547,19 @@ public class PlayerValues {
 			
 			if (actionCount.get("savedShot")!=0) savedShot.add(savedShot.get(i)/actionCount.get("savedShot"));
 			else savedShot.add(0.0);
-			System.out.println(tackle.size());
 		}
 		this.setTotal();
+	}
+	@Override
+	public String toString() {
+		return "PlayerValues [playerID=" + playerID + ", gameID=" + gameID + ", teamID=" + teamID + ", tackle=" + tackle
+				+ ", clearance=" + clearance + ", aerialDuel=" + aerialDuel + ", dispossessed=" + dispossessed
+				+ ", foulCommitted=" + foulCommitted + ", fouled=" + fouled + ", interception=" + interception
+				+ ", ballRecovery=" + ballRecovery + ", ballTouch=" + ballTouch + ", ballCarry=" + ballCarry + ", pass="
+				+ pass + ", longPass=" + longPass + ", cross=" + cross + ", freekickPass=" + freekickPass
+				+ ", cornerTaken=" + cornerTaken + ", throwInTaken=" + throwInTaken + ", takeOn=" + takeOn + ", shot="
+				+ shot + ", headedShot=" + headedShot + ", ballReceived=" + ballReceived + ", total=" + total
+				+ ", blockedShot=" + blockedShot + ", savedShot=" + savedShot + ", actionCount=" + actionCount + "]";
 	}
 
 

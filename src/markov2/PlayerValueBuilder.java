@@ -27,40 +27,54 @@ public class PlayerValueBuilder {
 			int playerID = events.getInt("PlayerID");
 			int homeID =  events.getInt("HomeID");
 			int awayID = events.getInt("AwayID");
+			int endStateID = events.getInt("EndID");
+			
 			double qValue = events.getDouble("QValue");
 			double endStateVal =  events.getDouble("EndValue");
+			double startStateVal = events.getDouble("StartValue");
 			String action = events.getString("E.Action");
+			double prevStartVal = 0;
+
+
 
 			if(gameID != prevGameID){
 				System.out.println("Begynner med gameID: " + gameID);
 				c++;
 				gameValues = new Hashtable<Integer, PlayerValues>();
 				playerValues.put(gameID, gameValues);
-			}
+				prevStartVal = 0;
 
-			double eventValue;
+			}
+			
+			ArrayList<Double> eventValues = new ArrayList<Double>();
 			if (teamID == homeID){ //hjemmelags event
-				eventValue = endStateVal - qValue;
+				eventValues.add(qValue);
+				eventValues.add(endStateVal - qValue);
+				eventValues.add(endStateVal - prevStartVal);
+				eventValues.add(qValue - startStateVal);
+				
+				
 
 			}
 			else { //bortelags event
-				eventValue = -(endStateVal - qValue);
+				eventValues.add(- qValue);
+				eventValues.add(-(endStateVal - qValue));
+				eventValues.add(-(endStateVal - prevStartVal));
+				eventValues.add(-(qValue - startStateVal));
 			}
 
 			if(gameValues.containsKey(playerID)){
 				PlayerValues pv = gameValues.get(playerID);
-				pv.updateValue(action, eventValue);
+				pv.updateValue(action, eventValues);
 				gameValues.put(playerID, pv);
 			}
 			else {
 				PlayerValues pv = new PlayerValues(playerID, gameID,teamID);
-				pv.updateValue(action, eventValue);
+				pv.updateValue(action, eventValues);
 				gameValues.put(playerID, pv);
 			}
-
+			prevStartVal = startStateVal;
 			prevGameID = gameID;
-
-
 
 		}
 		Set<Integer> gameIDs = playerValues.keySet();
@@ -69,11 +83,12 @@ public class PlayerValueBuilder {
 			Set<Integer> playerIDs = playervals.keySet();
 			for (Integer pID: playerIDs){
 				playerValueList.add(playervals.get(pID));
+				playervals.get(pID).setAverageActionValues();
 			}
 		}
 
 		System.out.println(c);
-		DatabaseHandler.insertPlayerValues(playerValueList);
+		DatabaseHandler.insertPlayerValuesMod2(playerValueList);
 
 
 
