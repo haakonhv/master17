@@ -2,6 +2,9 @@ package master17;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,6 +24,75 @@ public class xmlReader {
         Document doc = builder.parse(fileName);
         return doc;
     }
+	public static Hashtable<Integer, Integer> getResults(Document doc){
+		Hashtable<Integer, Integer> results = new Hashtable<Integer, Integer>();
+		NodeList matches = doc.getElementsByTagName("MatchData");
+		for (int i = 0; i < matches.getLength(); i++){
+			Element match = (Element) matches.item(i);
+			int gameID = Integer.parseInt(match.getAttribute("uID").substring(1));
+			NodeList children = match.getChildNodes();
+			int homeGoals = 0;
+			int awayGoals = 0;
+			for (int j=0; j<children.getLength(); j++){
+				if (children.item(j).getNodeType() == Node.ELEMENT_NODE){
+					String nodeName = children.item(j).getNodeName();
+					if (nodeName.equals("MatchInfo")){
+						Element matchInfo = (Element) children.item(j);
+						if (!matchInfo.hasAttribute("MatchWinner")){ //uavgjort
+							results.put(gameID, 0);
+							break;
+						}
+					}
+					else if (nodeName.equals("TeamData")){
+						Element teamInfo = (Element) children.item(j);
+						if (teamInfo.getAttribute("Side").equals("Home")){
+							homeGoals = Integer.parseInt(teamInfo.getAttribute("Score"));
+						}
+						else awayGoals = Integer.parseInt(teamInfo.getAttribute("Score"));
+					}
+					System.out.println(children.item(j).getNodeName());
+				}
+				if (homeGoals>awayGoals) results.put(gameID, 1);
+				else results.put(gameID, -1);
+				
+			}
+
+		}
+		return results;
+	}
+	
+	public static int getResultsFromEvents(Document doc, Game game){
+		ArrayList<StartingEleven> seList = new ArrayList<StartingEleven>();
+		NodeList xmlEventList = doc.getElementsByTagName("Event");
+		int score = 0;
+		for (int i = 0; i<xmlEventList.getLength(); i++){
+			Element eventElement = (Element) xmlEventList.item(i);
+			if (Integer.parseInt(eventElement.getAttribute("type_id")) == 16){
+				boolean ownGoal = false;
+				NodeList qualifiers = eventElement.getChildNodes();
+				for (int j = 0; j < qualifiers.getLength(); j++){
+					if (qualifiers.item(j).getNodeType()==Node.ELEMENT_NODE){
+						Element q = (Element) qualifiers.item(j);
+						if (Integer.parseInt(q.getAttribute("qualifier_id"))==28) ownGoal = true;
+					}
+				}
+				if (Integer.parseInt(eventElement.getAttribute("team_id")) == game.getHome_team_id()){
+					if (ownGoal) score -= 1;
+					else score +=1;
+				}
+				
+				else {
+					if (ownGoal) score += 1;
+					else score-=1; 
+				}
+			}
+		}
+		System.out.println(score);
+		if (score > 0) return 1;
+		else if (score < 0) return -1;
+		else return 0;
+	}
+	
 	public static Game getGame(Document doc){
         Node gameNode = doc.getElementsByTagName("Game").item(0); //Game-noden er det første og eneste elementet med TagName "Game"
         Element gameElement = (Element) gameNode;  //Node castes til Element for å kunne bruke getAttribute()
@@ -32,6 +104,29 @@ public class xmlReader {
         Game game = new Game(game_id, home_team_id, away_team_id, matchday, season);
         return game;
     }
+	public static ArrayList<StartingEleven> getStartingEleven(Document doc, Game game){
+		ArrayList<StartingEleven> seList = new ArrayList<StartingEleven>();
+		NodeList xmlEventList = doc.getElementsByTagName("Event");
+		for (int i = 0; i<xmlEventList.getLength(); i++){
+			Element eventElement = (Element) xmlEventList.item(i);
+			if (Integer.parseInt(eventElement.getAttribute("type_id")) == 34){
+				NodeList qualifierList = eventElement.getChildNodes();
+				for (int j = 0; j<qualifierList.getLength(); j++){
+					if (qualifierList.item(j).getNodeType() == Node.ELEMENT_NODE){
+						Element q = (Element) qualifierList.item(j);
+						if (Integer.parseInt(q.getAttribute("qualifier_id"))==30){
+							String players = q.getAttribute("value");
+							List<String> list = new ArrayList<String>(Arrays.asList(players.split(", ")));
+							list = list.subList(0, 11);
+							StartingEleven se = new StartingEleven(Integer.parseInt(eventElement.getAttribute("team_id")), game.getGame_id(), list);
+							seList.add(se);
+						}
+					}
+				}
+			}
+		}
+		return seList;
+	}
 //	public static ArrayList<Event> getEventList(Document doc, Game game){ //Ikke i bruk. Bruker buildEventList()
 //		int game_id = game.getGame_id();
 //		NodeList xmlEventList = doc.getElementsByTagName("Event"); //nodelist med alle event-nodene fra XML-filen

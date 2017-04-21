@@ -2,8 +2,11 @@ package master17;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -22,7 +25,7 @@ public class Main {
 //		sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
-//		FindPlayerValues.findValues();
+//				FindPlayerValues.findValues();
 //		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
@@ -32,10 +35,49 @@ public class Main {
 //		markov2.Builder.setStateAction();
 //		markov2.Reinforcement.learningAlgorithm();
 //		markov2.Builder.buildStateAction();
-//		markov2.Reinforcement.learning();
-//		markov2.Reinforcement.learning2();
-		markov2.PlayerValueBuilder.buildPlayerValues();
-
+		markov2.Reinforcement.learning2();
+//		markov2.PlayerValueBuilder.buildPlayerValues();
+//		sendStartingElevenFromDataFiles();
+//		sendMatchResults();
+	}
+	
+	public static void sendMatchResults() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
+		File folder = new File("data_files");
+		File[] listOfFiles = folder.listFiles();
+		Hashtable<Integer, Integer> results = new Hashtable<Integer, Integer>();
+		for(int i = 0; i < listOfFiles.length; i++){
+			Document doc = xmlReader.getDocument(listOfFiles[i].toString());
+			Game game = xmlReader.getGame(doc);
+			int gameID = game.getGame_id();
+			int result = xmlReader.getResultsFromEvents(doc, game);
+			results.put(gameID, result);
+			System.out.println(gameID + " " + result);
+//			Document doc = xmlReader.getDocument(listOfFiles[i].toString()); // bruk hvis man leser resultfiler
+//			results = xmlReader.getResults(doc);
+//			
+		}
+		DatabaseHandler.updateMatchResults(results);
+	}
+	
+	
+	public static void sendStartingElevenFromDataFiles() throws ParserConfigurationException, SAXException, IOException, SQLException, ClassNotFoundException {
+		File folder = new File("data_files");
+		File[] listOfFiles = folder.listFiles();
+		ArrayList<StartingEleven> seList = new ArrayList<StartingEleven>();
+		
+		for(int i = 0; i < listOfFiles.length; i++){
+			long startTime = System.nanoTime();
+			Document doc = xmlReader.getDocument(listOfFiles[i].toString());
+			Game game = xmlReader.getGame(doc);
+			long endTime = System.nanoTime();
+			System.out.println("Game " + (i+1) + " av " + listOfFiles.length + " Tid= " +(endTime-startTime)/Math.pow(10, 9)+" sekunder");
+			ArrayList<StartingEleven> temp = xmlReader.getStartingEleven(doc, game);
+			for (StartingEleven se: temp){
+				seList.add(se);
+			}
+		}
+		DatabaseHandler.insertStartingEleven(seList);
+		
 	}
 	public static void sendGamesFromDataFiles() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
 		File folder = new File("data_files");
