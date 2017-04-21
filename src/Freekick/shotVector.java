@@ -16,6 +16,9 @@ public class shotVector {
 	private int secondThrough;
 	private double distance;
 	private double angle;
+	private double inverseDistance;
+	private double inverseAngle;
+	private double distanceAngle;
 	
 	
 
@@ -35,16 +38,36 @@ public class shotVector {
 		throughBall = 0;
 		secondThrough = 0;
 	}
-	@Override
-	public String toString() {
-		return "shotVector [goal=" + goal + ", directFK=" + directFK + ", corner=" + corner + ", intentional_assist="
-				+ intentional_assist + ", penalty=" + penalty + ", volley=" + volley + ", header=" + header
-				+ ", fastBreak=" + fastBreak + ", followsDribble=" + followsDribble + ", cross=" + cross + ", pullBack="
-				+ pullBack + ", throughBall=" + throughBall + ", secondThrough=" + secondThrough + ", distance="
-				+ distance + ", angle=" + angle + "]";
+	public double getInverseDistance() {
+		return inverseDistance;
 	}
+	public void setInverseDistance(double inverseDistance) {
+		this.inverseDistance = inverseDistance;
+	}
+	public double getInverseAngle() {
+		return inverseAngle;
+	}
+	public void setInverseAngle(double inverseAngle) {
+		this.inverseAngle = inverseAngle;
+	}
+	public double getDistanceAngle() {
+		return distanceAngle;
+	}
+	public void setDistanceAngle(double distanceAngle) {
+		this.distanceAngle = distanceAngle;
+	}
+
 	public int getGoal() {
 		return goal;
+	}
+	@Override
+	public String toString() {
+		return  + goal + "," + directFK + "," + corner + ","
+				+ intentional_assist + "," + penalty + "," + volley + "," + header
+				+ "," + fastBreak + "," + followsDribble + "," + cross + ","
+				+ pullBack + "," + throughBall + "," + secondThrough + ","
+				+ distance + "," + angle + "," + inverseDistance + ","
+				+ inverseAngle + "," + distanceAngle +"\n";
 	}
 	public void setGoal(int goal) {
 		this.goal = goal;

@@ -242,7 +242,7 @@ public class DatabaseHandler {
 				+ "FROM Event AS E \n"
 				+ "INNER JOIN State AS S ON E.StateID=S.StateID \n"
 				+ "INNER JOIN Game AS G ON E.GameID=G.GameID \n"
-				+ "WHERE G.SeasonID=2014 \n"
+				+ "WHERE G.SeasonID=2017 \n"
 				+ "ORDER BY EventID ASC;";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
@@ -597,6 +597,32 @@ public class DatabaseHandler {
 		}
 		int[] updateCounts = stmt.executeBatch();
 		closeConnection();
+	}
+	
+	public static void insertStartingEleven(ArrayList<StartingEleven> startingElevens) throws SQLException, ClassNotFoundException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		for (int i = 0; i < startingElevens.size(); i++){
+			String sql = "INSERT INTO StartingEleven VALUES ("+startingElevens.get(i).getGameID()+","+startingElevens.get(i).getTeamID() +"," + startingElevens.get(i).getPlayers().get(0)+","+
+					startingElevens.get(i).getPlayers().get(1)+","+startingElevens.get(i).getPlayers().get(2)+","+startingElevens.get(i).getPlayers().get(3)+","+
+					startingElevens.get(i).getPlayers().get(4)+","+startingElevens.get(i).getPlayers().get(5)+","+startingElevens.get(i).getPlayers().get(6)+","+
+					startingElevens.get(i).getPlayers().get(7)+","+startingElevens.get(i).getPlayers().get(8)+","+startingElevens.get(i).getPlayers().get(9)+","+
+					startingElevens.get(i).getPlayers().get(10)+");\n";
+			stmt.addBatch(sql);
+		}
+		int[] updateCounts = stmt.executeBatch();
+	}
+	
+	public static void updateMatchResults(Hashtable<Integer, Integer> results) throws ClassNotFoundException, SQLException{
+		openConnection();
+		Statement stmt = conn.createStatement();
+		Set<Integer> gameIDs = results.keySet();
+		for (int gameID: gameIDs){
+			String sql = "UPDATE Game SET Score="+results.get(gameID) +" WHERE GameID="+gameID;
+			System.out.println(sql);
+			stmt.addBatch(sql);
+		}
+		int[] updateCounts = stmt.executeBatch();
 	}
 	
 

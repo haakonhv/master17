@@ -267,7 +267,6 @@ public class Reinforcement {
 						StateActionNext san = nextList.get(j);
 						String nextKey = san.getNextStateID() + san.getNextAction();
 						int sanOcc = san.getOccurrence();
-//						double nextQvalue = saList.get(nextKey).getValue();
 						double nextStateValue = states.get(Integer.parseInt(nextKey.replaceAll("[^\\d.]", ""))).getValue(); //finner value til next state
 						qValue += (double) sanOcc/saOcc*nextStateValue;
 						currentValue += Math.abs(qValue);
@@ -309,35 +308,6 @@ public class Reinforcement {
 			currentValue = 0;
 		}
 
-//		Set<String> keySet = saList.keySet();
-//		Hashtable<Integer, State> states = new Hashtable<Integer, State>();
-//		for (String key : keySet){
-//			int stateID = Integer.parseInt(key.replaceAll("[^\\d.]", ""));
-//			double saValue = saList.get(key).getValue();
-//			int occurrence = saList.get(key).getOccurrence();
-//			double doubleOcc = (double) occurrence;
-//			if (states.containsKey(stateID)){
-//				State state = states.get(stateID);
-//				double oldVal = state.getValue();
-//				state.setValue(oldVal+(saValue*doubleOcc));
-//				int oldOcc = state.getOccurrence();
-//				state.setOccurrence(oldOcc+occurrence);
-//				states.put(stateID, state);
-//			}
-//			else{
-//				State state = new State(stateID, saValue*doubleOcc, occurrence);
-//				states.put(stateID, state);
-//			}
-//		}
-
-
-
-//		Set<Integer> stateIDs = states.keySet();
-//		for (int stateID: stateIDs){
-//			State state = states.get(stateID);
-//			double weightedVal = state.getValue()/state.getOccurrence();
-//			state.setValue(weightedVal);
-//		}
 
 
 		DatabaseHandler.updateStateActionQ(saList);
