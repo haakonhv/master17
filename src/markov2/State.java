@@ -9,8 +9,20 @@ public class State {
 	private int matchStatus;
 	private int occurrence;
 	private int reward;
+	@Override
+	public String toString() {
+		return "State [stateID=" + stateID + ", occurrence=" + occurrence + ", reward=" + reward + ", value=" + value
+				+ "]";
+	}
+
 	private double value;
 
+
+
+	public State(int stateID) {
+		super();
+		this.stateID = stateID;
+	}
 
 
 	public State(int stateID,int zone, String team, int period, int matchStatus, int reward) {
@@ -38,6 +50,11 @@ public class State {
 		this.stateID = stateID;
 		this.value = value;
 		this.occurrence = occurrence;
+	}
+
+
+	public void setTeam(String team) {
+		this.team = team;
 	}
 
 

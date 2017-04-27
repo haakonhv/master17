@@ -6,6 +6,14 @@ public class Game {
 	private int away_team_id;
 	private int matchday;
 	private int season;
+	private int score;
+	
+	
+	public Game(int game_id, int score) {
+		super();
+		this.game_id = game_id;
+		this.score = score;
+	}
 	public int getGame_id() {
 		return game_id;
 	}
@@ -47,6 +55,12 @@ public class Game {
 	public int getOtherTeam (int team){
 		if (team == this.getHome_team_id()) return this.away_team_id;
 		else return this.getHome_team_id();
+	}
+	public int getScore() {
+		return score;
+	}
+	public void setScore(int score) {
+		this.score = score;
 	}
 
 }

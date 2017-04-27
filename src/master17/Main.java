@@ -25,7 +25,7 @@ public class Main {
 //		sendGamesFromDataFiles();
 		//Qlearning.qLearningAlgorithm();
 		//insertGames();
-//				FindPlayerValues.findValues();
+//		FindPlayerValues.findValues();
 //		sendEventsFromDataFiles();
 //		StateBuilder.getStatesFromEvents();
 //		StateTransitionBuilder.setStateTransitions();
@@ -35,10 +35,11 @@ public class Main {
 //		markov2.Builder.setStateAction();
 //		markov2.Reinforcement.learningAlgorithm();
 //		markov2.Builder.buildStateAction();
-		markov2.Reinforcement.learning2();
+//		markov2.Reinforcement.learning();
 //		markov2.PlayerValueBuilder.buildPlayerValues();
 //		sendStartingElevenFromDataFiles();
 //		sendMatchResults();
+		Validation.gameAverageImpact(Validation.playerImpactPerGroup(Validation.createGroups()));
 	}
 	
 	public static void sendMatchResults() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{

@@ -16,9 +16,7 @@ public class StateTransition {
 		this.occurrence = 1;
 	}
 
-	public void setStateTransitionID(int stateTransitionID) {
-		this.stateTransitionID = stateTransitionID;
-	}
+	
 
 	public StateTransition(State startState, State endState, String action) {
 		super();
@@ -26,6 +24,22 @@ public class StateTransition {
 		this.endState = endState;
 		this.action = action;
 		this.occurrence = 1;
+	}
+	
+	public void setStateTransitionID(int stateTransitionID) {
+		this.stateTransitionID = stateTransitionID;
+	}
+
+	@Override
+	public String toString() {
+		return "StateTransition [stateTransitionID=" + stateTransitionID + ", startState=" + startState.getStateID() + ", endState="
+				+ endState.getStateID() + ", action=" + action + ", occurrence=" + occurrence + "]";
+	}
+
+
+
+	public void setOccurrence(int occurrence) {
+		this.occurrence = occurrence;
 	}
 
 	public int getStateTransitionID() {
