@@ -44,11 +44,11 @@ public class DatabaseHandler {
 
 	}
 
-	public static void insertStates(ArrayList<State> stateList) throws ClassNotFoundException, SQLException{
+	public static void insertStates(ArrayList<master17.State> stateList) throws ClassNotFoundException, SQLException{
 		Statement stmt = conn.createStatement();
 		int home;
 		String sql="";
-		for(State s : stateList){
+		for(master17.State s : stateList){
 			if (s.isHome()){
 				home = 1;
 			}
@@ -65,11 +65,11 @@ public class DatabaseHandler {
 		//closeConnection();
 	}
 
-	public static void insertStateTransitions(ArrayList<StateTransition> stateTransList) throws SQLException{
+	public static void insertStateTransitions(ArrayList<master17.StateTransition> stateTransList) throws SQLException{
 		Statement stmt = conn.createStatement();
 		int home;
 		String sql="";
-		for(StateTransition st : stateTransList){
+		for(master17.StateTransition st : stateTransList){
 
 			sql="INSERT INTO StateTransition (StartID, EndID, Occurrence) VALUES ("+st.getStartStateID()+","+st.getEndStateID()+","+st.getOccurrence()+")";
 			stmt.addBatch(sql);
@@ -130,7 +130,7 @@ public class DatabaseHandler {
 	public static ResultSet getDatabaseStateAction() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT * FROM StateAction";
+		String query = "SELECT * FROM StateAction2";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 	}
@@ -149,14 +149,14 @@ public class DatabaseHandler {
 	public static ResultSet getDatabaseStates() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT* FROM State";
+		String query = "SELECT* FROM State2";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 	}
 	public static ResultSet getDatabaseStateTrans() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT* FROM StateTransition";
+		String query = "SELECT* FROM StateTransition2";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
 	}
@@ -185,7 +185,7 @@ public class DatabaseHandler {
 	public static ResultSet getOrderedEventsJoinTrans() throws ClassNotFoundException, SQLException{
 		openConnection();
 		Statement stmt = conn.createStatement();
-		String query = "SELECT* FROM Event AS E INNER JOIN StateTransition AS ST ON E.StateTransitionID=ST.TransitionID "
+		String query = "SELECT* FROM Event AS E INNER JOIN StateTransition2 AS ST ON E.StateTransitionID=ST.TransitionID "
 				+ "INNER JOIN State as End ON ST.EndID = End.StateID WHERE E.StateTransitionID IS NOT NULL ORDER BY EventID ASC";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
@@ -242,7 +242,7 @@ public class DatabaseHandler {
 				+ "FROM Event AS E \n"
 				+ "INNER JOIN State AS S ON E.StateID=S.StateID \n"
 				+ "INNER JOIN Game AS G ON E.GameID=G.GameID \n"
-				+ "WHERE G.SeasonID=2017 \n"
+				+ "WHERE G.SeasonID=2014 \n"
 				+ "ORDER BY EventID ASC;";
 		ResultSet rs = stmt.executeQuery(query);
 		return rs;
@@ -252,12 +252,12 @@ public class DatabaseHandler {
 		openConnection();
 		Statement stmt = conn.createStatement();
 		String query = "SELECT E.Number, E.EventID, E.Action, E.TeamID, E.PlayerID, E.GameID, E.StateTransitionID, "
-				+ "ST.TransitionID, ST.StartID, ST.EndID, SA.StateID, SA.Action, SA.Value AS QValue, StartS.Value AS StartValue, EndS.Value AS EndValue, G.HomeID, G.AwayID "
+				+ "ST.TransitionID, ST.StartID, ST.EndID, SA.StateID, SA.Action, SA.Value AS QValue, StartS.Value AS StartValue, EndS.Value AS EndValue, EndS.Reward AS Endreward, G.HomeID, G.AwayID "
 				+ "FROM `Event` AS E "
-				+ "INNER JOIN StateTransition AS ST ON E.StateTransitionID=ST.TransitionID "
-				+ "INNER JOIN State AS StartS ON ST.StartID=StartS.StateID "
-				+ "INNER JOIN StateAction AS SA ON ST.StartID=SA.StateID "
-				+ "INNER JOIN State AS EndS	ON ST.EndID=EndS.StateID "
+				+ "INNER JOIN StateTransition2 AS ST ON E.StateTransitionID=ST.TransitionID "
+				+ "INNER JOIN State2 AS StartS ON ST.StartID=StartS.StateID "
+				+ "INNER JOIN StateAction2 AS SA ON ST.StartID=SA.StateID "
+				+ "INNER JOIN State2 AS EndS	ON ST.EndID=EndS.StateID "
 				+ "INNER JOIN Game AS G	ON E.GameID=G.GameID WHERE SA.Action = E.Action "
 				+ "ORDER BY E.EventID ASC";
 		ResultSet rs = stmt.executeQuery(query);
@@ -411,14 +411,14 @@ public class DatabaseHandler {
 		Statement stmt = conn.createStatement();
 		String sql = "";
 		for (State s : stateList){
-			sql = "INSERT INTO State VALUES (" + s.getStateID() + "," + s.getZone() + "," + "'"+s.getTeam()+"'" + "," + s.getPeriod() + "," + s.getMatchStatus() + ","
+			sql = "INSERT INTO State2 VALUES (" + s.getStateID() + "," + s.getZone() + "," + "'"+s.getTeam()+"'" + "," + s.getPeriod() + "," + s.getMatchStatus() + ","
 					+ s.getOccurrence() + "," + s.getValue() + ","+s.getReward() + ");\n";
 			stmt.addBatch(sql);
 		}
 		int[] updateCounts = stmt.executeBatch();
 		System.out.println("States inserted");
 		for (StateTransition st : transitionArray){
-			sql = "INSERT INTO StateTransition (TransitionID, StartID, EndID, Action, Occurrence) VALUES (" + st.getStateTransitionID() + "," +st.getStartState().getStateID() +"," + st.getEndState().getStateID() + "," + "'" + st.getAction()
+			sql = "INSERT INTO StateTransition2 (TransitionID, StartID, EndID, Action, Occurrence) VALUES (" + st.getStateTransitionID() + "," +st.getStartState().getStateID() +"," + st.getEndState().getStateID() + "," + "'" + st.getAction()
 			+ "'" + "," + st.getOccurrence() + ");\n";
 			stmt.addBatch(sql);
 		}
@@ -437,7 +437,7 @@ public class DatabaseHandler {
 			Set<String> actions = stateActions.get(stateID).keySet();
 			for(String action : actions){
 				int occurrence = stateActions.get(stateID).get(action);
-				sql = "INSERT INTO StateAction (StateID, Action, Occurrence, Value) VALUES ( "+ stateID + ",'"+ action + "'," + occurrence + "," + 0 +");\n";
+				sql = "INSERT INTO StateAction2 (StateID, Action, Occurrence, Value) VALUES ( "+ stateID + ",'"+ action + "'," + occurrence + "," + 0 +");\n";
 				stmt.addBatch(sql);
 			}
 		}
@@ -456,7 +456,7 @@ public class DatabaseHandler {
 			int stateID = Integer.parseInt(key.replaceAll("[^\\d.]", ""));
 			String action = key.replaceAll(Integer.toString(stateID), "");
 			double qValue = stateActions.get(key).getValue();
-			sql = "UPDATE StateAction SET Value = "+ qValue + " WHERE StateID = " + stateID + " AND Action = '" + action+ "';\n";
+			sql = "UPDATE StateAction2 SET Value = "+ qValue + " WHERE StateID = " + stateID + " AND Action = '" + action+ "';\n";
 			stmt.addBatch(sql);
 		}
 		int[] updateCounts = stmt.executeBatch();
@@ -502,7 +502,7 @@ public class DatabaseHandler {
 		for(Integer stateID : keys){
 			State state = states.get(stateID);
 			double stateValue = state.getValue();
-			sql = "UPDATE State SET Value=" + stateValue +" WHERE StateID = "+stateID+";\n";
+			sql = "UPDATE State2 SET Value=" + stateValue +" WHERE StateID = "+stateID+";\n";
 			stmt.addBatch(sql);
 
 		}
@@ -533,7 +533,7 @@ public class DatabaseHandler {
 		Statement stmt = conn.createStatement();
 		String sql;
 		for (StateActionNext sa: stateActionList){
-			sql = "INSERT INTO StateActionNext (StartID, StartAction, NextID, NextAction, Occurrence) VALUES ("+ sa.getStateID() + ",'"+sa.getAction()+"'," + sa.getNextStateID() +",'"+sa.getNextAction()
+			sql = "INSERT INTO StateActionNext2 (StartID, StartAction, NextID, NextAction, Occurrence) VALUES ("+ sa.getStateID() + ",'"+sa.getAction()+"'," + sa.getNextStateID() +",'"+sa.getNextAction()
 			+"',"+ sa.getOccurrence()+");\n";
 			System.out.println(sql);
 			stmt.addBatch(sql);
@@ -564,7 +564,7 @@ public class DatabaseHandler {
 		for (int i = 0 ; i < playerValues.size() ; i++){
 			PlayerValues pv = playerValues.get(i);
 			pv.setAverageActionValues();
-			for (int j = 0; j < pv.getTotal().size() ; j++){
+			for (int j = 0; j < 2 ; j++){
 				int index = j+1;
 				
 				String sql = "INSERT INTO PlayerValues"+index+" VALUES ("+pv.getPlayerID()+"," + pv.getGameID() + "," + pv.getTeamID() + "," +pv.getTotal().get(j) +","+pv.getPass().get(j) +","+ pv.getLongPass().get(j) + "," + pv.getBallCarry().get(j) + "," + pv.getBallRecovery().get(j) + "," + pv.getBallReceived().get(j) +
@@ -584,7 +584,7 @@ public class DatabaseHandler {
 		Statement stmt = conn.createStatement();
 		for (int i = 0 ; i < playerValues.size() ; i++){
 			PlayerValues pv = playerValues.get(i);
-			for (int j = 0; j < pv.getTotal().size() ; j++){
+			for (int j = 0; j < 2 ; j++){
 				int index = j+1;
 				
 				String sql = "INSERT INTO PlayerValues"+index+" VALUES ("+pv.getPlayerID()+"," + pv.getGameID() + "," + pv.getTeamID() + "," +pv.getTotal().get(j) +","+pv.getPass().get(j) +","+ pv.getLongPass().get(j) + "," + pv.getBallCarry().get(j) + "," + pv.getBallRecovery().get(j) + "," + pv.getBallReceived().get(j) +
@@ -623,6 +623,41 @@ public class DatabaseHandler {
 			stmt.addBatch(sql);
 		}
 		int[] updateCounts = stmt.executeBatch();
+	}
+
+	public static ResultSet getGames() throws SQLException, ClassNotFoundException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "SELECT GameID, Score FROM Game";			ResultSet rs = stmt.executeQuery(sql);
+		return rs;
+	}
+
+	public static ResultSet getPV1() throws ClassNotFoundException, SQLException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "SELECT GameID, PlayerID, Total FROM PlayerValues1";
+		ResultSet rs = stmt.executeQuery(sql);
+		return rs;
+	}
+	
+	public static ResultSet getPV2() throws ClassNotFoundException, SQLException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "SELECT GameID, PlayerID, Total FROM PlayerValues2";
+		ResultSet rs = stmt.executeQuery(sql);
+		return rs;
+	}
+	
+	
+
+	public static ResultSet getStartingElevens() throws ClassNotFoundException, SQLException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "SELECT* FROM Game"
+				+ " INNER JOIN StartingEleven as H on (H.GameID=Game.GameID AND Game.HomeID=H.TeamID) "
+				+ "INNER JOIN StartingEleven as A on (A.GameID=Game.GameID AND Game.AwayID=A.TeamID)";
+		ResultSet rs = stmt.executeQuery(sql);
+		return rs;
 	}
 	
 

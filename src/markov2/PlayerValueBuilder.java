@@ -31,6 +31,7 @@ public class PlayerValueBuilder {
 			
 			double qValue = events.getDouble("QValue");
 			double endStateVal =  events.getDouble("EndValue");
+			double endStateReward = events.getDouble("Endreward");
 			double startStateVal = events.getDouble("StartValue");
 			String action = events.getString("E.Action");
 			double prevStartVal = 0;
@@ -49,8 +50,8 @@ public class PlayerValueBuilder {
 			ArrayList<Double> eventValues = new ArrayList<Double>();
 			if (teamID == homeID){ //hjemmelags event
 				eventValues.add(qValue);
-				eventValues.add(endStateVal - qValue);
-				eventValues.add(endStateVal - prevStartVal);
+				eventValues.add(endStateVal + endStateReward - qValue);
+				eventValues.add(endStateVal + endStateReward - prevStartVal);
 				eventValues.add(qValue - startStateVal);
 				
 				
@@ -58,8 +59,8 @@ public class PlayerValueBuilder {
 			}
 			else { //bortelags event
 				eventValues.add(- qValue);
-				eventValues.add(-(endStateVal - qValue));
-				eventValues.add(-(endStateVal - prevStartVal));
+				eventValues.add(-(endStateVal + endStateReward - qValue));
+				eventValues.add(-(endStateVal + endStateReward - prevStartVal));
 				eventValues.add(-(qValue - startStateVal));
 			}
 
