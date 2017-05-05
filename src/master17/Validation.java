@@ -101,7 +101,7 @@ public class Validation {
 		Hashtable<Integer, Hashtable<Integer, Double>> playerImpact = new Hashtable<Integer, Hashtable<Integer, Double>>(); //groupNumber peker på PlayerID som peker på Rating
 		//groupNumber peker på PlayerID som peker på antall games spilleren har i denne gruppen
 		Hashtable<Integer, Hashtable<Integer, Double>> groupPlayerCount = new Hashtable<Integer, Hashtable<Integer, Double>>(); 
-		ResultSet pv1RS = DatabaseHandler.getPV1();
+		ResultSet pv1RS = DatabaseHandler.getPV2();
 
 		for (int i = 0; i < gameGroups.size(); i++){
 			for (Game game: gameGroups.get(i)){

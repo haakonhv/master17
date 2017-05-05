@@ -40,6 +40,7 @@ public class Main {
 //		sendStartingElevenFromDataFiles();
 //		sendMatchResults();
 		Validation.gameAverageImpact(Validation.playerImpactPerGroup(Validation.createGroups()));
+//		OddsReader.readOdds();
 	}
 	
 	public static void sendMatchResults() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{

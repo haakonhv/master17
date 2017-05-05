@@ -659,6 +659,25 @@ public class DatabaseHandler {
 		ResultSet rs = stmt.executeQuery(sql);
 		return rs;
 	}
+
+	public static ResultSet getGamesAndTeams() throws SQLException, ClassNotFoundException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "SELECT* FROM Game WHERE SeasonID=2016";
+		ResultSet rs = stmt.executeQuery(sql);
+		return rs;
+	}
+
+	public static void insertGameOutcomes(ArrayList<GameOutcome> gameList) throws SQLException, ClassNotFoundException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		for (GameOutcome go: gameList){
+			String sql = "UPDATE Game SET HomeProb="+go.getHomep() +",DrawProb="+go.getDrawp()+",AwayProb="+go.getAwayp()+" WHERE GameID="+go.getGameID()+";\n";
+			System.out.println(sql);
+			stmt.addBatch(sql);
+		}
+		int[] updateCounts = stmt.executeBatch();
+	}
 	
 
 }
