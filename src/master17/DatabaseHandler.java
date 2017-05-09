@@ -678,6 +678,58 @@ public class DatabaseHandler {
 		}
 		int[] updateCounts = stmt.executeBatch();
 	}
+
+	public static ResultSet getPlayerPerTeam() throws ClassNotFoundException, SQLException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "SELECT P.FirstName, P.LastName, P.PlayerID, PV.TeamID, T.Name, SUM(PV.Total), PGT.Total/90 AS Matches, SUM(PV.Total)/(PGT.Total/90) AS Total "                     
+                                    + "FROM PlayerValues1 AS PV "
+                                    + "INNER JOIN Player AS P ON PV.PlayerID=P.PlayerID "
+                                    + "INNER JOIN PlayerGameTime AS PGT ON (PV.PlayerID=PGT.PlayerID AND PV.TeamID=PGT.TeamID) "
+                                    + "INNER JOIN Game AS G ON PV.GameID=G.GameID "
+                                    + "INNER JOIN Team AS T ON PV.TeamID = T.TeamID "
+                                    + "WHERE PGT.Total>250 AND P.Position!='Goalkeeper' AND P.PlayerID IN ("
+                                    	+ "SELECT PGT.PlayerID "
+                                    	+ "FROM PlayerGameTime AS PGT "
+                                    	+ "WHERE PGT.Total>250 "
+                                    	+ "GROUP BY  PGT.PlayerID "
+                                    	+ "HAVING Count(*)>1) "
+                                    + "GROUP BY PV.PlayerID, PV.TeamID "
+                                    + "ORDER BY PV.PlayerID;";
+		ResultSet rs = stmt.executeQuery(sql);
+		return rs;
+	}
+
+	public static ResultSet getGameImpacts(int p, int t) throws ClassNotFoundException, SQLException {
+		openConnection();
+		Statement stmt = conn.createStatement();
+		String sql = "SELECT PV.PlayerID, PV.GameID, PV.TeamID, "
+				+ "I1.PlayerID AS P1, I1.Total AS I1, " 
+				+ "I2.PlayerID AS P2, I2.Total AS I2, "
+				+ "I3.PlayerID AS P3, I3.Total AS I3, "
+				+ "I4.PlayerID AS P4, I4.Total AS I4, "
+				+ "I5.PlayerID AS P5, I5.Total AS I5, "
+				+ "I6.PlayerID AS P6, I6.Total AS I6, "
+				+ "I7.PlayerID AS P7, I7.Total AS I7, "
+				+ "I8.PlayerID AS P8, I8.Total AS I8, "
+				+ "I9.PlayerID AS P9, I9.Total AS I9, "
+				+ "I10.PlayerID AS P10, I10.Total AS I10 "
+				+ "FROM `PlayerValues1` AS PV "
+				+ "INNER JOIN StartingEleven AS SE ON (PV.TeamID=SE.TeamID AND PV.GameID=SE.GameID) "
+				+ "INNER JOIN PlayerValues1 AS I1 ON (SE.P1=I1.PlayerID AND SE.GameID=I1.GameID) "
+				+ "INNER JOIN PlayerValues1 AS I2 ON (SE.P2=I2.PlayerID AND SE.GameID=I2.GameID) "
+				+ "INNER JOIN PlayerValues1 AS I3 ON (SE.P3=I3.PlayerID AND SE.GameID=I3.GameID) "
+				+ "INNER JOIN PlayerValues1 AS I4 ON (SE.P4=I4.PlayerID AND SE.GameID=I4.GameID) "
+				+ "INNER JOIN PlayerValues1 AS I5 ON (SE.P5=I5.PlayerID AND SE.GameID=I5.GameID) "
+				+ "INNER JOIN PlayerValues1 AS I6 ON (SE.P6=I6.PlayerID AND SE.GameID=I6.GameID) "
+				+ "INNER JOIN PlayerValues1 AS I7 ON (SE.P7=I7.PlayerID AND SE.GameID=I7.GameID) "
+				+ "INNER JOIN PlayerValues1 AS I8 ON (SE.P8=I8.PlayerID AND SE.GameID=I8.GameID) "
+				+ "INNER JOIN PlayerValues1 AS I9 ON (SE.P9=I9.PlayerID AND SE.GameID=I9.GameID) "
+				+ "INNER JOIN PlayerValues1 AS I10 ON (SE.P10=I10.PlayerID AND SE.GameID=I10.GameID)"
+				+ "WHERE PV.PlayerID = " +p + " AND PV.TeamID=" +t+";";
+		ResultSet rs = stmt.executeQuery(sql);
+		return rs;
+	}
 	
 
 }

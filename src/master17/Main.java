@@ -39,8 +39,9 @@ public class Main {
 //		markov2.PlayerValueBuilder.buildPlayerValues();
 //		sendStartingElevenFromDataFiles();
 //		sendMatchResults();
-		Validation.gameAverageImpact(Validation.playerImpactPerGroup(Validation.createGroups()));
+//		Validation.gameAverageImpact(Validation.playerImpactPerGroup(Validation.createGroups()));
 //		OddsReader.readOdds();
+		Transferhandler.averageRatingPerClub();
 	}
 	
 	public static void sendMatchResults() throws ParserConfigurationException, SAXException, IOException, ClassNotFoundException, SQLException{
